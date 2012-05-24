@@ -1,0 +1,279 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Fontis Australia Extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category   Fontis
+ * @package    Fontis_Australia
+ * @author     Chris Norton
+ * @copyright  Copyright (c) 2008 Fontis Pty. Ltd. (http://www.fontis.com.au)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<config>
+    <modules>
+        <Fontis_Australia>
+            <version>2.0.7</version>
+            <depends>
+                <Mage_Shipping />
+                <Mage_Payment />
+                <Mage_Paygate />
+                <Mage_Checkout />
+            </depends>
+        </Fontis_Australia>
+    </modules>
+    <crontab>
+        <jobs>
+            <Fontis_Australia_Myshopping>
+                <schedule>
+                    <cron_expr>0 0 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>australia/myshopping_cron::update</model>
+                </run>
+            </Fontis_Australia_Myshopping>
+            <Fontis_Australia_Shopbot>
+                <schedule>
+                    <cron_expr>0 0 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>australia/shopbot_cron::update</model>
+                </run>
+            </Fontis_Australia_Shopbot>
+            <Fontis_Australia_Getprice>
+                <schedule>
+                    <cron_expr>0 0 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>australia/getprice_cron::update</model>
+                </run>
+            </Fontis_Australia_Getprice>
+        </jobs>
+    </crontab>
+    <global>
+		<models>
+			<australia>
+				<class>Fontis_Australia_Model</class>
+				<resourceModel>australia_mysql4</resourceModel>
+			</australia>
+			<australia_mysql4>
+				<class>Fontis_Australia_Model_Mysql4</class>
+				<entities>
+					<eparcel>
+						<table>australia_eparcel</table>
+					</eparcel>
+				</entities>
+			</australia_mysql4>
+		</models>
+		<helpers>
+			<australia>
+				<class>Fontis_Australia_Helper</class>
+			</australia>
+		</helpers>
+		<blocks>
+			<australia>
+				<class>Fontis_Australia_Block</class>
+			</australia>
+		</blocks>
+		<resources>
+			<australia_setup>
+				<setup>
+				    <module>Fontis_Australia</module>
+				</setup>
+				<connection>
+				    <use>directory_setup</use>
+				</connection>
+			</australia_setup>
+			<australia_write>
+				<connection>
+				    <use>core_write</use>
+				</connection>
+			</australia_write>
+			<australia_read>
+				<connection>
+				    <use>core_read</use>
+				</connection>
+			</australia_read>
+		</resources>
+		<sales>
+			<shipping>
+				<carriers>
+				    <australiapost>
+				        <class>Fontis_Australia_Model_Shipping_Carrier_Australiapost</class>
+				    </australiapost>
+				</carriers>
+			</shipping>
+			<tax>
+				<methods>
+				    <gst>
+				        <class>Fontis_Australia_Model_Tax_Gst</class>
+				    </gst>
+				</methods>
+			</tax>
+            <order>
+                <statuses>
+                    <pending_bpay translate="label"><label>Pending BPAY</label></pending_bpay>
+                    <pending_deposit translate="label"><label>Pending Direct Deposit</label></pending_deposit>
+                </statuses>
+                <states>
+                    <new>
+                        <statuses>
+                            <pending_bpay/>
+                            <pending_deposit/>
+                        </statuses>
+                    </new>
+                </states>
+            </order>
+		</sales>
+		<events>
+			<sales_order_shipment_save_after>
+				<observers>
+					<fontis_australia_shipment_save>
+						<type>singleton</type>
+						<class>australia/shipping_carrier_eparcel</class>
+						<method>sendManifest</method>
+					</fontis_australia_shipment_save>
+				</observers>
+			</sales_order_shipment_save_after>
+		</events>
+    </global>
+    <frontend>
+        <routers>
+            <australia>
+                <use>standard</use>
+                <args>
+                    <module>Fontis_Australia</module>
+                    <frontName>australia</frontName>
+                </args>
+            </australia>
+        </routers>
+		<layout>
+			<updates>
+				<australia module="Fontis_Australia">
+					<file>fontis_australia.xml</file>
+				</australia>
+			</updates>
+		</layout>
+    </frontend>
+	<default>
+		<carriers>
+			<australiapost>
+				<active>0</active>
+				<sallowspecific>0</sallowspecific>
+				<model>australia/shipping_carrier_australiapost</model>
+				<title>Australia Post</title>
+				<name></name>
+				<weight_units>1000</weight_units>
+				<registered_post>0</registered_post>
+				<registered_post_charge>2.75</registered_post_charge>
+				<delivery_confirmation>0</delivery_confirmation>
+				<person_to_person>0</person_to_person>
+			</australiapost>
+			<eparcel>
+				<active>0</active>
+				<sallowspecific>0</sallowspecific>
+				<condition_name>package_weight</condition_name>
+				<model>australia/shipping_carrier_eparcel</model>
+				<name>eParcel</name>
+				<title>Australia Post eParcel</title>
+				<sallowspecific>1</sallowspecific>
+				<specificcountry>AU</specificcountry>
+				<specificerrmsg>This shipping method is currently unavailable. If you would like to ship using this shipping method, please contact us.</specificerrmsg>
+				<handling_type>F</handling_type>
+				<merchant_location_id>AWV</merchant_location_id>
+				<charge_code>S2</charge_code>
+				<post_charge_account>1234567</post_charge_account>
+				<signature_required>0</signature_required>
+                <signature_cost>6.44</signature_cost>
+                <insurance_step>100.0</insurance_step>
+                <insurance_cost_per_step>1.05</insurance_cost_per_step>
+			</eparcel>
+		</carriers>
+
+        <payment>
+            <bpay>
+                <active>0</active>
+                <model>australia/payment_bpay</model>
+                <order_status>pending</order_status>
+                <customer_group_access>0</customer_group_access>
+                <customer_group>0</customer_group>
+                <title>BPAY</title>
+                <allowspecific>0</allowspecific>
+                <calculate_using_customerid>0</calculate_using_customerid>
+                <accept_credit_cards>1</accept_credit_cards>
+                <message>Payment details will be displayed on order confirmation screen.</message>
+            </bpay>
+            <directdeposit_au>
+                <active>0</active>
+                <model>australia/payment_directdeposit</model>
+                <order_status>pending</order_status>
+                <customer_group_access>0</customer_group_access>
+                <customer_group>0</customer_group>			
+                <title>Direct Deposit</title>
+                <account_name></account_name>
+                <account_bsb>000000</account_bsb>
+                <account_number>00000000</account_number>
+                <allowspecific>0</allowspecific>
+                <message>Please quote order number (displayed after checkout confirmation) when making your deposit. Order will be processed once payment has been received.</message>
+            </directdeposit_au>
+        </payment>
+
+        <fontis_feeds>
+            <getpricefeed>
+                <output>getprice-feeds</output>
+                <defaultcategory>Products</defaultcategory>
+                <include_all_products>1</include_all_products>
+                <currency>AUS</currency>
+            </getpricefeed>
+            <shopbotfeed>
+                <output>shopbot-feeds/</output>
+                <defaultcategory>Products</defaultcategory>
+                <include_all_products>1</include_all_products>
+                <m_to_xml_attributes>a:4:{s:18:"_1260239763475_475";a:2:{s:7:"magento";s:12:"manufacturer";s:7:"xmlfeed";s:5:"brand";}s:18:"_1260241020747_747";a:2:{s:7:"magento";s:11:"description";s:7:"xmlfeed";s:11:"description";}s:18:"_1260413375112_112";a:2:{s:7:"magento";s:15:"FONTIS-category";s:7:"xmlfeed";s:8:"category";}s:18:"_1260420319241_241";a:2:{s:7:"magento";s:17:"FONTIS-image-link";s:7:"xmlfeed";s:5:"image";}}</m_to_xml_attributes>
+            </shopbotfeed>
+            <myshopping>
+                <output>myshopping-feeds/</output>
+                <defaultcategory>Products</defaultcategory>
+                <include_all_products>1</include_all_products>
+                <m_to_xml_attributes>a:4:{s:18:"_1260239763475_475";a:2:{s:7:"magento";s:12:"manufacturer";s:7:"xmlfeed";s:5:"brand";}s:18:"_1260241020747_747";a:2:{s:7:"magento";s:11:"description";s:7:"xmlfeed";s:11:"description";}s:18:"_1260413375112_112";a:2:{s:7:"magento";s:15:"FONTIS-category";s:7:"xmlfeed";s:8:"category";}s:18:"_1260420319241_241";a:2:{s:7:"magento";s:17:"FONTIS-image-link";s:7:"xmlfeed";s:5:"image";}}</m_to_xml_attributes>
+            </myshopping>
+        </fontis_feeds>
+    </default>
+    <adminhtml>
+        <acl>
+            <resources>
+                <all>
+                    <title>Allow Everything</title>
+                </all>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <fontis_australia>
+                                            <title>Australia</title>
+                                        </fontis_australia>
+                                        <fontis_feeds>
+                                            <title>Feeds</title>
+                                        </fontis_feeds>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    </adminhtml>
+</config>
