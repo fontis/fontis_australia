@@ -18,9 +18,9 @@
 * @copyright  Copyright (c) 2008 Fontis Pty. Ltd. (http://www.fontis.com.au)
 * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 */                   
-class Fontis_Australia_Block_Myshopping extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
+class Fontis_Australia_Block_Getprice extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
 {
-    protected $magentoOptions = array('instock' => 'instock', 'brand' => 'brand', 'final_price' => 'final_price', 'product_id' => 'product_id', "category" => "category", "link" => "link", "image_url" => "image_url");
+    protected $magentoOptions = array('final_price' => 'final_price', 'product_num' => 'product_num', "link" => "link", "category" => "category", "image_url" => "image_url", "currency" => "currency");
 
     public function __construct()
     {
@@ -29,7 +29,7 @@ class Fontis_Australia_Block_Myshopping extends Mage_Adminhtml_Block_System_Conf
             'size'  => 28,
         ));
         $this->addColumn('xmlfeed', array(
-            'label' => Mage::helper('adminhtml')->__('Myshopping feed tag'),
+            'label' => Mage::helper('adminhtml')->__('Getprice feed tag'),
             'size'  => 28
         ));
         $this->_addAfter = false;
@@ -75,7 +75,7 @@ class Fontis_Australia_Block_Myshopping extends Mage_Adminhtml_Block_System_Conf
         else
         {
             $rendered = '<select name="' . $inputName . '">';
-            $model = Mage::getModel('australia/myshopping');
+            $model = Mage::getModel('australia/getprice');
             foreach ($model->available_fields as $field) {
                 $rendered .= '<option value="'.$field.'">'.str_replace("_", " ", $field)."</option>";
             }

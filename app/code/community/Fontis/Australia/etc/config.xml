@@ -23,17 +23,23 @@
 <config>
     <modules>
         <Fontis_Australia>
-            <version>2.0.7</version>
+            <version>2.2.0</version>
             <depends>
                 <Mage_Shipping />
                 <Mage_Payment />
-                <Mage_Paygate />
-                <Mage_Checkout />
             </depends>
         </Fontis_Australia>
     </modules>
     <crontab>
         <jobs>
+            <Fontis_Australia_Shoppingdotcom>
+                <schedule>
+                    <cron_expr>0 0 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>australia/shoppingdotcom_cron::update</model>
+                </run>
+            </Fontis_Australia_Shoppingdotcom>
             <Fontis_Australia_Myshopping>
                 <schedule>
                     <cron_expr>0 0 * * *</cron_expr>
@@ -58,72 +64,84 @@
                     <model>australia/getprice_cron::update</model>
                 </run>
             </Fontis_Australia_Getprice>
+            <Fontis_Australia_Googleproducts>
+                <schedule>
+                    <cron_expr>0 0 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>australia/googleproducts_cron::update</model>
+                </run>
+            </Fontis_Australia_Googleproducts>
         </jobs>
     </crontab>
     <global>
-		<models>
-			<australia>
-				<class>Fontis_Australia_Model</class>
-				<resourceModel>australia_mysql4</resourceModel>
-			</australia>
-			<australia_mysql4>
-				<class>Fontis_Australia_Model_Mysql4</class>
-				<entities>
-					<eparcel>
-						<table>australia_eparcel</table>
-					</eparcel>
-				</entities>
-			</australia_mysql4>
-		</models>
-		<helpers>
-			<australia>
-				<class>Fontis_Australia_Helper</class>
-			</australia>
-		</helpers>
-		<blocks>
-			<australia>
-				<class>Fontis_Australia_Block</class>
-			</australia>
-		</blocks>
-		<resources>
-			<australia_setup>
-				<setup>
-				    <module>Fontis_Australia</module>
-				</setup>
-				<connection>
-				    <use>directory_setup</use>
-				</connection>
-			</australia_setup>
-			<australia_write>
-				<connection>
-				    <use>core_write</use>
-				</connection>
-			</australia_write>
-			<australia_read>
-				<connection>
-				    <use>core_read</use>
-				</connection>
-			</australia_read>
-		</resources>
-		<sales>
-			<shipping>
-				<carriers>
-				    <australiapost>
-				        <class>Fontis_Australia_Model_Shipping_Carrier_Australiapost</class>
-				    </australiapost>
-				</carriers>
-			</shipping>
-			<tax>
-				<methods>
-				    <gst>
-				        <class>Fontis_Australia_Model_Tax_Gst</class>
-				    </gst>
-				</methods>
-			</tax>
+        <models>
+            <australia>
+                <class>Fontis_Australia_Model</class>
+                <resourceModel>australia_mysql4</resourceModel>
+            </australia>
+            <australia_mysql4>
+                <class>Fontis_Australia_Model_Mysql4</class>
+                <entities>
+                    <eparcel>
+                        <table>australia_eparcel</table>
+                    </eparcel>
+                </entities>
+            </australia_mysql4>
+        </models>
+        <helpers>
+            <australia>
+                <class>Fontis_Australia_Helper</class>
+            </australia>
+        </helpers>
+        <blocks>
+            <australia>
+                <class>Fontis_Australia_Block</class>
+            </australia>
+        </blocks>
+        <resources>
+            <australia_setup>
+                <setup>
+                    <module>Fontis_Australia</module>
+                </setup>
+                <connection>
+                    <use>directory_setup</use>
+                </connection>
+            </australia_setup>
+            <australia_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </australia_write>
+            <australia_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </australia_read>
+        </resources>
+        <sales>
+            <shipping>
+                <carriers>
+                    <australiapost>
+                        <class>Fontis_Australia_Model_Shipping_Carrier_Australiapost</class>
+                    </australiapost>
+                </carriers>
+            </shipping>
+            <tax>
+                <methods>
+                    <gst>
+                        <class>Fontis_Australia_Model_Tax_Gst</class>
+                    </gst>
+                </methods>
+            </tax>
             <order>
                 <statuses>
-                    <pending_bpay translate="label"><label>Pending BPAY</label></pending_bpay>
-                    <pending_deposit translate="label"><label>Pending Direct Deposit</label></pending_deposit>
+                    <pending_bpay translate="label">
+                        <label>Pending BPAY</label>
+                    </pending_bpay>
+                    <pending_deposit translate="label">
+                        <label>Pending Direct Deposit</label>
+                    </pending_deposit>
                 </statuses>
                 <states>
                     <new>
@@ -134,18 +152,18 @@
                     </new>
                 </states>
             </order>
-		</sales>
-		<events>
-			<sales_order_shipment_save_after>
-				<observers>
-					<fontis_australia_shipment_save>
-						<type>singleton</type>
-						<class>australia/shipping_carrier_eparcel</class>
-						<method>sendManifest</method>
-					</fontis_australia_shipment_save>
-				</observers>
-			</sales_order_shipment_save_after>
-		</events>
+        </sales>
+        <events>
+            <sales_order_shipment_save_after>
+                <observers>
+                    <fontis_australia_shipment_save>
+                        <type>singleton</type>
+                        <class>australia/shipping_carrier_eparcel</class>
+                        <method>sendManifest</method>
+                    </fontis_australia_shipment_save>
+                </observers>
+            </sales_order_shipment_save_after>
+        </events>
     </global>
     <frontend>
         <routers>
@@ -157,48 +175,48 @@
                 </args>
             </australia>
         </routers>
-		<layout>
-			<updates>
-				<australia module="Fontis_Australia">
-					<file>fontis_australia.xml</file>
-				</australia>
-			</updates>
-		</layout>
+        <layout>
+            <updates>
+                <australia module="Fontis_Australia">
+                    <file>fontis_australia.xml</file>
+                </australia>
+            </updates>
+        </layout>
     </frontend>
-	<default>
-		<carriers>
-			<australiapost>
-				<active>0</active>
-				<sallowspecific>0</sallowspecific>
-				<model>australia/shipping_carrier_australiapost</model>
-				<title>Australia Post</title>
-				<name></name>
-				<weight_units>1000</weight_units>
-				<registered_post>0</registered_post>
-				<registered_post_charge>2.75</registered_post_charge>
-				<delivery_confirmation>0</delivery_confirmation>
-				<person_to_person>0</person_to_person>
-			</australiapost>
-			<eparcel>
-				<active>0</active>
-				<sallowspecific>0</sallowspecific>
-				<condition_name>package_weight</condition_name>
-				<model>australia/shipping_carrier_eparcel</model>
-				<name>eParcel</name>
-				<title>Australia Post eParcel</title>
-				<sallowspecific>1</sallowspecific>
-				<specificcountry>AU</specificcountry>
-				<specificerrmsg>This shipping method is currently unavailable. If you would like to ship using this shipping method, please contact us.</specificerrmsg>
-				<handling_type>F</handling_type>
-				<merchant_location_id>AWV</merchant_location_id>
-				<charge_code>S2</charge_code>
-				<post_charge_account>1234567</post_charge_account>
-				<signature_required>0</signature_required>
+    <default>
+        <carriers>
+            <australiapost>
+                <active>0</active>
+                <sallowspecific>0</sallowspecific>
+                <model>australia/shipping_carrier_australiapost</model>
+                <title>Australia Post</title>
+                <name></name>
+                <weight_units>1000</weight_units>
+                <registered_post>0</registered_post>
+                <registered_post_charge>2.75</registered_post_charge>
+                <delivery_confirmation>0</delivery_confirmation>
+                <person_to_person>0</person_to_person>
+            </australiapost>
+            <eparcel>
+                <active>0</active>
+                <sallowspecific>0</sallowspecific>
+                <condition_name>package_weight</condition_name>
+                <model>australia/shipping_carrier_eparcel</model>
+                <name>eParcel</name>
+                <title>Australia Post eParcel</title>
+                <sallowspecific>1</sallowspecific>
+                <specificcountry>AU</specificcountry>
+                <specificerrmsg>This shipping method is currently unavailable. If you would like to ship using this shipping method, please contact us.</specificerrmsg>
+                <handling_type>F</handling_type>
+                <merchant_location_id>AWV</merchant_location_id>
+                <charge_code>S2</charge_code>
+                <post_charge_account>1234567</post_charge_account>
+                <signature_required>0</signature_required>
                 <signature_cost>6.44</signature_cost>
                 <insurance_step>100.0</insurance_step>
                 <insurance_cost_per_step>1.05</insurance_cost_per_step>
-			</eparcel>
-		</carriers>
+            </eparcel>
+        </carriers>
 
         <payment>
             <bpay>
@@ -218,7 +236,7 @@
                 <model>australia/payment_directdeposit</model>
                 <order_status>pending</order_status>
                 <customer_group_access>0</customer_group_access>
-                <customer_group>0</customer_group>			
+                <customer_group>0</customer_group>
                 <title>Direct Deposit</title>
                 <account_name></account_name>
                 <account_bsb>000000</account_bsb>
@@ -229,8 +247,12 @@
         </payment>
 
         <fontis_feeds>
+            <shoppingdotcomfeed>
+                <output>shoppingdotcom-feeds/</output>
+                <include_all_products>1</include_all_products>
+            </shoppingdotcomfeed>
             <getpricefeed>
-                <output>getprice-feeds</output>
+                <output>getprice-feeds/</output>
                 <defaultcategory>Products</defaultcategory>
                 <include_all_products>1</include_all_products>
                 <currency>AUS</currency>
@@ -239,14 +261,17 @@
                 <output>shopbot-feeds/</output>
                 <defaultcategory>Products</defaultcategory>
                 <include_all_products>1</include_all_products>
-                <m_to_xml_attributes>a:4:{s:18:"_1260239763475_475";a:2:{s:7:"magento";s:12:"manufacturer";s:7:"xmlfeed";s:5:"brand";}s:18:"_1260241020747_747";a:2:{s:7:"magento";s:11:"description";s:7:"xmlfeed";s:11:"description";}s:18:"_1260413375112_112";a:2:{s:7:"magento";s:15:"FONTIS-category";s:7:"xmlfeed";s:8:"category";}s:18:"_1260420319241_241";a:2:{s:7:"magento";s:17:"FONTIS-image-link";s:7:"xmlfeed";s:5:"image";}}</m_to_xml_attributes>
             </shopbotfeed>
-            <myshopping>
+            <myshoppingfeed>
                 <output>myshopping-feeds/</output>
                 <defaultcategory>Products</defaultcategory>
                 <include_all_products>1</include_all_products>
-                <m_to_xml_attributes>a:4:{s:18:"_1260239763475_475";a:2:{s:7:"magento";s:12:"manufacturer";s:7:"xmlfeed";s:5:"brand";}s:18:"_1260241020747_747";a:2:{s:7:"magento";s:11:"description";s:7:"xmlfeed";s:11:"description";}s:18:"_1260413375112_112";a:2:{s:7:"magento";s:15:"FONTIS-category";s:7:"xmlfeed";s:8:"category";}s:18:"_1260420319241_241";a:2:{s:7:"magento";s:17:"FONTIS-image-link";s:7:"xmlfeed";s:5:"image";}}</m_to_xml_attributes>
-            </myshopping>
+            </myshoppingfeed>
+            <googleproductsfeed>
+                <output>googleproducts-feeds/</output>
+                <include_all_products>1</include_all_products>
+                <default_condition>new</default_condition>
+            </googleproductsfeed>
         </fontis_feeds>
     </default>
     <adminhtml>

@@ -19,138 +19,57 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-// Callback used by the Magento resource iterator walk() method. Adds a
-// product ID to a static array and calls addProductXmlgetPrice() to
-// generate XML when the array reaches the batch size.
-function addProductXmlCallbackGetPrice($args) {
-    Fontis_Australia_Model_GetPrice_Cron::$accumulator[] = $args['row']['entity_id'];
+class Fontis_Australia_Model_GetPrice_Cron extends Fontis_Australia_Model_FeedCronBase {
 
-    $length = count(Fontis_Australia_Model_GetPrice_Cron::$accumulator);
-    if($length >= Fontis_Australia_Model_GetPrice_Cron::BATCH_SIZE) {
-        addProductXmlGetPrice();
-    }
-}
-
-// Runs a subprocesss to create feed XML for the product IDs in the static
-// array, then empties the array.
-function addProductXmlGetPrice() {
-    $length = count(Fontis_Australia_Model_GetPrice_Cron::$accumulator);
-    if($length > 0) {
-        Mage::log("Fontis/Australia_Model_Getprice_Cron: Processing product IDs " . Fontis_Australia_Model_GetPrice_Cron::$accumulator[0] .
-                " to " . Fontis_Australia_Model_GetPrice_Cron::$accumulator[$length - 1]);
-        $store_id = Fontis_Australia_Model_GetPrice_Cron::$store->getId();
-
-        $data = shell_exec("php " . Mage::getBaseDir() . "/app/code/community/Fontis/Australia/Model/Getprice/Child.php " .
-                Mage::getBaseDir() . " '" . serialize(Fontis_Australia_Model_GetPrice_Cron::$accumulator) .
-                "' " . $store_id);
-        Fontis_Australia_Model_GetPrice_Cron::$accumulator = array();
-
-        $array = json_decode($data, true);
-
-        if(is_array($array)) {
-            $codes = array();
-            foreach($array as $prod) {
-                Fontis_Australia_Model_GetPrice_Cron::$debugCount += 1;
-                $product_node = Fontis_Australia_Model_GetPrice_Cron::$root_node->addChild('product');
-                foreach($prod as $key => $val) {
-                    if($key == 'Code') {
-                        $codes[] = $val;
-                    }
-                    $product_node->addChild($key, htmlspecialchars($val));
-                }
-            }
-            if(!empty($codes)) {
-                Mage::log("Fontis/Australia_Model_Getprice_Cron: Codes: ".implode(",", $codes));
-            }
-        } else {
-            Mage::log("Fontis/Australia_Model_Getprice_Cron: Could not unserialize to array:");
-            Mage::log($data);
-            Mage::log($array);
-        }
-
-        Mage::log('Fontis/Australia_Model_Getprice_Cron: ' . strlen($data) . ' characters returned');
-    }
-}
-
-class Fontis_Australia_Model_GetPrice_Cron {
-    const BATCH_SIZE = 100;
-
-    public static $doc;
-    public static $root_node;
-    public static $store;
-    public static $accumulator;
-    public static $debugCount = 0;
-
-    protected function _construct() {
-        self::$accumulator = array();
-    }
-
-    protected function getPath() {
-        $path = "";
-        $config_path = Mage::getStoreConfig('fontis_feeds/getpricefeed/output');
-
-        if (substr($config_path, 0, 1) == "/") {
-            $path = $config_path . '/';
-        } else {
-            $path = Mage::getBaseDir() . '/' . $config_path . '/';
-        }
-
-        return str_replace('//', '/', $path);
-    }
-
-    public function nonstatic() {
-        self::update();
-    }
+    public $config_path = 'getpricefeed';
+    public $generate_categories = true;
+    protected $generate_product_category = true;
+    protected $product_doc;
+    protected $category_doc;
+    protected $root_node;
+    protected $required_fields = array(
+        "product_num" => "product_num",
+        "sku"   =>  "upc",
+        "name" => "attribute1",
+        "description" => "description",
+        "category" => "category_name",
+        "image_url" => "image",
+        "final_price" => "price",
+        "currency" => "currency",
+        "link" => "product_url"
+    );
 
     public static function update() {
-        Mage::log('Fontis/Australia_Model_Getprice_Cron: Entered update function');
+        // Static launcher fopr Magento's cron logic
+        $obj = new self();
+        $obj->generateFeed();
+    }
 
-        if (Mage::getStoreConfig('fontis_feeds/getpricefeed/active')) {
-            $io = new Varien_Io_File();
-            $io->setAllowCreateFolders(true);
+    protected function setupStoreData() {
+        $this->product_doc = new SimpleXMLElement('<store url="' . $this->info("store_url") . '" date="'. $this->info("date") .'" time="'. $this->info("time") .'" name="' . $this->info("shop_name") . '"></store>');
+    }
 
-            $io->open(array('path' => self::getPath()));
-
-            // Loop through all stores:
-            foreach(Mage::app()->getStores() as $store) {
-                Mage::log('Fontis/Australia_Model_Getprice_Cron: Processing store: ' . $store->getName());
-                $clean_store_name = str_replace('+', '-', strtolower(urlencode($store->getName())));
-
-                // Write the entire products xml file:
-                Mage::log('Fontis/Australia_Model_Getprice_Cron: Generating All Products XML File');
-                $products_result = self::getProductsXml($store);
-                $io->write($clean_store_name . '-products.xml', $products_result['xml']);
-                Mage::log('Fontis/Australia_Model_Getprice_Cron: Wrote to file: ' . $clean_store_name . '-products.xml', $products_result['xml']);
-
-                // Write the leaf categories xml file:
-                Mage::log('Fontis/Australia_Model_Getprice_Cron: Generating Categories XML File');
-                $categories_result = self::getCategoriesXml($store);
-                $io->write($clean_store_name . '-categories.xml', $categories_result['xml']);
-                Mage::log('Fontis/Australia_Model_Getprice_Cron: Wrote to file: ' . $clean_store_name . '-categories.xml', $categories_result['xml']);
-
-                // Write for each leaf category, their products xml file:
-                foreach($categories_result['link_ids'] as $link_id) {
-                    Mage::log('Fontis/Australia_Model_Getprice_Cron: Generating Product Category XML File: ' . $link_id);
-                    $subcategory_products_result = self::getProductsXml($store, $link_id);
-                    $io->write($clean_store_name . '-products-'.$link_id.'.xml', $subcategory_products_result['xml']);
-                    Mage::log('Fontis/Australia_Model_Getprice_Cron: Wrote to file: ' . $clean_store_name . '-products-'.$link_id.'.xml', $subcategory_products_result['xml']);
-                }
+    protected function populateFeedWithBatchData($batch_data) {
+        $fields = $this->collectAttributeMapping();
+        $this->root_node = $this->product_doc->addChild('products');
+        foreach($batch_data as $product) {
+            $product_node = $this->root_node->addChild('product');
+            foreach($fields as $key => $feed_tag) {
+                // remove carriage return/HTML tags
+                $safe_string = strip_tags($product[$key]);
+                $safe_string = preg_replace("/\s*\n\s*/", " ", $safe_string);
+                // ...we also need to make it XML safe
+                $safe_string = htmlspecialchars($safe_string);
+                $product_node->addChild($feed_tag, $safe_string);
             }
-
-            $io->close();
-        } else {
-            Mage::log('Fontis/Australia_Model_Getprice_Cron: Disabled');
         }
     }
 
-    public function getCategoriesXml($store) {
-        $clean_store_name = str_replace('+', '-', strtolower(urlencode($store->getName())));
-
+    protected function getCategoriesXml() {
         $result = array();
         $categories = Mage::getModel('catalog/category')->getCollection()
-                ->setStoreId($store->getId())
+                ->setStoreId($this->store)
                 ->addAttributeToFilter('is_active', 1);
-
         $categories->load()->getItems();
 
         $full_categories = array();
@@ -165,77 +84,52 @@ class Fontis_Australia_Model_GetPrice_Cron {
             }
         }
 
-        $storeUrl = $store->getBaseUrl();
-        $shopName = $store->getName();
-        $date = date("d-m-Y", Mage::getModel('core/date')->timestamp(time()));
-        $time = date("h:i:s", Mage::getModel('core/date')->timestamp(time()));
-
-        $doc = new SimpleXMLElement('<store url="' . $storeUrl. '" date="'.$date.'" time="'.$time.'" name="' . $shopName . '"></store>');
+        $this->category_doc = new SimpleXMLElement('<store url="' . $this->info("store_url") . '" date="' . $this->info("date") . '" time="' . $this->info("time") . '" name="' . $this->info("shop_name") . '"></store>');
 
         foreach($full_categories as $category) {
-            $category_node = $doc->addChild('cat');
+            $category_node = $this->category_doc->addChild('cat');
 
             $title_node = $category_node->addChild('name');
             $title_node[0] = htmlspecialchars($category->getName());
 
             $link_node = $category_node->addChild('link');
-            $link_node[0] = Mage::getStoreConfig('web/unsecure/base_url') .
-                    Mage::getStoreConfig('fontis_feeds/getpricefeed/output') . "/$clean_store_name-products-" . $category->getId() . '.xml';
+            $link_node[0] = Mage::getStoreConfig('web/unsecure/base_url', $this->store) .
+                    Mage::getStoreConfig('fontis_feeds/'. $this->config_path . '/output', $this->store) . $this->info('clean_store_name') ."-products-" . $category->getId() . '.xml';
 
             $result['link_ids'][] = $category->getId();
-        }
-
-        $result['xml'] = self::formatSimpleXML($doc);
+        }       
+        // create categories XML feed
+        $this->createXml(array(
+                                            'name' => "categories",
+                                            'doc' => $this->category_doc
+                                        ));
         return $result;
     }
 
-    public function getProductsXml($store, $cat_id = -1) {
-        Fontis_Australia_Model_GetPrice_Cron::$store = $store;
-        $result = array();
-
-        $product = Mage::getModel('catalog/product');
-        $products = $product->getCollection();
-        $products->setStoreId($store);
-        $products->addStoreFilter();
-        $products->addAttributeToSelect('*');
-        $products->addAttributeToSelect(array('name', 'price', 'image', 'status', 'manufacturer'), 'left');
-        $products->addAttributeToFilter('status', 1);
-        $products->addAttributeToFilter('visibility', 4);
-
-        if ($cat_id != -1) {
-            $products->getSelect()->where("e.entity_id IN (
-                SELECT product_id FROM catalog_category_product WHERE category_id = ".$cat_id."
-                )");
-        }
-
-        $products->getSelect()->order('product_id');
-
-        $storeUrl = $store->getBaseUrl();
-        $shopName = $store->getName();
-        $date = date("d-m-Y", Mage::getModel('core/date')->timestamp(time()));
-        $time = date("h:i:s", Mage::getModel('core/date')->timestamp(time()));
-
-        self::$doc = new SimpleXMLElement('<store url="' . $storeUrl. '" date="'.$date.'" time="'.$time.'" name="' . $shopName . '"></store>');
-        self::$root_node = self::$doc->addChild('products');
-
-        Mage::log('Fontis/Australia_Model_Getprice_Cron: Iterating: ' . $products->getSize() . ' products...');
-        Mage::getSingleton('core/resource_iterator')->walk($products->getSelect(), array('addProductXmlCallbackGetPrice'), array('product' => $product));
-        
-        // call XML generation function one last time to process remaining batch
-        addProductXmlGetPrice();
-        Mage::log('Fontis/Australia_Model_Getprice_Cron: Iteration complete');
-
-        $result['xml'] = self::formatSimpleXML(self::$doc);
-        return $result;
-    }
-
-    public static function formatSimpleXML($doc) {
+    protected  function createXml($data = array()) {
+        // Use DOM to nicely format XML
         $dom = new DOMDocument('1.0');
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
-        $dom_sxml = dom_import_simplexml($doc);
+        $dom_sxml = dom_import_simplexml($data['doc']);
         $dom_sxml = $dom->importNode($dom_sxml, true);
         $dom->appendChild($dom_sxml);
-        return $dom->saveXML();
+        // $this->log("Generated XML:\n".$dom->saveXML());
+
+        // Write dom to file
+        $filename = $this->info("clean_store_name") . '-' . $data['name'] . '.xml';
+        $io = new Varien_Io_File();
+        $io->setAllowCreateFolders(true);
+        $io->open(array('path' => $this->getPath()));
+        $io->write($filename, $dom->saveXML());
+        $io->close();
+
+    }
+
+    protected function finaliseStoreData($cat_id = null) {
+        $this->createXml(array(
+                                            'name' => $cat_id ? "products-".$cat_id : "products",
+                                            'doc' => $this->product_doc
+                                            ));
     }
 }

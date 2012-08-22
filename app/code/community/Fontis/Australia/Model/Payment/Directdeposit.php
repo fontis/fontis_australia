@@ -34,6 +34,9 @@ class Fontis_Australia_Model_Payment_Directdeposit extends Mage_Payment_Model_Me
     protected $_formBlockType = 'fontis_australia_block_directdeposit_form';
     protected $_infoBlockType = 'fontis_australia_block_directdeposit_info';
 
+    // Set to allow the admin to set whether or not payment has been received
+    protected $_canCapture = true;
+
 	public function isAvailable($quote = null)
 	{
 	    if($this->getConfigData('active') == 0)
@@ -106,22 +109,22 @@ class Fontis_Australia_Model_Payment_Directdeposit extends Mage_Payment_Model_Me
     
 	public function getAccountName()
 	{
-		return $this->getConfigData('account_name');
+		return Mage::getStoreConfig('payment/directdeposit_au/account_name', $this->getInfoInstance()->getQuote()->getStoreId());
 	}
 
 	public function getAccountBSB()
 	{
-		return $this->getConfigData('account_bsb');
+		return Mage::getStoreConfig('payment/directdeposit_au/account_bsb', $this->getInfoInstance()->getQuote()->getStoreId());
 	}
 
 	public function getAccountNumber()
 	{
-		return $this->getConfigData('account_number');
+		return Mage::getStoreConfig('payment/directdeposit_au/account_number', $this->getInfoInstance()->getQuote()->getStoreId());
 	}
 	
 	public function getMessage()
 	{
-		return $this->getConfigData('message');
+		return Mage::getStoreConfig('payment/directdeposit_au/message', $this->getInfoInstance()->getQuote()->getStoreId());
 	}
 
 }

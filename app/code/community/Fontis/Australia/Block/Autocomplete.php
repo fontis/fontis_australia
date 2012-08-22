@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Fontis Australia Extension
  *
@@ -24,34 +25,38 @@
  */
 class Fontis_Australia_Block_Autocomplete extends Mage_Core_Block_Abstract
 {
+
     protected function _toHtml()
     {
         $html = '';
 
-		if (!$this->_beforeToHtml()) {
-			return $html;
-		}
+        if (!$this->_beforeToHtml()) {
+            return $html;
+        }
 
-		// Get the text that the customer has entered as a query.
-		$query = $this->helper('australia')->getQueryText();
-		$country = $this->helper('australia')->getQueryCountry();
-		if($country != "AU") return $html;
-		
-		$conn = Mage::getModel('Core/Mysql4_Config')->getReadConnection();
-		$resultArray = $conn->fetchAll('SELECT au.*, dcr.region_id FROM au_postcode AS au 
-										INNER JOIN directory_country_region AS dcr ON au.region_code = dcr.code
-										WHERE city LIKE \'%' . $query . '%\' ORDER BY city, region_code');
+        // Get the text that the customer has entered as a query.
+        $query = $this->helper('australia')->getQueryText();
+        $country = $this->helper('australia')->getQueryCountry();
+        if ($country != "AU")
+            return $html;
 
-		$html = '<ul>';
-		$counter = 0;
-		foreach ($resultArray as $item) {
-            $html .= '<li class="'.((++$counter)%2?'odd':'even').'" id="region-' . $item['region_id'] . '-postcode-' . $item['postcode'] . '">';
+        $conn = Mage::getSingleton('core/resource')->getConnection('australia_read');
+        $resultArray = $conn->fetchAll(
+                'SELECT au.*, dcr.region_id FROM ' . Mage::getSingleton('core/resource')->getTableName('australia_postcode') . ' AS au
+                 INNER JOIN ' . Mage::getSingleton('core/resource')->getTableName('directory_country_region') . ' AS dcr ON au.region_code = dcr.code
+		 WHERE city LIKE \'%' . $query . '%\' ORDER BY city, region_code');
+
+        $html = '<ul>';
+        $counter = 0;
+        foreach ($resultArray as $item) {
+            $html .= '<li class="' . ((++$counter) % 2 ? 'odd' : 'even') . '" id="region-' . $item['region_id'] . '-postcode-' . $item['postcode'] . '">';
             $html .= $item['city'] . '<span class="informal"> ' . $item['region_code'] . ', ' . $item['postcode'] . '</span>';
             $html .= '</li>';
-		}
+        }
 
-		$html.= '</ul>';
+        $html.= '</ul>';
 
         return $html;
     }
+
 }

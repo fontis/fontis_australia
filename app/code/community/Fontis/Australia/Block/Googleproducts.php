@@ -14,14 +14,15 @@
 *
 * @category   Fontis
 * @package    Fontis_Australia
-* @author     Tom Greenaway
+* @author     Peter Spiller
 * @copyright  Copyright (c) 2008 Fontis Pty. Ltd. (http://www.fontis.com.au)
 * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 */                   
-class Fontis_Australia_Block_Myshopping extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
+class Fontis_Australia_Block_Googleproducts extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
 {
-    protected $magentoOptions = array('instock' => 'instock', 'brand' => 'brand', 'final_price' => 'final_price', 'product_id' => 'product_id', "category" => "category", "link" => "link", "image_url" => "image_url");
-
+    // Map in some of the values not normally visible
+    protected $magentoOptions = array('is_salable' => 'is_saleable', 'manufacturer_name' => 'manufacturer_name', 'final_price' => 'final_price');
+    
     public function __construct()
     {
         $this->addColumn('magento', array(
@@ -29,7 +30,7 @@ class Fontis_Australia_Block_Myshopping extends Mage_Adminhtml_Block_System_Conf
             'size'  => 28,
         ));
         $this->addColumn('xmlfeed', array(
-            'label' => Mage::helper('adminhtml')->__('Myshopping feed tag'),
+            'label' => Mage::helper('adminhtml')->__('Google Products feed tag'),
             'size'  => 28
         ));
         $this->_addAfter = false;
@@ -45,8 +46,6 @@ class Fontis_Australia_Block_Myshopping extends Mage_Adminhtml_Block_System_Conf
         foreach($attributes as $att_code)
         {
             $attribute = $eav_config_model->getAttribute('catalog_product', $att_code);
-            Mage::log($attribute);
-
             if ($att_code != '')
             {
                 $this->magentoOptions[$att_code] = $att_code;
@@ -75,13 +74,15 @@ class Fontis_Australia_Block_Myshopping extends Mage_Adminhtml_Block_System_Conf
         else
         {
             $rendered = '<select name="' . $inputName . '">';
-            $model = Mage::getModel('australia/myshopping');
+            $model = Mage::getModel('australia/googleproducts');
             foreach ($model->available_fields as $field) {
                 $rendered .= '<option value="'.$field.'">'.str_replace("_", " ", $field)."</option>";
-            }
+            }            
             $rendered .= '</select>';
         }
-
+        
         return $rendered;
     }
+    
+    
 }

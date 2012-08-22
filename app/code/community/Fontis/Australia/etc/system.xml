@@ -56,6 +56,17 @@
                             <show_in_store>1</show_in_store>
                             <comment>Shown before each shipping method</comment>
                         </name>
+
+                        <shipping_methods translate="label">
+                            <label>Allowed Shipping Methods</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>australia/shipping_config_shippingmethods</source_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </shipping_methods>
+
                          <handling_type translate="label">
                             <label>Calculate Handling Fee</label>
                             <frontend_type>select</frontend_type>
@@ -729,6 +740,64 @@
             <show_in_website>1</show_in_website>
             <show_in_store>1</show_in_store>
             <groups>
+                <shoppingdotcomfeed>
+                    <label>Shopping.Com</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>-1</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </active>
+                        <include_all_products translate="label">
+                            <label>Include products by default</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>If 'yes', products will be included by default and excluded if the override attribute resolves true for the product. If 'no', products will be excluded by default and only included if the override attribute resolves true for the product.</comment>
+                        </include_all_products>
+                        <custom_filter_attribute translate="label">
+                            <label>Override individual products with attribute</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>australia/config_productAttributes</source_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Products with this selected attribute and where the attribute resolves to true for the product will be excluded from the feed if inclusion is set to default (see above option). Otherwise products will only be included if this attribute is available for the product and the attribute resolves to true when inclusion by default is turned off (see above option).</comment>
+                        </custom_filter_attribute>
+                        <output translate="label">
+                            <label>Output Path</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>XML files will be generated into this path.</comment>
+                        </output>
+                        <m_to_xml_attributes translate="comment">
+                            <label>Optional attributes to include in product feed</label>
+                            <frontend_model>fontis_australia_block_shoppingdotcom</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment></comment>
+                        </m_to_xml_attributes>
+                    </fields>
+                </shoppingdotcomfeed>
                 <getpricefeed>
                     <label>GetPrice</label>
                     <frontend_type>text</frontend_type>
@@ -767,7 +836,7 @@
                             <comment>Products with this selected attribute and where the attribute resolves to true for the product will be excluded from the feed if inclusion is set to default (see above option). Otherwise products will only be included if this attribute is available for the product and the attribute resolves to true when inclusion by default is turned off (see above option).</comment>
                         </custom_filter_attribute>
                         <output translate="label">
-                            <label>Output Filename</label>
+                            <label>Output Path</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>4</sort_order>
                             <show_in_default>1</show_in_default>
@@ -801,6 +870,16 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </currency>
+                        <m_to_xml_attributes translate="comment">
+                            <label>Attributes to include in product feed</label>
+                            <frontend_model>fontis_australia_block_getprice</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment></comment>
+                        </m_to_xml_attributes>
                     </fields>
                 </getpricefeed>
                 <shopbotfeed>
@@ -937,6 +1016,90 @@
                         </m_to_xml_attributes>
                     </fields>
                 </myshoppingfeed>
+                <googleproductsfeed>
+                    <label>Google Products</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>3</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active>
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </active>
+                        <include_all_products>
+                            <label>Include products by default</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>If 'yes', products will be included by default and excluded if the override attribute resolves true for the product. If 'no', products will be excluded by default and only included if the override attribute resolves true for the product.</comment>
+                        </include_all_products>
+                        <custom_filter_attribute>
+                            <label>Override individual products with attribute</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>australia/config_productAttributes</source_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Products with this selected attribute and where the attribute resolves to true for the product will be excluded from the feed if inclusion is set to default (see above option). Otherwise products will only be included if this attribute is available for the product and the attribute resolves to true when inclusion by default is turned off (see above option).</comment>
+                        </custom_filter_attribute>
+                        <output>
+                            <label>Output Path</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>XML files will be generated into this path.</comment>
+                        </output>
+                        <title>
+                            <label>Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </title>
+                        <author>
+                            <label>Author</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </author>
+                        <default_condition>
+                            <label>Default Condition</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>australia/config_condition</source_model>
+                            <sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The default value for the condition attribute in the product feed</comment>
+                        </default_condition>
+                        <m_to_xml_attributes translate="comment">
+                            <label>Optional attributes to include in product feed</label>
+                            <frontend_model>fontis_australia_block_googleproducts</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment></comment>
+                        </m_to_xml_attributes>
+                    </fields>
+                </googleproductsfeed>
             </groups>
         </fontis_feeds>
     </sections>

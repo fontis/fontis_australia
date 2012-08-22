@@ -36,7 +36,7 @@ function updateAddressBilling(text, item) {
 }
 
 // Create the autocompleter and assign it to a variable for future use.
-var completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", "<?=$this->helper('australia')->getCitySuggestUrl();?>", {
+var completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", "<?php echo $this->helper('australia')->getCitySuggestUrl();?>", {
 	afterUpdateElement: updateAddressBilling,
 	minChars: 2,
 	parameters: 'country=' + $F('billing:country_id')
@@ -44,7 +44,7 @@ var completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billin
 
 // Detect when the country has changed and update the parameters sent by the autocompleter.
 $('billing:country_id').observe('change', function() {
-	completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", "<?=$this->helper('australia')->getCitySuggestUrl();?>", {
+	completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", "<?php echo $this->helper('australia')->getCitySuggestUrl();?>", {
 		afterUpdateElement: updateAddressBilling,
 		minChars: 2,
 		parameters: 'country=' + $F('billing:country_id')
@@ -66,7 +66,7 @@ function updateAddressShipping(text, item) {
 }
 
 // Create the autocompleter and assign it to a variable for future use.
-var completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", "<?=$this->helper('australia')->getCitySuggestUrl();?>", {
+var completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", "<?php echo $this->helper('australia')->getCitySuggestUrl();?>", {
 	afterUpdateElement: updateAddressShipping,
 	minChars: 2,
 	parameters: 'country=' + $F('shipping:country_id')
@@ -74,7 +74,7 @@ var completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipp
 
 // Detect when the country has changed and update the parameters sent by the autocompleter.
 $('shipping:country_id').observe('change', function() {
-	completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", "<?=$this->helper('australia')->getCitySuggestUrl();?>", {
+	completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", "<?php echo $this->helper('australia')->getCitySuggestUrl();?>", {
 		afterUpdateElement: updateAddressShipping,
 		minChars: 2,
 		parameters: 'country=' + $F('shipping:country_id')

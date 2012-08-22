@@ -37,7 +37,7 @@ function updateAddress(text, item) {
 }
 
 // Create the autocompleter and assign it to a variable for future use.
-var completer = new Ajax.Autocompleter("city", "autocomplete_city", "<?=$this->helper('australia')->getCitySuggestUrl();?>", {
+var completer = new Ajax.Autocompleter("city", "autocomplete_city", "<?php echo $this->helper('australia')->getCitySuggestUrl();?>", {
 	afterUpdateElement: updateAddress,
 	minChars: 2,
 	parameters: 'country=' + $F('country')
@@ -45,7 +45,7 @@ var completer = new Ajax.Autocompleter("city", "autocomplete_city", "<?=$this->h
 
 // Detect when the country has changed and update the parameters sent by the autocompleter.
 $('country').observe('change', function() {
-	completer = new Ajax.Autocompleter("city", "autocomplete_city", "<?=$this->helper('australia')->getCitySuggestUrl();?>", {
+	completer = new Ajax.Autocompleter("city", "autocomplete_city", "<?php echo $this->helper('australia')->getCitySuggestUrl();?>", {
 		afterUpdateElement: updateAddress,
 		minChars: 2,
 		parameters: 'country=' + $F('country')

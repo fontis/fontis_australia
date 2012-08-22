@@ -20,7 +20,7 @@
 */                   
 class Fontis_Australia_Block_Shopbot extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
 {
-    protected $magentoOptions;
+    protected $magentoOptions = array("final_price" => "final_price", "link" => "link", "availability" => "availability", "price" => "price");
 
     public function __construct()
     {
@@ -52,8 +52,7 @@ class Fontis_Australia_Block_Shopbot extends Mage_Adminhtml_Block_System_Config_
             $attribute = $eav_config_model->getAttribute('catalog_product', $att_code);
             Mage::log($attribute);
 
-            if ($att_code != ''
-                )
+            if ($att_code != '')
             {
                 $this->magentoOptions[$att_code] = $att_code;
             }
@@ -80,7 +79,12 @@ class Fontis_Australia_Block_Shopbot extends Mage_Adminhtml_Block_System_Config_
         }
         else
         {
-            return '<input type="text" name="' . $inputName . '" value="#{' . $columnName . '}" ' . ($column['size'] ? 'size="' . $column['size'] . '"' : '') . '/>';
+            $rendered = '<select name="' . $inputName . '">';
+            $model = Mage::getModel('australia/shopbot');
+            foreach ($model->available_fields as $field) {
+                $rendered .= '<option value="'.$field.'">'.str_replace("_", " ", $field)."</option>";
+            }
+            $rendered .= '</select>';
         }
         
         return $rendered;
