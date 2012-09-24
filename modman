@@ -1,0 +1,11 @@
+# modman module description
+# see https://github.com/colinmollenhour/modman/ for more info
+
+#Fontis Australia
+app/code/community/Fontis/Australia/*	app/code/community/Fontis/Australia
+app/etc/modules/Fontis_Australia.xml	app/etc/modules/Fontis_Australia.xml
+app/design/adminhtml/default/default/template/fontis/australia/*	app/design/adminhtml/default/default/template/fontis/australia
+# Note that the frontend design files are mapped into the base/default folders to allow enterprise fallbacks
+app/design/frontend/default/default/layout/fontis_australia.xml	app/design/frontend/base/default/layout/fontis_australia.xml
+app/design/frontend/default/default/template/fontis/australia	app/design/frontend/base/default/template/fontis/australia
+skin/frontend/default/default/images/fontis/bpay.png skin/frontend/default/default/images/fontis/bpay.png
