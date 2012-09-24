@@ -346,7 +346,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost
 		$result = array();
 		foreach($drc_result as $vals)
 		{
-			$tokens = split("=", $vals);
+			$tokens = explode("=", $vals);
 			if(isset($tokens[1])) {
     			$result[$tokens[0]] = trim($tokens[1]);
     	    } else {
