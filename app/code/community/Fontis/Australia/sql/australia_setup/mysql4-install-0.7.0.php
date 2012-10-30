@@ -121,9 +121,7 @@ while ($row = fgets($fp)) {
 
 }
 //Import all values in a single expression and commit, _much_ faster and avoids timeouts on shared hosting accounts
-$installer->run("SET autocommit=0;
-                INSERT INTO {$this->getTable('au_postcode')} (postcode, city, region_code) VALUES ". $_values . ";
-                COMMIT;");
+$installer->run("INSERT INTO {$this->getTable('au_postcode')} (postcode, city, region_code) VALUES ". $_values . ";");
 
 fclose($fp);
 
