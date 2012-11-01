@@ -92,6 +92,7 @@ CREATE TABLE {$this->getTable('australia_postcode')} (
 // Note: dirname(__FILE__) is used instead of __DIR__ as the latter was not
 // available prior to PHP 5.3.0.
 $postcodefile = dirname(__FILE__) . '/postcodes.csv';
+$success = false;
 
 try {
     // Try using LOAD DATA which is extremely fast
@@ -99,14 +100,30 @@ try {
     FIELDS TERMINATED BY ','
     OPTIONALLY ENCLOSED BY '\"'
     LINES TERMINATED BY '\\n'");
+    
+    $success = true;
 } catch(Exception $e) {
-    // Attempt to load the rows one at a time; this is slower but should work
-    // in all cases
+    $success = false;
+}
+
+// Check if our LOAD DATA method worked (may not work in some environments)
+if(!$success) {
+    // Attempt to load the rows one at a time; this is slower but should work in all cases
     $fp = fopen($postcodefile, 'r');
 
-    while ($row = fgetcsv($fp)) {
-        $installer->run("INSERT INTO {$this->getTable('australia_postcode')} (postcode, region_code, city) VALUES ('" . $row[1] . "', '" . $row[2] . "', '" . $row[3] . "');");
+    $_values = '';
+    $i =0;
+    while ($row = fgets($fp)) {
+        if($i++==0){
+            $_values = trim($row);
+        } else {
+            $_values = $_values . ", " . trim($row);
+        }
+
     }
+    
+    // Import all values in a single expression and commit, _much_ faster and avoids timeouts on shared hosting accounts
+    $installer->run("INSERT INTO {$this->getTable('au_postcode')} (postcode, city, region_code) VALUES ". $_values . ";");
 
     fclose($fp);
 }
