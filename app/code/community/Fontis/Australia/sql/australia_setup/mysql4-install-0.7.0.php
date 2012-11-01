@@ -110,9 +110,18 @@ set_time_limit(0);
 // available prior to PHP 5.3.0.
 $fp = fopen( dirname(__FILE__) . '/postcodes.txt', 'r');
 
+$_values = '';
+$i =0;
 while ($row = fgets($fp)) {
-    $installer->run("INSERT INTO {$this->getTable('au_postcode')} (postcode, city, region_code) VALUES ".$row);
+    if($i++==0){
+        $_values = trim($row);
+    } else {
+        $_values = $_values . ", " . trim($row);
+    }
+
 }
+//Import all values in a single expression and commit, _much_ faster and avoids timeouts on shared hosting accounts
+$installer->run("INSERT INTO {$this->getTable('au_postcode')} (postcode, city, region_code) VALUES ". $_values . ";");
 
 fclose($fp);
 
