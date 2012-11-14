@@ -207,10 +207,34 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
 	}
 	
 	/**
+	 * Event Observer. Triggered before an adminhtml widget template is rendered.
+	 * We use this to add our action to bulk actions in the sales order grid instead of overridding the class.
+	 */
+	public function addExportToBulkAction($observer)
+	{
+	    if (! $observer->block instanceof Mage_Adminhtml_Block_Sales_Order_Grid) {
+	        return;
+	    }
+	    
+	    $observer->block->getMassactionBlock()->addItem('eparcelexport', array(
+            'label' => $observer->block->__('Export to .csv file (eParcel format)'),
+            'url' => $observer->block->getUrl('australia/eparcel/export')
+        ));
+	}
+	
+	/**
 	 * Event Observer. Triggered when a shipment is created.
 	 */
 	public function sendManifest($observer)
 	{
+	    /**
+	     * As far as I can tell, this has never worked.
+	     * I'll refactor to work is possible and integrate with new charge code management. 
+	     * @author Jonathan Melnick
+	     */
+	    return;
+	    
+	    
         //Mage::log('=========================================================================');
 		
 		$order = $observer->getEvent()->getShipment()->getOrder();

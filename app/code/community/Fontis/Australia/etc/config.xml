@@ -23,7 +23,7 @@
 <config>
     <modules>
         <Fontis_Australia>
-            <version>2.2.1</version>
+            <version>2.2.2</version>
             <depends>
                 <Mage_Shipping />
                 <Mage_Payment />
@@ -163,6 +163,15 @@
                     </fontis_australia_shipment_save>
                 </observers>
             </sales_order_shipment_save_after>
+            <adminhtml_block_html_before>
+                <observers>
+                    <fontis_australia_shipment_eparcel_export_bulkaction>
+                        <type>singleton</type>
+                        <class>australia/shipping_carrier_eparcel</class>
+                        <method>addExportToBulkAction</method>
+                    </fontis_australia_shipment_eparcel_export_bulkaction>
+                </observers>
+            </adminhtml_block_html_before>
         </events>
     </global>
     <frontend>
@@ -209,7 +218,6 @@
                 <specificerrmsg>This shipping method is currently unavailable. If you would like to ship using this shipping method, please contact us.</specificerrmsg>
                 <handling_type>F</handling_type>
                 <merchant_location_id>AWV</merchant_location_id>
-                <charge_code>S2</charge_code>
                 <post_charge_account>1234567</post_charge_account>
                 <signature_required>0</signature_required>
                 <signature_cost>6.44</signature_cost>
