@@ -70,8 +70,11 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
                     $method->setCarrier('eparcel');
                     $method->setCarrierTitle($this->getConfigData('title'));
 
-                    $method->setMethod($rate['delivery_type']);
+                    $method->setMethod($this->_getChargeCode($rate));
                     $method->setMethodTitle($rate['delivery_type']);
+                    
+                    $method->setMethodChargeCodeIndividual($rate['charge_code_individual']);
+                    $method->setMethodChargeCodeBusiness($rate['charge_code_business']);
 
                     $shippingPrice = $this->getFinalPriceWithHandlingFee($rate['price']);
 
@@ -94,6 +97,9 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
                 $method->setMethod('bestway');
                 $method->setMethodTitle($this->getConfigData('name'));
 
+                $method->setMethodChargeCodeIndividual($rates['charge_code_individual']);
+                $method->setMethodChargeCodeBusiness($rates['charge_code_business']);
+                
                 $shippingPrice = $this->getFinalPriceWithHandlingFee($rates['price']);
 
                 $method->setPrice($shippingPrice);
@@ -105,6 +111,30 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
         }
 
 		return $result;
+	}
+	
+	protected function _getChargeCode($rate)
+	{
+	    /* Is this customer is in a ~business~ group ? */
+	    $isBusinessCustomer = (
+            Mage::getSingleton('customer/session')->isLoggedIn()
+            AND 
+            in_array(
+                Mage::getSingleton('customer/session')->getCustomerGroupId(),
+                explode(',', 
+        	        Mage::getStoreConfig('doghouse_eparcelexport/charge_codes/business_groups')
+        	    )
+            )
+        );
+	    
+	    if ($isBusinessCustomer) {
+	        return $rate['charge_code_business'] ?: 
+	            Mage::getStoreConfig('doghouse_eparcelexport/charge_codes/default_charge_code_business');
+	    }
+	    else {
+	        return $rate['charge_code_individual'] ?: 
+	            Mage::getStoreConfig('doghouse_eparcelexport/charge_codes/default_charge_code_individual');
+	    }
 	}
 	
 	public function getRate(Mage_Shipping_Model_Rate_Request $request)
@@ -217,7 +247,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
 	    }
 	    
 	    $observer->block->getMassactionBlock()->addItem('eparcelexport', array(
-            'label' => $observer->block->__('Export to .csv file (eParcel format)'),
+            'label' => $observer->block->__('Eparcel CSV export'),
             'url' => $observer->block->getUrl('australia/eparcel/export')
         ));
 	}

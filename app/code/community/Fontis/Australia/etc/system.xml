@@ -1094,7 +1094,7 @@
             </groups>
         </fontis_feeds>
         
-        <dhmedia_eparcelexport translate="label comment">
+        <doghouse_eparcelexport translate="label comment">
             <tab>sales</tab>
             <label>Eparcel Export</label>
             <frontend_type>text</frontend_type>
@@ -1278,6 +1278,6 @@
 					</fields>
 				</charge_codes>
             </groups>
-        </dhmedia_eparcelexport>
+        </doghouse_eparcelexport>
     </sections>
 </config>

@@ -9,8 +9,10 @@
 class Fontis_Australia_EparcelController extends Mage_Adminhtml_Controller_Action
 {
     /**
-     * Exports orders defined by id in post param "order_ids"
-     * to csv and offers file directly for download when finished.
+     * Export Orders to CSV
+     * 
+     * This action exports orders to a CSV file and downloads the file. 
+     * The orders to be exported depend on the HTTP POST param "order_ids".
      */
     public function exportAction()
     {
@@ -18,14 +20,16 @@ class Fontis_Australia_EparcelController extends Mage_Adminhtml_Controller_Actio
         
         try
         {
-        	$filePath = Mage::getModel('australia/shipping_carrier_eparcel_export')->exportOrders($orders);
+            /* Build the CSV and retrieve its path */
+        	$filePath = Mage::getModel('australia/shipping_carrier_eparcel_export_csv')->exportOrders($orders);
         	
+        	/* Download the file */
         	$this->_prepareDownloadResponse( basename($filePath), file_get_contents($filePath) );
         }
-        catch(Dhmedia_EparcelExport_Exception $e)
+        catch(Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Exception $e)
         {
         	Mage::getSingleton('core/session')->addError($e->getMessage());
-        	
+
         	$this->_redirect('adminhtml/sales_order/index');
         }
     	catch(Exception $e)

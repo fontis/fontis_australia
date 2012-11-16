@@ -300,6 +300,9 @@
                                         <fontis_feeds>
                                             <title>Feeds</title>
                                         </fontis_feeds>
+                                        <doghouse_eparcelexport>
+                                            <title>Eparcel Export</title>
+                                        </doghouse_eparcelexport>
                                     </children>
                                 </config>
                             </children>
