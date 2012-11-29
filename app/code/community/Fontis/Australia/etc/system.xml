@@ -221,15 +221,6 @@
                             <show_in_store>1</show_in_store>
                             <comment>Provided by Australia Post. The unique ID specifying a specific merchant location.</comment>
                         </merchant_location_id>
-                        <charge_code translate="label">
-                        	<label>Charge Code</label>
-                        	<frontend_type>text</frontend_type>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>This is an alphanumeric code which identifies the service being used and is supplied by Australia Post.</comment>
-                        </charge_code>
                         <post_charge_account translate="label">
                         	<label>Post Charge To Account</label>
                         	<frontend_type>text</frontend_type>
@@ -1102,5 +1093,191 @@
                 </googleproductsfeed>
             </groups>
         </fontis_feeds>
+        
+        <doghouse_eparcelexport translate="label comment">
+            <tab>sales</tab>
+            <label>Eparcel Export</label>
+            <frontend_type>text</frontend_type>
+            <sort_order>600</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <parcel translate="label comment">
+                    <label>Parcel Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                    	<use_cubicweight translate="label">
+                            <label>Use Cubic Weight ?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Ask your Australia Post account manager how your account is setup.</comment>
+                        </use_cubicweight>
+                        <weightmax translate="label">
+                            <label>Parcel Max Weight</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>15</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Kilograms (without box weight)</comment>
+                        </weightmax>
+                        <width translate="label">
+                            <label>Parcel Width</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>21</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Centimeters - no decimals</comment>
+                        </width>
+                        <height translate="label">
+                            <label>Parcel Height</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>22</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Centimeters - no decimals</comment>
+                        </height>
+                        <length translate="label">
+                            <label>Parcel Length</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>23</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Centimeters - no decimals</comment>
+                        </length>
+                    </fields>
+                </parcel>
+                <consignement translate="label comment">
+                    <label>Consignement Defaults</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <is_signature_required translate="label">
+                            <label>Is Signature Required ?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Should signature be required by default ?  Specific shipping methods will override this setting.  Check cost of service on your Australia Post contract.</comment>
+                        </is_signature_required>
+                        <add_to_address_book translate="label">
+                            <label>Add to Address Book ?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment></comment>
+                        </add_to_address_book>
+                        <print_ref1 translate="label">
+                            <label>Print Reference #1 ?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Ref #1 contains the invoice number (if the order has been invoiced)</comment>
+                        </print_ref1>
+                        <print_ref2 translate="label">
+                            <label>Print Reference #2 ?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Ref #2 contains the order number</comment>
+                        </print_ref2>
+                    </fields>
+                </consignement>
+                <good translate="label comment">
+                    <label>Good Defaults</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                    	<product_type translate="label">
+                            <label>Product type</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment></comment>
+                        </product_type>
+                        <use_multiplegoodrecords translate="label">
+                            <label>Use multiple good records</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Australia Post's documentation says to use multiple good lines but their tech support says no.  Also, it only seems to work when set to 'No'.</comment>
+                        </use_multiplegoodrecords>
+                        
+					</fields>
+				</good>
+				<charge_codes translate="label comment">
+                    <label>Charge codes</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <default_charge_code_individual translate="label">
+                        	<label>Default charge Code (individual)</label>
+                        	<frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The default charge code for individuals. Will be overridden by values in your table rates.</comment>
+                        </default_charge_code_individual>
+                        <default_charge_code_business translate="label">
+                        	<label>Default charge Code (business)</label>
+                        	<frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The default charge code for businesses, as defined by the customer groups below. Will be overridden by values in your table rates.</comment>
+                        </default_charge_code_business>
+                        <business_groups translate="label">
+                            <label>Business customer groups</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>adminhtml/system_config_source_customer_group</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The selected customer groups will use the "Business" version of the "Standard" and "Express" charge codes.  Make sure your contract supports business (B2B) charge codes.</comment>
+                        </business_groups>
+					</fields>
+				</charge_codes>
+            </groups>
+        </doghouse_eparcelexport>
     </sections>
 </config>

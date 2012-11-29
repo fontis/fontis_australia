@@ -178,9 +178,6 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
 
             $websiteId = $object->getScopeId();
             $websiteModel = Mage::app()->getWebsite($websiteId);
-            /*
-            getting condition name from post instead of the following commented logic
-            */
 
             if (isset($_POST['groups']['eparcel']['fields']['condition_name']['inherit'])) {
                 $conditionName = (string)Mage::getConfig()->getNode('default/carriers/eparcel/condition_name');
@@ -189,6 +186,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
             }
 
             $conditionFullName = Mage::getModel('australia/shipping_carrier_eparcel')->getCode('condition_name_short', $conditionName);
+            
             if (!empty($csv)) {
                 $exceptions = array();
                 $csvLines = explode("\n", $csv);
@@ -283,8 +281,37 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                             $csvLine[6] = (float)$csvLine[6];
                         }
                         
-                        $data[] = array('website_id'=>$websiteId, 'dest_country_id'=>$countryId, 'dest_region_id'=>$regionId, 'dest_zip'=>$zip, 'condition_name'=>$conditionName, 'condition_from_value'=>$csvLine[3],'condition_to_value'=>$csvLine[4], 'price'=>$csvLine[5], 'price_per_kg'=>$csvLine[6], 'delivery_type'=>$csvLine[7]);
-                        $dataDetails[] = array('country'=>$csvLine[0], 'region'=>$csvLine[1]);
+                        if (isset($csvLine[8]) AND !$this->_isValidChargeCode($csvLine[8])) {
+                            $exceptions[] = Mage::helper('shipping')->__('Invalid Charge Code "%s" in the Row #%s', $csvLine[8], ($k+1));
+                        } else {
+                            $csvLine[8] = isset($csvLine[8]) ? (string)$csvLine[8] : null;
+                        }
+                        
+                        if (isset($csvLine[9]) AND !$this->_isValidChargeCode($csvLine[9])) {
+                            $exceptions[] = Mage::helper('shipping')->__('Invalid Charge Code "%s" in the Row #%s', $csvLine[9], ($k+1));
+                        } else {
+                            $csvLine[9] = isset($csvLine[9]) ? (string)$csvLine[9] : null;
+                        }
+                        
+                        $data[] = array(
+                            'website_id' => $websiteId,
+                            'dest_country_id' => $countryId,
+                            'dest_region_id' => $regionId,
+                            'dest_zip' => $zip,
+                            'condition_name' => $conditionName,
+                            'condition_from_value' => $csvLine[3],
+                            'condition_to_value' => $csvLine[4],
+                            'price' => $csvLine[5],
+                            'price_per_kg' => $csvLine[6],
+                            'delivery_type' => $csvLine[7],
+                            'charge_codes_individual' => $csvLine[8],
+                            'charge_codes_business' => $csvLine[9]
+                        );
+                        
+                        $dataDetails[] = array(
+                            'country' => $csvLine[0],
+                            'region' => $csvLine[1]
+                        );
                     }
                 }
 
@@ -341,6 +368,26 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
         }
     }
 
+    /**
+     * Due to bugs in fgetcsv(), this extension is using tips from php.net.
+     * We could potentially swap this out for Zend's CSV parsers after testing for bugs in that.
+     * 
+     * Note: I've updated this code the latest version in the comments on php.net (Jonathan Melnick)
+     * 
+     * @author Jonathan Melnick
+     * @author Chris Norton
+     * @author Dave Walter
+     * @author justin at cam dot org
+     * @author Theodule
+     * @author dan dot jones at lunarfish dot co dot uk
+     * 
+     * @see http://www.php.net/manual/en/function.split.php#81490
+     * @see https://bugs.php.net/bug.php?id=45356
+     * @see http://stackoverflow.com/questions/12390851/fgetcsv-is-eating-the-first-letter-of-a-string-if-its-an-umlaut
+     * 
+     * @param string $string
+     * @param string $separator
+     */
     protected function _getCsvValues($string, $separator=",")
     {
         $elements = explode($separator, trim($string));
@@ -348,7 +395,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
             $nquotes = substr_count($elements[$i], '"');
             if ($nquotes %2 == 1) {
                 for ($j = $i+1; $j < count($elements); $j++) {
-                    if (substr_count($elements[$j], '"') > 0) {
+                    if (substr_count($elements[$j], '"') %2 == 1) { // Look for an odd-number of quotes
                         // Put the quoted string's pieces back together again
                         array_splice($elements, $i, $j-$i+1, implode($separator, array_slice($elements, $i, $j-$i+1)));
                         break;
