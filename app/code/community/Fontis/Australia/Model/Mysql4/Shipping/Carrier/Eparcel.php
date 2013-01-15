@@ -350,7 +350,9 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                             
                             Mage::log(var_export($postcodes, true));
                             foreach($postcodes as $postcode) {
-                                $dataLine['dest_zip'] = str_pad($postcode, 4, "0", STR_PAD_LEFT);
+                                if($dataLine['dest_zip'] != '') {
+                                    $dataLine['dest_zip'] = str_pad($postcode, 4, "0", STR_PAD_LEFT);
+                                }
                                 $connection->insert($table, $dataLine);
                             }
                         } catch (Exception $e) {
