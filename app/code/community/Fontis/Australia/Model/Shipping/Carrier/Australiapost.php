@@ -264,56 +264,126 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost extends Mage_Shippin
     }
 
     protected function _drcRequest($service, $fromPostCode, $toPostCode, $destCountry, $weight, $length, $width, $height, $num_boxes)
-    {
-        // Construct the appropriate URL and send all the information
-        // to the Australia Post DRC.
-        $url = "http://drc.edeliver.com.au/ratecalc.asp?" .
-                "Pickup_Postcode=" . rawurlencode($fromPostCode) .
-                "&Destination_Postcode=" . rawurlencode($toPostCode) .
-                "&Country=" . rawurlencode($destCountry) .
-                "&Weight=" . rawurlencode($weight) .
-                "&Service_Type=" . rawurlencode($service) .
-                "&Height=" . rawurlencode($height) .
-                "&Width=" . rawurlencode($width) .
-                "&Length=" . rawurlencode($length) .
-                "&Quantity=" . rawurlencode($num_boxes);
-
-        if (ini_get('allow_url_fopen')) {
-            $drc_result = file($url);
-        } else if (extension_loaded('curl')) {
+	{
+            // Construct the appropriate URL and send all the information
+            // to the Australia Post DRC.
+		
+            // don't make a call if the postcodes are not populated.
+            if(is_null($fromPostCode) || is_null($toPostCode)) {
+                return array('err_msg' => 'One of To or From Postcodes are missing');
+            }
+            
+            /**
+             * Lucas van Staden @ doghouse media (lucas@dhmedia.com.au)
+             * Add a drc call cache to session. (valid for 1 hour)
+             * The call to drc is made at least 3-4 times, using the same data (ugh)
+             *  - Add to cart (sometimes * 2)
+             *  - Checkout * 2
+             * 
+             * Create a lookup cache based on FromPostcode->ToPostcode combination, and re-use cached data
+             * The end result will kill lookups in checkout process, as it was actually done at cart, which will speed checkout up.
+             */
+            
+            $drcCache = Mage::getSingleton('checkout/session')->getDrcCache();
+            if(!$drcCache) {
+                $drcCache = array();
+            } else {
+                // wrap it in a try block, s it is used durng checkout.
+                // prevents any mistake from stopping checkout as a new lookup will be done.
+                try {
+                    $time = time();
+                    if($this->getConfigFlag('cache') 
+                            && array_key_exists($fromPostCode, $drcCache) 
+                            && array_key_exists($toPostCode, $drcCache[$fromPostCode])
+                            && $time - $drcCache[$fromPostCode][$toPostCode]['timestamp'] < 3600) {
+                        if ($this->getConfigFlag('debug')) {
+                            Mage::log('Using cached drc lookup for ' . $fromPostCode . '/' . $toPostCode, null, 'fontis_australia.log');
+                        }
+                        return $drcCache[$fromPostCode][$toPostCode]['result'];
+                    }
+                } catch (Exception $e) {
+                    mage::logException($e);
+                }   
+            }
+            
+            $url = "http://drc.edeliver.com.au/ratecalc.asp?" . 
+			"Pickup_Postcode=" . rawurlencode($fromPostCode) .
+			"&Destination_Postcode=" . rawurlencode($toPostCode) .
+			"&Country=" . rawurlencode($destCountry) .
+			"&Weight=" . rawurlencode($weight) .
+			"&Service_Type=" . rawurlencode($service) . 
+			"&Height=" . rawurlencode($height) . 
+			"&Width=" . rawurlencode($width) . 
+			"&Length=" . rawurlencode($length) .
+			"&Quantity=" . rawurlencode($num_boxes);
+            
+        if(extension_loaded('curl'))
+        {
+            
+            if ($this->getConfigFlag('debug')) {
+                Mage::log('Using curl', null, 'fontis_australia.log');
+            }
             try {
-                $drc_result = $this->_curl_get_file_contents($url);
-            } catch (Exception $e) {
+                // use CURL rather than php fopen url wroppers.
+                // curl is faster.
+                // see http://stackoverflow.com/questions/555523/file-get-contents-vs-curl-what-has-better-performance
+                // and do it the 'magento way'
+                // @author Lucas van Staden from Doghouse Media (lucas@dhmedia.com.au)
+                $curl = new Varien_Http_Adapter_Curl();
+                $curl->setConfig(array(
+                        'timeout'   => 15    //Timeout in no of seconds
+                 ));
+                $curl->write(Zend_Http_Client::GET, $url);
+                $curlData = $curl->read();
+                $drc_result = Zend_Http_Response::extractBody($curlData);
+                $curl->close();
+            } catch(Exception $e) {
+                Mage::log($e);
                 $drc_result = array();
                 $drc_result['err_msg'] = 'FAIL';
             }
 
-            $drc_result = explode("\n", $drc_result);
-
+            $drc_result = explode("\n",$drc_result);
             //clean up array
-            foreach ($drc_result as $k => $vals) {
-                if ($vals == '')
-                    unset($drc_result[$k]);
-            }
+            $drc_result = array_map('trim', $drc_result);
+            $drc_result = array_filter($drc_result);                                    
+            
         }
-        else {
+        else if(ini_get('allow_url_fopen'))
+        {
+            if ($this->getConfigFlag('debug')) {
+                Mage::log('Using fopen URL wrappers', null, 'fontis_australia.log');
+            }
+            
+            $drc_result = file($url);
+        }
+        else
+        {
+            Mage::log('No download method available, could not contact DRC!', null, 'fontis_australia.log');
             $a = array();
             $a['err_msg'] = 'FAIL';
             return $a;
         }
+        Mage::log("DRC result: " . print_r($drc_result,true), null, 'fontis_australia.log');
 
-        $result = array();
-        foreach ($drc_result as $vals) {
-            $tokens = explode("=", $vals);
-            if (isset($tokens[1])) {
-                $result[$tokens[0]] = trim($tokens[1]);
-            } else {
-                return array('err_msg' => 'Parsing error on Australia Post results');
-            }
-        }
-
-        return $result;
-    }
+		$result = array();
+		foreach($drc_result as $vals)
+		{
+			$tokens = explode("=", $vals);
+			if(isset($tokens[1])) {
+    			$result[$tokens[0]] = trim($tokens[1]);
+    	    } else {
+    	        return array('err_msg' => 'Parsing error on Australia Post results');
+    	    }
+		}
+		
+                // save the drc data to lookup cache, with a timestamp.
+                if(is_array($drcCache)){
+                    $drcCache[$fromPostCode][$toPostCode] = array('result'=>$result,'timestamp'=>time());         
+                    Mage::getSingleton('checkout/session')->setDrcCache($drcCache);
+                }    
+		return $result;
+	}
 
     /**
      * Get allowed shipping methods
