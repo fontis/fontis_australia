@@ -82,7 +82,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost extends Mage_Shippin
 
                 if ($drc['err_msg'] == 'OK') {
                     // Check for registered post activation. If so, add extra options
-                    if ($this->getConfigData('registered_post'))
+                    if ($this->getConfigData('registered_post')){
                         if (in_array('STANDARD', $allowedShippingMethods)) {
                             $title = $this->getConfigData('name') . " " . ucfirst(strtolower($shipping_method));
 
@@ -113,12 +113,14 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost extends Mage_Shippin
                                 $method = $this->_createMethod($request, $shipping_method . '_EC', $title, $charge, $charge);
                                 $result->append($method);
                             }
-                        } else {
+                        }
+                    }
+                    else {
                             $title = $this->getConfigData('name') . " " . ucfirst(strtolower($shipping_method));
 
                             $method = $this->_createMethod($request, $shipping_method, $title, $drc['charge'], $drc['charge']);
                             $result->append($method);
-                        }
+                    }
                 }
             }
         } else {
