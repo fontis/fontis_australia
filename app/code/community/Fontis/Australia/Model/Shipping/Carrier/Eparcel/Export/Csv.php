@@ -230,7 +230,7 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
     }
 
     
-    protected function getConsignementRecord(Mage_Sales_Model_Order $order, Doghouse_AustraliaPost_Eparcel_Parcel $parcel)
+    protected function getConsignementRecord(Mage_Sales_Model_Order $order, Doghouse_Australia_Eparcel_Parcel $parcel)
     {
         $consignementRecord = new Doghouse_Australia_Eparcel_Record_Consignement();
         
