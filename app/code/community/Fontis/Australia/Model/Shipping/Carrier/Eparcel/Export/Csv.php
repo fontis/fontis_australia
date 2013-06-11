@@ -234,7 +234,7 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
     {
         $consignementRecord = new Doghouse_Australia_Eparcel_Record_Consignement();
         
-        $consignementRecord->chargeCode = 
+        $consignementRecord->chargeCode = $this->_getChargeCode($order);
                 
         $consignementRecord->isSignatureRequired    = (bool) $this->getDefault('consignement/is_signature_required');
         $consignementRecord->addToAddressBook       = (bool) $this->getDefault('consignement/add_to_address_book');
