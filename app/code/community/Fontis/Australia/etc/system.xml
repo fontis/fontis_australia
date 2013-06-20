@@ -1195,6 +1195,16 @@
                             <show_in_store>1</show_in_store>
                             <comment>Should signature be required by default ?  Specific shipping methods will override this setting.  Check cost of service on your Australia Post contract.</comment>
                         </is_signature_required>
+                        <is_insurance_required translate="label">
+                            <label>Is Insurance Required ?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Should insurance be required by default ?  Specific shipping methods will override this setting (extra cover).</comment>
+                        </is_insurance_required>
                         <add_to_address_book translate="label">
                             <label>Add to Address Book ?</label>
                             <frontend_type>select</frontend_type>

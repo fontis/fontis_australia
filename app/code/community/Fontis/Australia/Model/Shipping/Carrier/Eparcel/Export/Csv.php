@@ -92,11 +92,11 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
         foreach ($orders as $order) {
             $order = Mage::getModel('sales/order')->load($order);
 
-            if ( ! $order->getShippingCarrier() instanceof Fontis_Australia_Model_Shipping_Carrier_Eparcel ) {
-                throw new Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Exception(
-                    "Order #" . $order->getIncrementId() . " doesn't use Australia Post's Eparcel as it's carrier!"
-                );                
-            }
+//            if ( ! $order->getShippingCarrier() instanceof Fontis_Australia_Model_Shipping_Carrier_Eparcel ) {
+//                throw new Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Exception(
+//                    "Order #" . $order->getIncrementId() . " doesn't use Australia Post's Eparcel as it's carrier!"
+//                );                
+//            }
             
             $orderItems = $order->getItemsCollection();
             $currentParcel = $this->getNewParcel();
@@ -172,8 +172,6 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
     {
         $parcel = new Doghouse_Australia_Eparcel_Parcel_Carton();
         
-        $parcel->isInsuranceRequired(true);
-        
         $parcel->weightMax = $this->getDefault('parcel/weightmax');
         $parcel->width = (int) $this->getDefault('parcel/width');
         $parcel->height = (int) $this->getDefault('parcel/height');
@@ -229,14 +227,25 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
         return true;
     }
 
+    private function getInsuranceRequired($order) {
+        if($shippingCarrier = $order->getShippingCarrier()) {
+           if($shippingCarrier->getExtraCoverCost() > 0) {
+               return true;
+           }
+        }
+        return $this->getDefault('consignement/is_insurance_required');
+    }
     
-    protected function getConsignementRecord(Mage_Sales_Model_Order $order, Dhmedia_AustraliaPost_Eparcel_Parcel $parcel)
+    protected function getConsignementRecord(Mage_Sales_Model_Order $order, Doghouse_Australia_Eparcel_Parcel $parcel)
     {
         $consignementRecord = new Doghouse_Australia_Eparcel_Record_Consignement();
         
-        $consignementRecord->chargeCode = 
+        $consignementRecord->chargeCode = $this->_getChargeCode($order);
                 
         $consignementRecord->isSignatureRequired    = (bool) $this->getDefault('consignement/is_signature_required');
+        
+        $consignementRecord->isInsuranceRequired    = (bool) $this->getInsuranceRequired($order);
+        
         $consignementRecord->addToAddressBook       = (bool) $this->getDefault('consignement/add_to_address_book');
         $consignementRecord->isRefPrintRequired     = (bool) $this->getDefault('consignement/print_ref1');
         $consignementRecord->isRef2PrintRequired    = (bool) $this->getDefault('consignement/print_ref2');
