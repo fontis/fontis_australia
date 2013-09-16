@@ -14,7 +14,8 @@
  *
  * @category   Fontis
  * @package    Fontis_Australia
- * @author     Chris Norton (minor contribution by Jonathan Melnick) 
+ * @author     Chris Norton
+ * @author     Jonathan Melnick
  * @copyright  Copyright (c) 2010 Fontis Pty. Ltd. (http://www.fontis.com.au)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
@@ -100,7 +101,7 @@ try {
     // Try using LOAD DATA which is extremely fast
     $installer->run("LOAD DATA LOCAL INFILE '$postcodefile' INTO TABLE {$this->getTable('australia_postcode')}
                     FIELDS TERMINATED BY ','
-                    OPTIONALLY ENCLOSED BY '\"'
+                    OPTIONALLY ENCLOSED BY '\''
                     LINES TERMINATED BY '\\n'");
 
     $success = true;

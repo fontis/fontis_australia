@@ -97,10 +97,10 @@ $success = false;
 try {
     // Try using LOAD DATA which is extremely fast
     $installer->run("LOAD DATA LOCAL INFILE '$postcodefile' INTO TABLE {$this->getTable('australia_postcode')}
-    FIELDS TERMINATED BY ','
-    OPTIONALLY ENCLOSED BY '\"'
-    LINES TERMINATED BY '\\n'");
-    
+                    FIELDS TERMINATED BY ','
+                    OPTIONALLY ENCLOSED BY '\''
+                    LINES TERMINATED BY '\\n'");
+
     $success = true;
 } catch(Exception $e) {
     $success = false;
@@ -108,22 +108,29 @@ try {
 
 // Check if our LOAD DATA method worked (may not work in some environments)
 if(!$success) {
-    // Attempt to load the rows one at a time; this is slower but should work in all cases
+    // Here we import values in larger expressions, which is slower than LOAD DATA
+    // but should be available in all environments
     $fp = fopen($postcodefile, 'r');
 
-    $_values = '';
-    $i =0;
-    while ($row = fgets($fp)) {
-        if($i++==0){
-            $_values = trim($row);
-        } else {
-            $_values = $_values . ", " . trim($row);
-        }
+    $_values = array();
+    $i = 0;
 
+    while ($row = fgets($fp)) {
+        $_values[] = '(' . trim($row) . ')';
+
+        // Process the file in batches
+        if($i++ % 1000 == 0) {
+            $insertValues = implode(',', $_values);
+            $installer->run("INSERT INTO {$this->getTable('australia_postcode')} (country_id, postcode, region_code, city) VALUES ". $insertValues . ";");
+            $_values = array();
+        }
     }
-    
-    // Import all values in a single expression and commit, _much_ faster and avoids timeouts on shared hosting accounts
-    $installer->run("INSERT INTO {$this->getTable('au_postcode')} (postcode, city, region_code) VALUES ". $_values . ";");
+
+    // Insert any remaining values
+    if(count($_values)) {
+        $insertValues = implode(',', $_values);
+        $installer->run("INSERT INTO {$this->getTable('australia_postcode')} (country_id, postcode, region_code, city) VALUES ". $insertValues . ";");
+    }
 
     fclose($fp);
 }

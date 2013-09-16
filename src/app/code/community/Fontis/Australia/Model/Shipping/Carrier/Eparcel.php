@@ -112,30 +112,36 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
 
 		return $result;
 	}
-	
-	protected function _getChargeCode($rate)
-	{
-	    /* Is this customer is in a ~business~ group ? */
-	    $isBusinessCustomer = (
+
+    protected function _getChargeCode($rate)
+    {
+        /* Is this customer is in a ~business~ group ? */
+        $isBusinessCustomer = (
             Mage::getSingleton('customer/session')->isLoggedIn()
-            AND 
+            AND
             in_array(
                 Mage::getSingleton('customer/session')->getCustomerGroupId(),
-                explode(',', 
-        	        Mage::getStoreConfig('doghouse_eparcelexport/charge_codes/business_groups')
-        	    )
+                explode(
+                    ',',
+                    Mage::getStoreConfig('doghouse_eparcelexport/charge_codes/business_groups')
+                )
             )
         );
-	    
-	    if ($isBusinessCustomer) {
-	        return $rate['charge_code_business'] ?: 
-	            Mage::getStoreConfig('doghouse_eparcelexport/charge_codes/default_charge_code_business');
-	    }
-	    else {
-	        return $rate['charge_code_individual'] ?: 
-	            Mage::getStoreConfig('doghouse_eparcelexport/charge_codes/default_charge_code_individual');
-	    }
-	}
+
+        if ($isBusinessCustomer) {
+            if (isset($rate['charge_code_business']) && $rate['charge_code_business']) {
+                return $rate['charge_code_business'];
+            }
+
+            return Mage::getStoreConfig('doghouse_eparcelexport/charge_codes/default_charge_code_business');
+        } else {
+            if (isset($rate['charge_code_individual']) && $rate['charge_code_individual']) {
+                return $rate['charge_code_individual'];
+            }
+
+            return Mage::getStoreConfig('doghouse_eparcelexport/charge_codes/default_charge_code_individual');
+        }
+    }
 	
 	public function getRate(Mage_Shipping_Model_Rate_Request $request)
 	{
