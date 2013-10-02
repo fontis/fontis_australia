@@ -15,6 +15,7 @@
  * @category   Fontis
  * @package    Fontis_Australia
  * @author     Chris Norton
+ * @author     Jonathan Melnick
  * @copyright  Copyright (c) 2010 Fontis Pty. Ltd. (http://www.fontis.com.au)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
@@ -41,6 +42,8 @@ CREATE TABLE {$this->getTable('australia_eparcel')} (
   `price_per_kg` decimal(12,4) NOT NULL default '0.0000',
   `cost` decimal(12,4) NOT NULL default '0.0000',
   `delivery_type` varchar(50) NOT NULL default '',
+  `charge_code_individual` varchar(50) NULL default NULL,
+  `charge_code_business` varchar(50) NULL default NULL,
   PRIMARY KEY  (`pk`),
   UNIQUE KEY `dest_country` ( `website_id` , `dest_country_id` , `dest_region_id` , `dest_zip` , `condition_name` , `condition_to_value` , `delivery_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -97,10 +100,10 @@ $success = false;
 try {
     // Try using LOAD DATA which is extremely fast
     $installer->run("LOAD DATA LOCAL INFILE '$postcodefile' INTO TABLE {$this->getTable('australia_postcode')}
-    FIELDS TERMINATED BY ','
-    OPTIONALLY ENCLOSED BY '\"'
-    LINES TERMINATED BY '\\n'");
-    
+                    FIELDS TERMINATED BY ','
+                    OPTIONALLY ENCLOSED BY '\''
+                    LINES TERMINATED BY '\\n'");
+
     $success = true;
 } catch(Exception $e) {
     $success = false;
@@ -108,22 +111,29 @@ try {
 
 // Check if our LOAD DATA method worked (may not work in some environments)
 if(!$success) {
-    // Attempt to load the rows one at a time; this is slower but should work in all cases
+    // Here we import values in larger expressions, which is slower than LOAD DATA
+    // but should be available in all environments
     $fp = fopen($postcodefile, 'r');
 
-    $_values = '';
-    $i =0;
+    $_values = array();
+    $i = 0;
+    
     while ($row = fgets($fp)) {
-        if($i++==0){
-            $_values = trim($row);
-        } else {
-            $_values = $_values . ", " . trim($row);
+        $_values[] = '(' . trim($row) . ')';
+            
+        // Process the file in batches
+        if($i++ % 1000 == 0) {
+            $insertValues = implode(',', $_values);
+            $installer->run("INSERT INTO {$this->getTable('australia_postcode')} (country_id, postcode, region_code, city) VALUES ". $insertValues . ";");
+            $_values = array();
         }
-
     }
     
-    // Import all values in a single expression and commit, _much_ faster and avoids timeouts on shared hosting accounts
-    $installer->run("INSERT INTO {$this->getTable('au_postcode')} (postcode, city, region_code) VALUES ". $_values . ";");
+    // Insert any remaining values
+    if(count($_values)) {
+        $insertValues = implode(',', $_values);
+        $installer->run("INSERT INTO {$this->getTable('australia_postcode')} (country_id, postcode, region_code, city) VALUES ". $insertValues . ";");
+    }
 
     fclose($fp);
 }

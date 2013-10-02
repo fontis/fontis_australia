@@ -14,7 +14,7 @@
  *
  * @category   Fontis
  * @package    Fontis_Australia
- * @author     Chris Norton (minor contribution by Jonathan Melnick) 
+ * @author     Chris Norton
  * @copyright  Copyright (c) 2010 Fontis Pty. Ltd. (http://www.fontis.com.au)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
@@ -41,8 +41,6 @@ CREATE TABLE {$this->getTable('australia_eparcel')} (
   `price_per_kg` decimal(12,4) NOT NULL default '0.0000',
   `cost` decimal(12,4) NOT NULL default '0.0000',
   `delivery_type` varchar(50) NOT NULL default '',
-  `charge_code_individual` varchar(50) NULL default NULL,
-  `charge_code_business` varchar(50) NULL default NULL,
   PRIMARY KEY  (`pk`),
   UNIQUE KEY `dest_country` ( `website_id` , `dest_country_id` , `dest_region_id` , `dest_zip` , `condition_name` , `condition_to_value` , `delivery_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -100,7 +98,7 @@ try {
     // Try using LOAD DATA which is extremely fast
     $installer->run("LOAD DATA LOCAL INFILE '$postcodefile' INTO TABLE {$this->getTable('australia_postcode')}
                     FIELDS TERMINATED BY ','
-                    OPTIONALLY ENCLOSED BY '\"'
+                    OPTIONALLY ENCLOSED BY '\''
                     LINES TERMINATED BY '\\n'");
 
     $success = true;
@@ -116,10 +114,10 @@ if(!$success) {
 
     $_values = array();
     $i = 0;
-    
+
     while ($row = fgets($fp)) {
         $_values[] = '(' . trim($row) . ')';
-            
+
         // Process the file in batches
         if($i++ % 1000 == 0) {
             $insertValues = implode(',', $_values);
@@ -127,7 +125,7 @@ if(!$success) {
             $_values = array();
         }
     }
-    
+
     // Insert any remaining values
     if(count($_values)) {
         $insertValues = implode(',', $_values);

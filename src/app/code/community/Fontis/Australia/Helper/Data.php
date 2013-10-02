@@ -58,7 +58,7 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
 
 	public function getCitySuggestUrl()
 	{
-		return $this->_getUrl('australia/ajax/suggest');
+		return $this->_getUrl('australia/ajax/suggest', array('_secure'=>true));
 	}
 
 } 
