@@ -304,8 +304,8 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                             'price' => $csvLine[5],
                             'price_per_kg' => $csvLine[6],
                             'delivery_type' => $csvLine[7],
-                            'charge_codes_individual' => $csvLine[8],
-                            'charge_codes_business' => $csvLine[9]
+                            'charge_code_individual' => $csvLine[8],
+                            'charge_code_business' => $csvLine[9]
                         );
                         
                         $dataDetails[] = array(
