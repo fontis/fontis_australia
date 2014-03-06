@@ -262,6 +262,13 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
     
     protected function _getChargeCode(Mage_Sales_Model_Order $order)
     {
+        
+        if($shippingCarrier = $order->getShippingCarrier()) {
+           if($shippingCarrier->getConfigData('eparcel_code')) {
+               return $shippingCarrier->getConfigData('eparcel_code');
+           }
+        }
+        
         list ($carrierCode, $chargeCode) = explode('_', $order->getData('shipping_method'));
         
         if ($this->_isValidChargeCode($chargeCode)) {

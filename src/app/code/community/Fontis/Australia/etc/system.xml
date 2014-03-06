@@ -30,6 +30,30 @@
     <sections>
         <carriers>
             <groups>
+                <flatrate translate="label">
+                    <fields>
+                        <eparcel_code translate="label">
+                            <label>Eparcel Code</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5000</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </eparcel_code>
+                    </fields>
+                </flatrate>
+                <freeshipping translate="label">
+                    <fields>
+                        <eparcel_code translate="label">
+                            <label>Eparcel Code</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5000</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </eparcel_code>
+                    </fields>
+                </freeshipping>
                 <australiapost translate="label" module="australia">
                     <label>Australia Post</label>
                     <frontend_type>text</frontend_type>
