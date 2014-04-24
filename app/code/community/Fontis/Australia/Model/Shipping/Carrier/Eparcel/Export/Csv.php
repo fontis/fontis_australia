@@ -172,6 +172,8 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
     {
         $parcel = new Doghouse_Australia_Eparcel_Parcel_Carton();
         
+        $parcel->isInsuranceRequired    = (bool) $this->getInsuranceRequired($order);
+        
         $parcel->weightMax = $this->getDefault('parcel/weightmax');
         $parcel->width = (int) $this->getDefault('parcel/width');
         $parcel->height = (int) $this->getDefault('parcel/height');
@@ -243,8 +245,6 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
         $consignementRecord->chargeCode = $this->_getChargeCode($order);
                 
         $consignementRecord->isSignatureRequired    = (bool) $this->getDefault('consignement/is_signature_required');
-        
-        $consignementRecord->isInsuranceRequired    = (bool) $this->getInsuranceRequired($order);
         
         $consignementRecord->addToAddressBook       = (bool) $this->getDefault('consignement/add_to_address_book');
         $consignementRecord->isRefPrintRequired     = (bool) $this->getDefault('consignement/print_ref1');
