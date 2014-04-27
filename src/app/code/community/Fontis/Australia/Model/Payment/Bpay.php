@@ -28,8 +28,8 @@
 class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abstract
 {
     protected $_code  = 'bpay';
-    protected $_formBlockType = 'fontis_australia_block_bpay_form';
-    protected $_infoBlockType = 'fontis_australia_block_bpay_info';
+    protected $_formBlockType = 'Fontis_Australia_Block_Bpay_Form';
+    protected $_infoBlockType = 'Fontis_Australia_Block_Bpay_Info';
     
     protected $_ref = null;
 
