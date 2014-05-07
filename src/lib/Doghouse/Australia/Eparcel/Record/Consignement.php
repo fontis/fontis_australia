@@ -33,4 +33,26 @@ class Doghouse_Australia_Eparcel_Record_Consignement extends Doghouse_Australia_
 	public $isRef2PrintRequired = false;
 	public $chargebackAccount;
 	public $isRecurringConsignement = false;
+	public $returnName;
+	public $returnAddressLine1;
+	public $returnAddressLine2;
+	public $returnAddressLine3;
+	public $returnAddressLine4;
+	public $returnSuburb;
+	public $returnStateCode;
+	public $returnPostcode;
+	public $returnCountryCode;
+	public $redirectionCompanyName;
+	public $redirectionName;
+	public $redirectionAddressLine1;
+	public $redirectionAddressLine2;
+	public $redirectionAddressLine3;
+	public $redirectionAddressLine4;
+	public $redirectionSuburb;
+	public $redirectionStateCode;
+	public $redirectionPostcode;
+	public $redirectionCountryCode;
+	public $manifestId = '';
+	public $consigneeEmail;
+	public $consigneeEmailNotification;
 }

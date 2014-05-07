@@ -19,7 +19,7 @@ abstract class Doghouse_Australia_Eparcel_Record
 	public function getValues()
 	{
 		$values = array_values(
-			get_object_vars($this)
+			array_diff_key(get_object_vars($this), array('isAddedToEparcel' => ''))
 		);
 		
 		foreach( $values as &$value )
