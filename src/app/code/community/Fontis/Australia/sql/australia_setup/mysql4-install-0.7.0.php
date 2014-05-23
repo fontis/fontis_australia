@@ -8,14 +8,11 @@
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
  *
  * @category   Fontis
  * @package    Fontis_Australia
  * @author     Chris Norton
- * @copyright  Copyright (c) 2008 Fontis Pty. Ltd. (http://www.fontis.com.au)
+ * @copyright  Copyright (c) 2014 Fontis Pty. Ltd. (http://www.fontis.com.au)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -50,42 +47,42 @@ CREATE TABLE {$this->getTable('australia_eparcel')} (
 $installer->run("
 DELETE FROM `{$this->getTable('directory_country_region')}` WHERE country_id = 'AU';
 
-INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES 
+INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES
 	('AU', 'ACT', 'Australian Capital Territory');
 	INSERT INTO `{$this->getTable('directory_country_region_name')}` (`locale`, `region_id`, `name`) VALUES
 	('en_US', LAST_INSERT_ID(), 'Australian Capital Territory'), ('en_AU', LAST_INSERT_ID(), 'Australian Capital Territory');
-	
-INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES 
+
+INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES
 	('AU', 'NSW', 'New South Wales');
 	INSERT INTO `{$this->getTable('directory_country_region_name')}` (`locale`, `region_id`, `name`) VALUES
 	('en_US', LAST_INSERT_ID(), 'New South Wales'), ('en_AU', LAST_INSERT_ID(), 'New South Wales');
-	
-INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES 
+
+INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES
 	('AU', 'NT', 'Northern Territory');
 	INSERT INTO `{$this->getTable('directory_country_region_name')}` (`locale`, `region_id`, `name`) VALUES
 	('en_US', LAST_INSERT_ID(), 'Northern Territory'), ('en_AU', LAST_INSERT_ID(), 'Northern Territory');
-	
-INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES 
+
+INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES
 	('AU', 'QLD', 'Queensland');
 	INSERT INTO `{$this->getTable('directory_country_region_name')}` (`locale`, `region_id`, `name`) VALUES
 	('en_US', LAST_INSERT_ID(), 'Queensland'), ('en_AU', LAST_INSERT_ID(), 'Queensland');
-	
-INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES 
+
+INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES
 	('AU', 'SA', 'South Australia');
 	INSERT INTO `{$this->getTable('directory_country_region_name')}` (`locale`, `region_id`, `name`) VALUES
 	('en_US', LAST_INSERT_ID(), 'South Australia'), ('en_AU', LAST_INSERT_ID(), 'South Australia');
-	
-INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES 
+
+INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES
 	('AU', 'TAS', 'Tasmania');
 	INSERT INTO `{$this->getTable('directory_country_region_name')}` (`locale`, `region_id`, `name`) VALUES
 	('en_US', LAST_INSERT_ID(), 'Tasmania'), ('en_AU', LAST_INSERT_ID(), 'Tasmania');
-	
-INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES 
+
+INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES
 	('AU', 'VIC', 'Victoria');
 	INSERT INTO `{$this->getTable('directory_country_region_name')}` (`locale`, `region_id`, `name`) VALUES
 	('en_US', LAST_INSERT_ID(), 'Victoria'), ('en_AU', LAST_INSERT_ID(), 'Victoria');
-	
-INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES 
+
+INSERT INTO `{$this->getTable('directory_country_region')}` (`country_id`, `code`, `default_name`) VALUES
 	('AU', 'WA', 'Western Australia');
 	INSERT INTO `{$this->getTable('directory_country_region_name')}` (`locale`, `region_id`, `name`) VALUES
 	('en_US', LAST_INSERT_ID(), 'Western Australia'), ('en_AU', LAST_INSERT_ID(), 'Western Australia');");

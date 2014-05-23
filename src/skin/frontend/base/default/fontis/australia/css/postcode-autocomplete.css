@@ -1,0 +1,23 @@
+.fontis-postcode-autocomplete {
+    z-index: 999;
+}
+.fontis-postcode-autocomplete ul {
+    border: 1px solid #5c7989;
+    background-color: #f9f5f0;
+}
+.fontis-postcode-autocomplete li {
+    border-bottom: 1px solid #f4eee7;
+    margin-bottom: 5px;
+    padding: 2px 8px 1px 8px;
+    cursor: pointer;
+}
+.fontis-postcode-autocomplete li .amount {
+    float: right;
+    font-weight: bold;
+}
+.fontis-postcode-autocomplete li.odd {
+    background-color: #fffefb;
+}
+.fontis-postcode-autocomplete li.selected {
+    background-color:#f7e8dd;
+}

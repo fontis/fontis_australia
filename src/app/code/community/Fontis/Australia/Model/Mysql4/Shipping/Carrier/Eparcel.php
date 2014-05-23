@@ -8,9 +8,6 @@
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
  *
  * Originally based on Magento Tablerate Shipping code and Auctionmaid Matrixrate.
  * @copyright  Copyright (c) 2008 Auction Maid (http://www.auctionmaid.com)
@@ -19,7 +16,7 @@
  * @category   Fontis
  * @package    Fontis_Australia
  * @author     Chris Norton
- * @copyright  Copyright (c) 2008 Fontis Pty. Ltd. (http://www.fontis.com.au)
+ * @copyright  Copyright (c) 2014 Fontis Pty. Ltd. (http://www.fontis.com.au)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -33,30 +30,28 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
     public function getRate(Mage_Shipping_Model_Rate_Request $request)
     {
         $read = $this->_getReadAdapter();
-        $write = $this->_getWriteAdapter();
 
-		$postcode = $request->getDestPostcode();
+        $postcode = $request->getDestPostcode();
         $table = $this->getMainTable();
+        $storeId = $request->getStoreId();
 
-        $insuranceStep = (float)Mage::getConfig()->getNode('default/carriers/eparcel/insurance_step');
-        $insuranceCostPerStep = (float)Mage::getConfig()->getNode('default/carriers/eparcel/insurance_cost_per_step');
-        $signatureRequired = Mage::getConfig()->getNode('default/carriers/eparcel/signature_required');
+        $insuranceStep = (float)Mage::getStoreConfig('default/carriers/eparcel/insurance_step', $storeId);
+        $insuranceCostPerStep = (float)Mage::getStoreConfig('default/carriers/eparcel/insurance_cost_per_step', $storeId);
+        $signatureRequired = Mage::getStoreConfigFlag('default/carriers/eparcel/signature_required', $storeId);
         if($signatureRequired) {
-            $signatureCost = (float)Mage::getConfig()->getNode('default/carriers/eparcel/signature_cost');
+            $signatureCost = (float)Mage::getStoreConfig('default/carriers/eparcel/signature_cost', $storeId);
         } else {
             $signatureCost = 0;
         }
-        
+
         Mage::log($request->getDestCountryId());
         Mage::log($request->getDestRegionId());
         Mage::log($postcode);
         Mage::log(var_export($request->getConditionName(), true));
-		
-        for ($j=0;$j<5;$j++)
-		{
+
+        for ($j = 0; $j < 5; $j++) {
 
             $select = $read->select()->from($table);
-
 
             switch($j) {
                 case 0:
@@ -126,48 +121,48 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
             {
                 // have found a result or found nothing and at end of list!
                 foreach ($row as $data) {
-		            try {
+                    try {
                         $price = (float)($data['price']);
-                        
+
                         // add per-Kg cost
                         $conditionValue = (float)($request->getData($request->getConditionName()));
                         $price += (float)($data['price_per_kg']) * $conditionValue;
-                    
+
                         // add signature cost
                         $price += $signatureCost;
-                        
+
                         // add version without insurance
                         $data['price'] = (string)$price;
                         $newdata[]=$data;
 
-                        // add version with insurance
-                        // work out how many insurance 'steps' we have
-                        $steps = ceil($request->getPackageValue() / $insuranceStep);
-                        Mage::log("Insurance steps: $steps");
-                        // add on number of 'steps' multiplied by the
-                        // insurance cost per step
-                        $insuranceCost = $insuranceCostPerStep * $steps;
-                        Mage::log("Insurance cost: $insuranceCost");
-                        $price += $insuranceCost;
-                        
-                        $data['price'] = (string)$price;
-                        $data['delivery_type'] .= " with TransitCover";
-                        $newdata[]=$data;
+                        if (Mage::getStoreConfig('carriers/eparcel/insurance_enable', $storeId)) {
+                            // add version with insurance
+                            // work out how many insurance 'steps' we have
+                            $steps = ceil($request->getPackageValue() / $insuranceStep);
+                            Mage::log("Insurance steps: $steps");
+                            // add on number of 'steps' multiplied by the
+                            // insurance cost per step
+                            $insuranceCost = $insuranceCostPerStep * $steps;
+                            Mage::log("Insurance cost: $insuranceCost");
+                            $price += $insuranceCost;
 
+                            $data['price'] = (string)$price;
+                            $data['delivery_type'] .= " with TransitCover";
+                            $newdata[]=$data;
+                        }
                     } catch(Exception $e) {
                         Mage::log($e->getMessage());
                     }
                 }
                 break;
             }
-		}
+        }
         Mage::log(var_export($newdata, true));
         return $newdata;
     }
 
     public function uploadAndImport(Varien_Object $object)
     {
-    	Mage::log('Eparcel uploadAndImport');
         $csvFile = $_FILES["groups"]["tmp_name"]["eparcel"]["fields"]["import"]["value"];
 
         if (!empty($csvFile)) {
@@ -177,7 +172,6 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
             $table = Mage::getSingleton('core/resource')->getTableName('australia/eparcel');
 
             $websiteId = $object->getScopeId();
-            $websiteModel = Mage::app()->getWebsite($websiteId);
 
             if (isset($_POST['groups']['eparcel']['fields']['condition_name']['inherit'])) {
                 $conditionName = (string)Mage::getConfig()->getNode('default/carriers/eparcel/condition_name');
@@ -186,7 +180,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
             }
 
             $conditionFullName = Mage::getModel('australia/shipping_carrier_eparcel')->getCode('condition_name_short', $conditionName);
-            
+
             if (!empty($csv)) {
                 $exceptions = array();
                 $csvLines = explode("\n", $csv);
@@ -280,19 +274,22 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                         } else {
                             $csvLine[6] = (float)$csvLine[6];
                         }
-                        
-                        if (isset($csvLine[8]) AND !$this->_isValidChargeCode($csvLine[8])) {
+
+                        /** @var Fontis_Australia_Helper_Eparcel $helper */
+                        $helper = Mage::helper('australia/eparcel');
+
+                        if (isset($csvLine[8]) && !$helper->isValidChargeCode($csvLine[8])) {
                             $exceptions[] = Mage::helper('shipping')->__('Invalid Charge Code "%s" in the Row #%s', $csvLine[8], ($k+1));
                         } else {
                             $csvLine[8] = isset($csvLine[8]) ? (string)$csvLine[8] : null;
                         }
-                        
-                        if (isset($csvLine[9]) AND !$this->_isValidChargeCode($csvLine[9])) {
+
+                        if (isset($csvLine[9]) && !$helper->isValidChargeCode($csvLine[9])) {
                             $exceptions[] = Mage::helper('shipping')->__('Invalid Charge Code "%s" in the Row #%s', $csvLine[9], ($k+1));
                         } else {
                             $csvLine[9] = isset($csvLine[9]) ? (string)$csvLine[9] : null;
                         }
-                        
+
                         $data[] = array(
                             'website_id' => $websiteId,
                             'dest_country_id' => $countryId,
@@ -307,7 +304,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                             'charge_code_individual' => $csvLine[8],
                             'charge_code_business' => $csvLine[9]
                         );
-                        
+
                         $dataDetails[] = array(
                             'country' => $csvLine[0],
                             'region' => $csvLine[1]
@@ -343,20 +340,19 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                                     $pcode1 = (int)$postcodeEntry[0];
                                     $pcode2 = (int)$postcodeEntry[1];
                                     Mage::log("Line $k, postcode range: $pcode1-$pcode2");
-                                    
+
                                     $postcodes = array_merge($postcodes, range(min($pcode1, $pcode2), max($pcode1, $pcode2)));
                                 }
                             }
-                            
+
                             Mage::log(var_export($postcodes, true));
                             foreach($postcodes as $postcode) {
                                 $dataLine['dest_zip'] = str_pad($postcode, 4, "0", STR_PAD_LEFT);
                                 $connection->insert($table, $dataLine);
                             }
                         } catch (Exception $e) {
-                            //$exceptions[] = Mage::helper('shipping')->__('ERROR Row #%s (Country "%s", Region/State "%s", Zip "%s" and Value "%s")', ($k+1), $dataDetails[$k]['country'], $dataDetails[$k]['region'], $dataLine['dest_zip'], $dataLine['condition_value']);
                             Mage::log($e->getMessage());
-                            $exceptionas[] = $e->getMessage();
+                            $exceptions[] = $e->getMessage();
                         }
                     }
                 }
@@ -371,20 +367,20 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
     /**
      * Due to bugs in fgetcsv(), this extension is using tips from php.net.
      * We could potentially swap this out for Zend's CSV parsers after testing for bugs in that.
-     * 
+     *
      * Note: I've updated this code the latest version in the comments on php.net (Jonathan Melnick)
-     * 
+     *
      * @author Jonathan Melnick
      * @author Chris Norton
      * @author Dave Walter
      * @author justin at cam dot org
      * @author Theodule
      * @author dan dot jones at lunarfish dot co dot uk
-     * 
+     *
      * @see http://www.php.net/manual/en/function.split.php#81490
      * @see https://bugs.php.net/bug.php?id=45356
      * @see http://stackoverflow.com/questions/12390851/fgetcsv-is-eating-the-first-letter-of-a-string-if-its-an-umlaut
-     * 
+     *
      * @param string $string
      * @param string $separator
      */
@@ -418,5 +414,4 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
     {
         return preg_match ("/^[0-9]+(\.[0-9]*)?$/", $n);
     }
-
 }

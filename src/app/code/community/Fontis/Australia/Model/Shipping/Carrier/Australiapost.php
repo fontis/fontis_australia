@@ -9,14 +9,11 @@
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
  *
  * @category   Fontis
  * @package    Fontis_Australia
  * @author     Chris Norton
- * @copyright  Copyright (c) 2008 Fontis Pty. Ltd. (http://www.fontis.com.au)
+ * @copyright  Copyright (c) 2014 Fontis Pty. Ltd. (http://www.fontis.com.au)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -267,23 +264,23 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost extends Mage_Shippin
 	{
             // Construct the appropriate URL and send all the information
             // to the Australia Post DRC.
-		
+
             // don't make a call if the postcodes are not populated.
             if(is_null($fromPostCode) || is_null($toPostCode)) {
                 return array('err_msg' => 'One of To or From Postcodes are missing');
             }
-            
+
             /**
              * Lucas van Staden @ doghouse media (lucas@dhmedia.com.au)
              * Add a drc call cache to session. (valid for 1 hour)
              * The call to drc is made at least 3-4 times, using the same data (ugh)
              *  - Add to cart (sometimes * 2)
              *  - Checkout * 2
-             * 
+             *
              * Create a lookup cache based on FromPostcode->ToPostcode combination, and re-use cached data
              * The end result will kill lookups in checkout process, as it was actually done at cart, which will speed checkout up.
              */
-            
+
             $drcCache = Mage::getSingleton('checkout/session')->getDrcCache();
             if(!$drcCache) {
                 $drcCache = array();
@@ -292,8 +289,8 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost extends Mage_Shippin
                 // prevents any mistake from stopping checkout as a new lookup will be done.
                 try {
                     $time = time();
-                    if($this->getConfigFlag('cache') 
-                            && array_key_exists($fromPostCode, $drcCache) 
+                    if($this->getConfigFlag('cache')
+                            && array_key_exists($fromPostCode, $drcCache)
                             && array_key_exists($toPostCode, $drcCache[$fromPostCode])
                             && $time - $drcCache[$fromPostCode][$toPostCode]['timestamp'] < 3600) {
                         if ($this->getConfigFlag('debug')) {
@@ -303,23 +300,23 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost extends Mage_Shippin
                     }
                 } catch (Exception $e) {
                     mage::logException($e);
-                }   
+                }
             }
-            
-            $url = "http://drc.edeliver.com.au/ratecalc.asp?" . 
+
+            $url = "http://drc.edeliver.com.au/ratecalc.asp?" .
 			"Pickup_Postcode=" . rawurlencode($fromPostCode) .
 			"&Destination_Postcode=" . rawurlencode($toPostCode) .
 			"&Country=" . rawurlencode($destCountry) .
 			"&Weight=" . rawurlencode($weight) .
-			"&Service_Type=" . rawurlencode($service) . 
-			"&Height=" . rawurlencode($height) . 
-			"&Width=" . rawurlencode($width) . 
+			"&Service_Type=" . rawurlencode($service) .
+			"&Height=" . rawurlencode($height) .
+			"&Width=" . rawurlencode($width) .
 			"&Length=" . rawurlencode($length) .
 			"&Quantity=" . rawurlencode($num_boxes);
-            
+
         if(extension_loaded('curl'))
         {
-            
+
             if ($this->getConfigFlag('debug')) {
                 Mage::log('Using curl', null, 'fontis_australia.log');
             }
@@ -346,15 +343,15 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost extends Mage_Shippin
             $drc_result = explode("\n",$drc_result);
             //clean up array
             $drc_result = array_map('trim', $drc_result);
-            $drc_result = array_filter($drc_result);                                    
-            
+            $drc_result = array_filter($drc_result);
+
         }
         else if(ini_get('allow_url_fopen'))
         {
             if ($this->getConfigFlag('debug')) {
                 Mage::log('Using fopen URL wrappers', null, 'fontis_australia.log');
             }
-            
+
             $drc_result = file($url);
         }
         else
@@ -376,12 +373,12 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost extends Mage_Shippin
     	        return array('err_msg' => 'Parsing error on Australia Post results');
     	    }
 		}
-		
+
                 // save the drc data to lookup cache, with a timestamp.
                 if(is_array($drcCache)){
-                    $drcCache[$fromPostCode][$toPostCode] = array('result'=>$result,'timestamp'=>time());         
+                    $drcCache[$fromPostCode][$toPostCode] = array('result'=>$result,'timestamp'=>time());
                     Mage::getSingleton('checkout/session')->setDrcCache($drcCache);
-                }    
+                }
 		return $result;
 	}
 

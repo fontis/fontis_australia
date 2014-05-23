@@ -1,7 +1,7 @@
 {
     "name":"fontis/australia",
     "type":"magento-module",
-    "license":"Open Software License (OSL 3.0)",    
+    "license":"Open Software License (OSL 3.0)",
     "description":"This extension is intended to provide most of the functionality needed to run a Magento store in Australia. This includes all essential payment and shipping methods as well as small localisations such as adding the store's ABN, adding Australian states and territories to the region directory and adding in a postcode database.",
     "homepage":"http://www.fontis.com.au",
     "authors":[
@@ -32,7 +32,7 @@
                 {
                     "type":"magedesign",
                     "structure":"file",
-                    "path":"frontend/base/default/layout/fontis_australia.xml"
+                    "path":"frontend/base/default/layout/fontis/australia.xml"
                 },
                 {
                     "type":"magedesign",

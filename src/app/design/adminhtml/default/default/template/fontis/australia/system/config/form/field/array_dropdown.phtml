@@ -16,7 +16,7 @@
  * @package    Fontis_CampaignMonitor
  * @author     Peter Spiller
  * @author     Chris Norton
- * @copyright  Copyright (c) 2008 Fontis Pty. Ltd. (http://www.fontis.com.au)
+ * @copyright  Copyright (c) 2014 Fontis Pty. Ltd. (http://www.fontis.com.au)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -121,7 +121,7 @@ var arrayRow<?php echo $_htmlId ?> = {
             }
         }
 <?php endforeach;?>
-        
+
 <?php if ($this->_addAfter):?>
         Event.observe('addAfterBtn' + templateData._id, 'click', this.add.bind(this, '', templateData._id));
 <?php endif;?>

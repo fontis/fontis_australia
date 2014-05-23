@@ -8,14 +8,11 @@
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
  *
  * @category   Fontis
  * @package    Fontis_Australia
  * @author     Chris Norton
- * @copyright  Copyright (c) 2008 Fontis Pty. Ltd. (http://www.fontis.com.au)
+ * @copyright  Copyright (c) 2014 Fontis Pty. Ltd. (http://www.fontis.com.au)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -30,7 +27,7 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
     protected $_code  = 'bpay';
     protected $_formBlockType = 'fontis_australia_block_bpay_form';
     protected $_infoBlockType = 'fontis_australia_block_bpay_info';
-    
+
     protected $_ref = null;
 
 	public function isAvailable($quote = null)
@@ -39,10 +36,10 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
         {
             return false;
         }
-        
+
 		$groupAccess = $this->getConfigData('customer_group_access');
 		$group = $this->getConfigData('customer_group');
-		
+
 		if($groupAccess == 0)
 		{
 			// No restrictions on access
@@ -66,7 +63,7 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
 				return true;
 			}
 		}
-		
+
 		// Default, restrict access
 		return false;
 	}
@@ -82,29 +79,29 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
         $info = $this->getInfoInstance();
         $info->setBillerCode($this->getBillerCode());
         $info->setRef($this->getRef());
-        
+
 		$details = array();
 		if ($this->getBillerCode())
 		{
 			$details['biller_code'] = $this->getBillerCode();
-			
+
 			if($this->getRef())
 			{
 				$details['ref'] = $this->getRef();
 			}
 		}
-        if (!empty($details)) 
+        if (!empty($details))
         {
             $this->getInfoInstance()->setAdditionalData(serialize($details));
         }
         return $this;
     }
-    
+
 	public function getBillerCode()
 	{
 		return $this->getConfigData('biller_code');
 	}
-	
+
 	public function getRef()
 	{
 		if($this->_ref)	{
@@ -129,17 +126,17 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
 			} else {
 				$order_id = Mage::getSingleton('checkout/session')->getLastRealOrderId();
 				$this->_ref = $this->_calculateRef($order_id);
-			}			
+			}
 			//$this->assignData();
-		}		
+		}
 		return $this->_ref;
 	}
-	
+
 	public function getMessage()
 	{
 		return $this->getConfigData('message');
 	}
-	
+
 	protected function _calculateRef($ref, $seperator = '', $crn_length = 6)
     {
 	    $revstr = strrev(intval($ref));
