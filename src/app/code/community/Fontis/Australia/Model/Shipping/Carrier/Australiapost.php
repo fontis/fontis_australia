@@ -79,43 +79,42 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost extends Mage_Shippin
 
                 if ($drc['err_msg'] == 'OK') {
                     // Check for registered post activation. If so, add extra options
-                    if ($this->getConfigData('registered_post'))
-                        if (in_array('STANDARD', $allowedShippingMethods)) {
-                            $title = $this->getConfigData('name') . " " . ucfirst(strtolower($shipping_method));
+                    if ($this->getConfigData('registered_post')) {
+	                $title = $this->getConfigData('name') . " " . ucfirst(strtolower($shipping_method));
+	
+	                $charge = $drc['charge'];
+	                $charge += $this->getConfigData('registered_post_charge');
+	
+	                if ($this->getConfigData('person_to_person')) {
+	                    $charge += 5.50;
+	                } elseif ($this->getConfigData('delivery_confirmation')) {
+	                     $charge += 1.85;
+	                }
+	
+	                $method = $this->_createMethod($request, $shipping_method, $title, $charge, $charge);
+	                $result->append($method);
+	
+	                // Insurance only covers up to $5000 worth of goods.
+	                $packageValue = ($request->getPackageValue() > 5000) ? 5000 : $request->getPackageValue();
+	
+	                // Insurance cost is $1.25 per $100 or part thereof. First $100 is
+	                // included in normal registered post costs.
+	                $insurance = (ceil($packageValue / 100) - 1) * 1.25;
+	
+	                // Only add a new method if the insurance is different
+	                if ($insurance > 0) {
+	                    $charge += $insurance;
+	
+	                    $title = $this->getConfigData('name') . " " . ucfirst(strtolower($shipping_method)) . ' with Extra Cover';
+	                    $method = $this->_createMethod($request, $shipping_method . '_EC', $title, $charge, $charge);
+	                    $result->append($method);
+	                }
+                    } else {
+                        $title = $this->getConfigData('name') . " " . ucfirst(strtolower($shipping_method));
 
-                            $charge = $drc['charge'];
-                            $charge += $this->getConfigData('registered_post_charge');
-
-                            if ($this->getConfigData('person_to_person')) {
-                                $charge += 5.50;
-                            } elseif ($this->getConfigData('delivery_confirmation')) {
-                                $charge += 1.85;
-                            }
-
-                            $method = $this->_createMethod($request, $shipping_method, $title, $charge, $charge);
-                            $result->append($method);
-
-                            // Insurance only covers up to $5000 worth of goods.
-                            $packageValue = ($request->getPackageValue() > 5000) ? 5000 : $request->getPackageValue();
-
-                            // Insurance cost is $1.25 per $100 or part thereof. First $100 is
-                            // included in normal registered post costs.
-                            $insurance = (ceil($packageValue / 100) - 1) * 1.25;
-
-                            // Only add a new method if the insurance is different
-                            if ($insurance > 0) {
-                                $charge += $insurance;
-
-                                $title = $this->getConfigData('name') . " " . ucfirst(strtolower($shipping_method)) . ' with Extra Cover';
-                                $method = $this->_createMethod($request, $shipping_method . '_EC', $title, $charge, $charge);
-                                $result->append($method);
-                            }
-                        } else {
-                            $title = $this->getConfigData('name') . " " . ucfirst(strtolower($shipping_method));
-
-                            $method = $this->_createMethod($request, $shipping_method, $title, $drc['charge'], $drc['charge']);
-                            $result->append($method);
-                        }
+                        $method = $this->_createMethod($request, $shipping_method, $title, $drc['charge'], $drc['charge']);
+                        $result->append($method);
+                    }
                 }
             }
         } else {
