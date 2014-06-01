@@ -54,8 +54,9 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
             $select = $read->select()->from($table);
 
             // Support for Multi Warehouse Extension.
-            if ($request->getWarehouseId() > 0)
+            if ($request->getWarehouseId() > 0) {
                 $select->where('stock_id = ?', $request->getWarehouseId());
+            }
             
             switch($j) {
                 case 0:
