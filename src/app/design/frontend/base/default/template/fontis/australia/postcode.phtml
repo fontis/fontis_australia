@@ -41,14 +41,5 @@
         minChars: 2,
         parameters: 'country=' + $F('country')
     });
-
-    // Detect when the country has changed and update the parameters sent by the autocompleter.
-    $('country').observe('change', function() {
-        completer = new Ajax.Autocompleter("city", "autocomplete_city", citySuggestUrl, {
-            afterUpdateElement: updateAddress,
-            minChars: 2,
-            parameters: 'country=' + $F('country')
-        });
-    });
     </script>
 <?php endif ?>
