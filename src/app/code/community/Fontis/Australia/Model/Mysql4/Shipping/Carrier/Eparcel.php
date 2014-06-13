@@ -53,6 +53,11 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
 
             $select = $read->select()->from($table);
 
+            // Support for Multi Warehouse Extension.
+            if ($request->getWarehouseId() > 0) {
+                $select->where('stock_id = ?', $request->getWarehouseId());
+            }
+            
             switch($j) {
                 case 0:
                     $select->where(
@@ -278,31 +283,39 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                         /** @var Fontis_Australia_Helper_Eparcel $helper */
                         $helper = Mage::helper('australia/eparcel');
 
-                        if (isset($csvLine[8]) && !$helper->isValidChargeCode($csvLine[8])) {
+                        if (isset($csvLine[8]) && $csvLine[8] != '' && !$helper->isValidChargeCode($csvLine[8])) {
                             $exceptions[] = Mage::helper('shipping')->__('Invalid Charge Code "%s" in the Row #%s', $csvLine[8], ($k+1));
                         } else {
                             $csvLine[8] = isset($csvLine[8]) ? (string)$csvLine[8] : null;
                         }
 
-                        if (isset($csvLine[9]) && !$helper->isValidChargeCode($csvLine[9])) {
+                        if (isset($csvLine[9]) && $csvLine[9] != '' && !$helper->isValidChargeCode($csvLine[9])) {
                             $exceptions[] = Mage::helper('shipping')->__('Invalid Charge Code "%s" in the Row #%s', $csvLine[9], ($k+1));
                         } else {
                             $csvLine[9] = isset($csvLine[9]) ? (string)$csvLine[9] : null;
                         }
+                        
+                        // If Multi Warehouse Ext is not used the value is 0 (as for no warehouse) otherwise is positive integer from table "warehouse"
+                        if (isset($csvLine[10]) && intval($csvLine[10]) < 0) {
+                            $exceptions[] = Mage::helper('shipping')->__('Invalid Warehouse ID "%s" in the Row #%s', $csvLine[10], ($k+1));
+                        } else {
+                            $csvLine[10] = isset($csvLine[10]) ? (int)$csvLine[10] : null;
+                        }
 
                         $data[] = array(
-                            'website_id' => $websiteId,
-                            'dest_country_id' => $countryId,
-                            'dest_region_id' => $regionId,
-                            'dest_zip' => $zip,
-                            'condition_name' => $conditionName,
-                            'condition_from_value' => $csvLine[3],
-                            'condition_to_value' => $csvLine[4],
-                            'price' => $csvLine[5],
-                            'price_per_kg' => $csvLine[6],
-                            'delivery_type' => $csvLine[7],
+                            'website_id'             => $websiteId,
+                            'dest_country_id'        => $countryId,
+                            'dest_region_id'         => $regionId,
+                            'dest_zip'               => $zip,
+                            'condition_name'         => $conditionName,
+                            'condition_from_value'   => $csvLine[3],
+                            'condition_to_value'     => $csvLine[4],
+                            'price'                  => $csvLine[5],
+                            'price_per_kg'           => $csvLine[6],
+                            'delivery_type'          => $csvLine[7],
                             'charge_code_individual' => $csvLine[8],
-                            'charge_code_business' => $csvLine[9]
+                            'charge_code_business'   => $csvLine[9],
+                            'stock_id'               => $csvLine[10],
                         );
 
                         $dataDetails[] = array(

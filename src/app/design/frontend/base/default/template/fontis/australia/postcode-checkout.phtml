@@ -41,15 +41,6 @@
         parameters: 'country=' + $F('billing:country_id')
     });
 
-    // Detect when the country has changed and update the parameters sent by the autocompleter.
-    $('billing:country_id').observe('change', function() {
-        completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", citySuggestUrl, {
-            afterUpdateElement: updateAddressBilling,
-            minChars: 2,
-            parameters: 'country=' + $F('billing:country_id')
-        });
-    });
-
     //============ Shipping ============//
     var autocomplete_city_shipping = new Element('div', { id: 'autocomplete_city_shipping', 'class': 'fontis-postcode-autocomplete' });
     $('shipping:city').parentNode.appendChild(autocomplete_city_shipping);
@@ -69,15 +60,6 @@
         afterUpdateElement: updateAddressShipping,
         minChars: 2,
         parameters: 'country=' + $F('shipping:country_id')
-    });
-
-    // Detect when the country has changed and update the parameters sent by the autocompleter.
-    $('shipping:country_id').observe('change', function() {
-        completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", citySuggestUrl, {
-            afterUpdateElement: updateAddressShipping,
-            minChars: 2,
-            parameters: 'country=' + $F('shipping:country_id')
-        });
     });
     </script>
 <?php endif ?>

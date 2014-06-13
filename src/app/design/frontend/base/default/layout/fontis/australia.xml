@@ -22,7 +22,7 @@
         <reference name="head">
             <action method="addCss" ifconfig="fontis_australia/postcode_autocomplete/enabled"><stylesheet>fontis/australia/css/postcode-autocomplete.css</stylesheet></action>
         </reference>
-        <reference name="footer">
+        <reference name="my.account.wrapper">
             <block type="core/template" name="fontis_australia_autocomplete" template="fontis/australia/postcode.phtml"/>
         </reference>
     </customer_address_form>
@@ -38,7 +38,7 @@
         <reference name="head">
             <action method="addCss" ifconfig="fontis_australia/postcode_autocomplete/enabled"><stylesheet>fontis/australia/css/postcode-autocomplete.css</stylesheet></action>
         </reference>
-        <reference name="footer">
+        <reference name="content">
             <block type="core/template" name="fontis_australia_autocomplete" template="fontis/australia/postcode-checkout.phtml"/>
         </reference>
     </checkout_onepage_index>
