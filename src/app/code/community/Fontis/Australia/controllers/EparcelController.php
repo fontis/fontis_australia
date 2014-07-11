@@ -53,4 +53,43 @@ class Fontis_Australia_EparcelController extends Mage_Adminhtml_Controller_Actio
             $this->_redirect(self::ADMINHTML_SALES_ORDER_INDEX);
         }
     }
+
+    /**
+     * Export the eParcel table rates as a CSV file.
+     */
+    public function exportTableratesAction()
+    {
+        $rates = Mage::getResourceModel('australia/shipping_carrier_eparcel_collection');
+        $response = array(
+            array('Country', 'Region/State', 'Postcodes', 'Weight from', 'Weight to', 'Parcel Cost', 'Cost Per Kg', 'Delivery Type', 'Charge Code Individual', 'Charge Code Business')
+        );
+        foreach ($rates as $rate) {
+            $countryId = $rate->getData('dest_country_id');
+            $countryCode = Mage::getModel('directory/country')->load($countryId)->getIso3Code();
+            $regionId = $rate->getData('dest_region_id');
+            $regionCode = Mage::getModel('directory/region')->load($regionId)->getCode();
+            $response[] = array(
+                $countryCode,
+                $regionCode,
+                $rate->getData('dest_zip'),
+                $rate->getData('condition_from_value'),
+                $rate->getData('condition_to_value'),
+                $rate->getData('price'),
+                $rate->getData('price_per_kg'),
+                $rate->getData('delivery_type'),
+                $rate->getData('charge_code_individual'),
+                $rate->getData('charge_code_business')
+            );
+        }
+
+        $csv = new Varien_File_Csv();
+        $temp = tmpfile();
+        foreach ($response as $responseRow) {
+            $csv->fputcsv($temp, $responseRow);
+        }
+        rewind($temp);
+        $contents = stream_get_contents($temp);
+        $this->_prepareDownloadResponse('tablerates.csv', $contents);
+        fclose($temp);
+    }
 }

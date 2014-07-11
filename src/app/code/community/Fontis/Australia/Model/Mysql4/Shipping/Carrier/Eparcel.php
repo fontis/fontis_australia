@@ -22,6 +22,8 @@
 
 class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_Model_Mysql4_Abstract
 {
+    const MIN_CSV_COLUMN_COUNT = 8;
+
     protected function _construct()
     {
         $this->_init('australia/eparcel', 'pk');
@@ -69,13 +71,13 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                 case 1:
                     $select->where(
                        $read->quoteInto("  (dest_country_id=? ", $request->getDestCountryId()).
-                            $read->quoteInto(" AND dest_region_id=? AND dest_zip='') ", $request->getDestRegionId())
+                            $read->quoteInto(" AND dest_region_id=? AND dest_zip='0000') ", $request->getDestRegionId())
                        );
                     break;
 
                 case 2:
                     $select->where(
-                       $read->quoteInto("  (dest_country_id=? AND dest_region_id='0' AND dest_zip='') ", $request->getDestCountryId())
+                       $read->quoteInto("  (dest_country_id=? AND dest_region_id='0' AND dest_zip='0000') ", $request->getDestCountryId())
                     );
                     break;
                 case 3:
@@ -86,7 +88,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                     break;
                 case 4:
                     $select->where(
-                            "  (dest_country_id='0' AND dest_region_id='0' AND dest_zip='')"
+                            "  (dest_country_id='0' AND dest_region_id='0' AND dest_zip='0000')"
                 );
                     break;
             }
@@ -191,16 +193,17 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                 $csvLines = explode("\n", $csv);
                 $csvLine = array_shift($csvLines);
                 $csvLine = $this->_getCsvValues($csvLine);
-                if (count($csvLine) < 8) {
-                    $exceptions[0] = Mage::helper('shipping')->__('Invalid Table Rates File Format');
+                if (count($csvLine) < self::MIN_CSV_COLUMN_COUNT) {
+                    $exceptions[0] = Mage::helper('shipping')->__('Less than ' . self::MIN_CSV_COLUMN_COUNT . ' columns in the CSV header.');
                 }
 
                 $countryCodes = array();
                 $regionCodes = array();
-                foreach ($csvLines as $k=>$csvLine) {
+                foreach ($csvLines as $k => $csvLine) {
                     $csvLine = $this->_getCsvValues($csvLine);
-                    if (count($csvLine) > 0 && count($csvLine) < 8) {
-                        $exceptions[0] = Mage::helper('shipping')->__('Invalid Table Rates File Format');
+                    $count = count($csvLine);
+                    if ($count > 0 && $count < self::MIN_CSV_COLUMN_COUNT) {
+                        $exceptions[0] = Mage::helper('shipping')->__('Less than ' . self::MIN_CSV_COLUMN_COUNT . ' columns in row ' . ($k + 1) . '.');
                     } else {
                         $countryCodes[] = $csvLine[0];
                         $regionCodes[] = $csvLine[1];
@@ -235,7 +238,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                         if (empty($countryCodesToIds) || !array_key_exists($csvLine[0], $countryCodesToIds)) {
                             $countryId = '0';
                             if ($csvLine[0] != '*' && $csvLine[0] != '') {
-                                $exceptions[] = Mage::helper('shipping')->__('Invalid Country "%s" in the Row #%s', $csvLine[0], ($k+1));
+                                $exceptions[] = Mage::helper('shipping')->__('Invalid country "%s" on row #%s', $csvLine[0], ($k+1));
                             }
                         } else {
                             $countryId = $countryCodesToIds[$csvLine[0]];
@@ -244,7 +247,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                         if (empty($regionCodesToIds) || !array_key_exists($csvLine[1], $regionCodesToIds)) {
                             $regionId = '0';
                             if ($csvLine[1] != '*' && $csvLine[1] != '') {
-                                $exceptions[] = Mage::helper('shipping')->__('Invalid Region/State "%s" in the Row #%s', $csvLine[1], ($k+1));
+                                $exceptions[] = Mage::helper('shipping')->__('Invalid region/state "%s" on row #%s', $csvLine[1], ($k+1));
                             }
                         } else {
                             $regionId = $regionCodesToIds[$csvLine[1]];
@@ -257,25 +260,25 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                         }
 
                         if (!$this->_isPositiveDecimalNumber($csvLine[3]) || $csvLine[3] == '*' || $csvLine[3] == '') {
-                            $exceptions[] = Mage::helper('shipping')->__('Invalid %s "%s" in the Row #%s', $conditionFullName, $csvLine[3], ($k+1));
+                            $exceptions[] = Mage::helper('shipping')->__('Invalid %s "%s" on row #%s', $conditionFullName, $csvLine[3], ($k+1));
                         } else {
                             $csvLine[3] = (float)$csvLine[3];
                         }
 
                         if (!$this->_isPositiveDecimalNumber($csvLine[4]) || $csvLine[4] == '*' || $csvLine[4] == '') {
-                            $exceptions[] = Mage::helper('shipping')->__('Invalid %s "%s" in the Row #%s', $conditionFullName, $csvLine[4], ($k+1));
+                            $exceptions[] = Mage::helper('shipping')->__('Invalid %s "%s" on row #%s', $conditionFullName, $csvLine[4], ($k+1));
                         } else {
                             $csvLine[4] = (float)$csvLine[4];
                         }
 
                         if (!$this->_isPositiveDecimalNumber($csvLine[5])) {
-                            $exceptions[] = Mage::helper('shipping')->__('Invalid Shipping Price "%s" in the Row #%s', $csvLine[5], ($k+1));
+                            $exceptions[] = Mage::helper('shipping')->__('Invalid shipping price "%s" on row #%s', $csvLine[5], ($k+1));
                         } else {
                             $csvLine[5] = (float)$csvLine[5];
                         }
 
                         if (!$this->_isPositiveDecimalNumber($csvLine[6])) {
-                            $exceptions[] = Mage::helper('shipping')->__('Invalid Shipping Price per Kg "%s" in the Row #%s', $csvLine[6], ($k+1));
+                            $exceptions[] = Mage::helper('shipping')->__('Invalid shipping price per kg "%s" on row #%s', $csvLine[6], ($k+1));
                         } else {
                             $csvLine[6] = (float)$csvLine[6];
                         }
@@ -284,13 +287,13 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                         $helper = Mage::helper('australia/eparcel');
 
                         if (isset($csvLine[8]) && $csvLine[8] != '' && !$helper->isValidChargeCode($csvLine[8])) {
-                            $exceptions[] = Mage::helper('shipping')->__('Invalid Charge Code "%s" in the Row #%s', $csvLine[8], ($k+1));
+                            $exceptions[] = Mage::helper('shipping')->__('Invalid charge code "%s" on row #%s', $csvLine[8], ($k+1));
                         } else {
                             $csvLine[8] = isset($csvLine[8]) ? (string)$csvLine[8] : null;
                         }
 
                         if (isset($csvLine[9]) && $csvLine[9] != '' && !$helper->isValidChargeCode($csvLine[9])) {
-                            $exceptions[] = Mage::helper('shipping')->__('Invalid Charge Code "%s" in the Row #%s', $csvLine[9], ($k+1));
+                            $exceptions[] = Mage::helper('shipping')->__('Invalid charge code "%s" on row #%s', $csvLine[9], ($k+1));
                         } else {
                             $csvLine[9] = isset($csvLine[9]) ? (string)$csvLine[9] : null;
                         }

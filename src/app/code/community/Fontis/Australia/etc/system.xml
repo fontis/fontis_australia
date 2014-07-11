@@ -314,7 +314,8 @@
                         </condition_name>
                         <export translate="label">
                             <label>Export</label>
-                            <frontend_type>export</frontend_type>
+                            <frontend_type>button</frontend_type>
+                            <frontend_model>australia/eparcel_rate_export</frontend_model>
                             <sort_order>5</sort_order>
                             <show_in_default>0</show_in_default>
                             <show_in_website>1</show_in_website>
