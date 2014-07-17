@@ -24,6 +24,9 @@
  */
 class Fontis_Australia_Model_Config_CustomerGroups
 {
+    /**
+     * @return array
+     */
     public function toOptionArray()
     {
         $storeId = Mage::app()->getStore()->getId();
@@ -34,7 +37,7 @@ class Fontis_Australia_Model_Config_CustomerGroups
         foreach ($collection as $group) {
             $options[] = array(
                 'value' => $group->getCustomerGroupId(),
-                'label' => $group->getCustomerGroupCode()
+                'label' => $group->getCustomerGroupCode(),
             );
         }
 

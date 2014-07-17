@@ -20,7 +20,7 @@
             "php_max":"6.0.0",
             "stability":"stable",
             "license_uri":"http://opensource.org/licenses/osl-3.0.php",
-            "summary":"Broad extension that provides functionality for Australian stores.",
+            "summary":"Adds Australian states and territories, support for Australia Post and eParcel shipping, direct deposit and BPAY payment methods, and postcode autocomplete for Australian stores.",
             "content":[
                 {
                     "type":"magecommunity",

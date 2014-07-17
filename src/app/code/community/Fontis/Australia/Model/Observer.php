@@ -39,4 +39,28 @@ class Fontis_Australia_Model_Observer
             }
         }
     }
+
+    /**
+     * The magento.css file is moved into the skin directory in Magento 1.7 so
+     * we need to look for it in both the new and old locations for backwards
+     * compatibility.
+     *
+     * @param $observer
+     */
+    public function addMagentoCss($observer)
+    {
+        if (Mage::helper('australia/address')->isAddressValidationEnabled()) {
+            /** @var Mage_Core_Model_Layout $layout */
+            $layout = Mage::getSingleton('core/layout');
+            /** @var Mage_Page_Block_Html_Head $head */
+            $head = $layout->getBlock('head');
+            $skinBaseDir = Mage::getDesign()->getSkinBaseDir(array('_package' => 'base'));
+            $magentoCss = 'prototype/windows/themes/magento.css';
+            if (file_exists($skinBaseDir . DS . 'lib' . DS . $magentoCss)) {
+                $head->addCss('lib' . DS . $magentoCss);
+            } else {
+                $head->addItem('js_css', $magentoCss);
+            }
+        }
+    }
 }

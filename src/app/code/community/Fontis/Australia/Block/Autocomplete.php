@@ -21,6 +21,9 @@
  */
 class Fontis_Australia_Block_Autocomplete extends Mage_Core_Block_Abstract
 {
+    /**
+     * @return string
+     */
     protected function _toHtml()
     {
         $html = '';

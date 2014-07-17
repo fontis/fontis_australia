@@ -1,0 +1,5 @@
+{
+    "require": {
+        "fontis/auspost-api-php": "1.x"
+    }
+}

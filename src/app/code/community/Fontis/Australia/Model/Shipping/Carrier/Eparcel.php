@@ -31,7 +31,14 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
     extends Mage_Shipping_Model_Carrier_Abstract
     implements Mage_Shipping_Model_Carrier_Interface
 {
+    /**
+     * @var string
+     */
     protected $_code = 'eparcel';
+
+    /**
+     * @var string
+     */
     protected $_default_condition_name = 'package_weight';
 
     protected $_conditionNames = array();
@@ -115,6 +122,10 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
         return $result;
     }
 
+    /**
+     * @param array $rate
+     * @return mixed
+     */
     protected function _getChargeCode($rate)
     {
         /* Is this customer is in a ~business~ group ? */
@@ -150,34 +161,32 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
         return Mage::getResourceModel('australia/shipping_carrier_eparcel')->getRate($request);
     }
 
-    public function getCode($type, $code='')
+    public function getCode($type, $code = '')
     {
+        $helper = Mage::helper('shipping');
         $codes = array(
-
-            'condition_name'=>array(
-                'package_weight' => Mage::helper('shipping')->__('Weight vs. Destination'),
-                'package_value'  => Mage::helper('shipping')->__('Price vs. Destination'),
-                'package_qty'    => Mage::helper('shipping')->__('# of Items vs. Destination'),
+            'condition_name' => array(
+                'package_weight' => $helper->__('Weight vs. Destination'),
+                'package_value'  => $helper->__('Price vs. Destination'),
+                'package_qty'    => $helper->__('# of Items vs. Destination'),
             ),
-
-            'condition_name_short'=>array(
-                'package_weight' => Mage::helper('shipping')->__('Weight (and above)'),
-                'package_value'  => Mage::helper('shipping')->__('Order Subtotal (and above)'),
-                'package_qty'    => Mage::helper('shipping')->__('# of Items (and above)'),
+            'condition_name_short' => array(
+                'package_weight' => $helper->__('Weight (and above)'),
+                'package_value'  => $helper->__('Order Subtotal (and above)'),
+                'package_qty'    => $helper->__('# of Items (and above)'),
             ),
-
         );
 
         if (!isset($codes[$type])) {
-            throw Mage::exception('Mage_Shipping', Mage::helper('shipping')->__('Invalid Table Rate code type: %s', $type));
+            throw Mage::exception('Mage_Shipping', $helper->__('Invalid Table Rate code type: %s', $type));
         }
 
-        if (''===$code) {
+        if ('' === $code) {
             return $codes[$type];
         }
 
         if (!isset($codes[$type][$code])) {
-            throw Mage::exception('Mage_Shipping', Mage::helper('shipping')->__('Invalid Table Rate code for type %s: %s', $type, $code));
+            throw Mage::exception('Mage_Shipping', $helper->__('Invalid Table Rate code for type %s: %s', $type, $code));
         }
 
         return $codes[$type][$code];
@@ -190,7 +199,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
      */
     public function getAllowedMethods()
     {
-        return array('bestway'=>$this->getConfigData('name'));
+        return array('bestway' => $this->getConfigData('name'));
     }
 
     /*
@@ -231,7 +240,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
     {
         $result = Mage::getModel('shipping/tracking_result');
 
-        foreach($trackings as $t) {
+        foreach ($trackings as $t) {
             $tracking = Mage::getModel('shipping/tracking_result_status');
             $tracking->setCarrier($this->_code);
             $tracking->setCarrierTitle($this->getConfigData('title'));

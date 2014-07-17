@@ -8,9 +8,6 @@
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
  *
  * @category   Fontis
  * @package    Fontis_Australia
@@ -23,7 +20,10 @@
 $order = Mage::getModel('sales/order')->loadByIncrementId($this->getOrderId());
 $payment = $order->getPayment();
 ?>
-<?php if($payment->getMethod() == 'bpay'): ?>
+<?php if ($payment->getMethod() == 'bpay'): ?>
     <?php $data = @unserialize($payment->getAdditionalData()); ?>
-    <?php echo Mage::helper('australia/bpay')->bpayInfoBlock($data['biller_code'], $data['ref']); ?>
+    <?php $child = $this->getChild('fontis.australia.bpay.details'); ?>
+    <?php $child->setBillerCode($data['biller_code']); ?>
+    <?php $child->setRef($data['ref']); ?>
+    <?php echo $child->toHtml(); ?>
 <?php endif; ?>

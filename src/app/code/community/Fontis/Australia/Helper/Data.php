@@ -31,6 +31,8 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
 
     /**
      * Gets the query text for city lookups in the postcode database.
+     *
+     * @return string
      */
     public function getQueryText()
     {
@@ -52,14 +54,20 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
         return $this->_queryText;
     }
 
+    /**
+     * @return string
+     */
     public function getQueryCountry()
     {
         return $this->_getRequest()->getParam('country');
     }
 
+    /**
+     * @return string
+     */
     public function getCitySuggestUrl()
     {
-        return $this->_getUrl('australia/ajax/suggest', array('_secure'=>true));
+        return $this->_getUrl('australia/ajax/suggest', array('_secure' => true));
     }
 
     /**

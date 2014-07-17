@@ -24,6 +24,9 @@
  */
 class Fontis_Australia_Model_Config_ProductAttributes
 {
+    /**
+     * @return array
+     */
     public function toOptionArray() {
         $eav_config = Mage::getModel('eav/config');
         $attributes = $eav_config->getEntityAttributeCodes('catalog_product');

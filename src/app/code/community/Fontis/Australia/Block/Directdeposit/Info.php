@@ -18,7 +18,6 @@
 
 class Fontis_Australia_Block_Directdeposit_Info extends Mage_Payment_Block_Info
 {
-
     protected $_accountName;
     protected $_accountBSB;
     protected $_accountNumber;
@@ -85,7 +84,7 @@ class Fontis_Australia_Block_Directdeposit_Info extends Mage_Payment_Block_Info
     /**
      * Converts serialised additional data into a more usable form.
      *
-     * @return Fontis_Australia_Block_Info_Directdeposit
+     * @return Fontis_Australia_Block_Directdeposit_Info
      */
     protected function _convertAdditionalData()
     {
@@ -103,5 +102,4 @@ class Fontis_Australia_Block_Directdeposit_Info extends Mage_Payment_Block_Info
         }
         return $this;
     }
-
 }

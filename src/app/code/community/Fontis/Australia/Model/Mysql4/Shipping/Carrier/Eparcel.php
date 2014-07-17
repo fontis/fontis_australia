@@ -124,8 +124,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
             $newdata=array();
             Mage::log($select->__toString());
             $row = $read->fetchAll($select);
-            if (!empty($row) && ($j<5))
-            {
+            if (!empty($row) && ($j < 5)) {
                 // have found a result or found nothing and at end of list!
                 foreach ($row as $data) {
                     try {
@@ -157,7 +156,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                             $data['delivery_type'] .= " with TransitCover";
                             $newdata[]=$data;
                         }
-                    } catch(Exception $e) {
+                    } catch (Exception $e) {
                         Mage::log($e->getMessage());
                     }
                 }
@@ -399,6 +398,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
      *
      * @param string $string
      * @param string $separator
+     * @return array
      */
     protected function _getCsvValues($string, $separator=",")
     {
@@ -426,8 +426,12 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
         return $elements;
     }
 
+    /**
+     * @param string $n
+     * @return int
+     */
     protected function _isPositiveDecimalNumber($n)
     {
-        return preg_match ("/^[0-9]+(\.[0-9]*)?$/", $n);
+        return preg_match("/^[0-9]+(\.[0-9]*)?$/", $n);
     }
 }

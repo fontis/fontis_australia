@@ -3,10 +3,7 @@
  * @package    Fontis_Australia
  */
 
-
-
-class Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Csv
-extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
+class Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Csv extends Fontis_Australia_Model_Shipping_Carrier_Common_Export_Csv_Abstract
 {
     const ENCLOSURE = '"';
     const DELIMITER = ',';
@@ -20,6 +17,7 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
      *
      * @param $orders List of orders of type Mage_Sales_Model_Order or order ids to export.
      * @return String The name of the written csv file in var/export
+     * @throws Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Exception
      */
     public function exportOrders($orders)
     {
@@ -42,13 +40,17 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
 
             foreach ($orderItems as $item) {
                 /* Check item is valid */
-                if ( $item->isDummy() ) continue;
+                if ($item->isDummy()) {
+                    continue;
+                }
 
                 /* Calculate item quantity */
                 $itemQuantity = $item->getData('qty_ordered') - $item->getData('qty_canceled') - $item->getData('qty_shipped');
 
                 /* Check item quantity */
-                if ( $itemQuantity == 0 ) continue;
+                if ($itemQuantity == 0) {
+                    continue;
+                }
 
                 /*
                  * Populate Good Record
@@ -126,6 +128,11 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
         return $parcel;
     }
 
+    /**
+     * @param Doghouse_Australia_Eparcel $eparcel
+     * @param Doghouse_Australia_Eparcel_Parcel $parcel
+     * @return bool
+     */
     protected function closeParcel(Doghouse_Australia_Eparcel $eparcel, Doghouse_Australia_Eparcel_Parcel $parcel)
     {
         $articleRecordClass = (bool) $this->getDefault('parcel/use_cubicweight') ?

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Fontis Australia Extension
  *
@@ -13,9 +12,15 @@
  * @category   Fontis
  * @package    Fontis_Australia
  * @author     Chris Norton
+ * @author     Ronilo Carr
+ * @author     Thai Phan
  * @copyright  Copyright (c) 2014 Fontis Pty. Ltd. (http://www.fontis.com.au)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+use Auspost\Common\Auspost;
+use Auspost\Postage\PostageClient;
+use Auspost\Postage\Enum\ServiceCode;
+use Auspost\Postage\Enum\ServiceOption;
 
 /**
  * Australia Post shipping model
@@ -23,363 +28,350 @@
  * @category   Fontis
  * @package    Fontis_Australia
  */
-class Fontis_Australia_Model_Shipping_Carrier_Australiapost extends Mage_Shipping_Model_Carrier_Abstract implements Mage_Shipping_Model_Carrier_Interface
+class Fontis_Australia_Model_Shipping_Carrier_Australiapost
+    extends Mage_Shipping_Model_Carrier_Abstract
+    implements Mage_Shipping_Model_Carrier_Interface
 {
+    const EXTRA_COVER_LIMIT = 5000;
 
     protected $_code = 'australiapost';
 
+    /** @var PostageClient */
+    protected $_client = null;
+
+    /** @var Mage_Shipping_Model_Rate_Result  */
+    protected $_result = null;
+
+    public function __construct()
+    {
+        /** @var Fontis_Australia_Helper_Australiapost $helper */
+        $helper = Mage::helper('australia/australiapost');
+        $apiKey = $this->getConfigData('api_key');
+        $config = array();
+
+        if ($helper->isAustraliaPostDeveloperMode()) {
+            $config = array(
+                'developer_mode' => true
+            );
+        } else if ($apiKey) {
+            $config = array(
+                'auth_key' => Mage::helper('core')->decrypt($apiKey)
+            );
+        } else {
+            Mage::log('You need a valid API key in order to use this feature.', null, 'fontis_australia.log');
+        }
+
+        if (!empty($config)) {
+            $this->_client = Auspost::factory($config)->get('postage');
+        }
+
+        $this->_result = Mage::getModel('shipping/rate_result');
+    }
+
     /**
-     * Collects the shipping rates for Australia Post from the DRC API.
+     * Collects the shipping rates for Australia Post from the REST API.
      *
-     * @param Mage_Shipping_Model_Rate_Request $data
-     * @return Mage_Shipping_Model_Rate_Result
+     * @param Mage_Shipping_Model_Rate_Request $request
+     * @return Mage_Shipping_Model_Rate_Result|bool
      */
     public function collectRates(Mage_Shipping_Model_Rate_Request $request)
     {
-        $allowedShippingMethods = explode(',', $this->getConfigData('shipping_methods'));
-
         // Check if this method is active
         if (!$this->getConfigFlag('active')) {
             return false;
         }
 
         // Check if this method is even applicable (shipping from Australia)
-        $origCountry = Mage::getStoreConfig('shipping/origin/country_id', $this->getStore());
-
-        if ($origCountry != "AU") {
+        $origCountry = Mage::getStoreConfig('shipping/origin/country_id', $request->getStore());
+        if ($origCountry != 'AU') {
             return false;
         }
 
-        $result = Mage::getModel('shipping/rate_result');
+        if ($this->_client == null) {
+            return false;
+        }
 
-        // TODO: Add some more validations
-        $frompcode = Mage::getStoreConfig('shipping/origin/postcode', $this->getStore());
-        $topcode = $request->getDestPostcode();
+        $fromPostcode = (int)Mage::getStoreConfig('shipping/origin/postcode', $this->getStore());
+        $toPostcode = (int)$request->getDestPostcode();
 
         if ($request->getDestCountryId()) {
             $destCountry = $request->getDestCountryId();
         } else {
-            $destCountry = "AU";
+            $destCountry = 'AU';
         }
 
-        // Here we get the weight (and convert it to grams) and set some
-        // sensible defaults for other shipping parameters.
-        $sweight = (int) ((float) $request->getPackageWeight() * (float) $this->getConfigData('weight_units'));
-        $sheight = $swidth = $slength = 100;
-        $shipping_num_boxes = 1;
+        $sweight = (int)$request->getPackageWeight();
+        /** @var Fontis_Australia_Helper_Australiapost $helper */
+        $helper = Mage::helper('australia/australiapost');
+        $sheight = (int)$helper->getAttribute($request, 'height');
+        $slength = (int)$helper->getAttribute($request, 'length');
+        $swidth = (int)$helper->getAttribute($request, 'width');
+        $extraCover = $request->getPackageValue() > self::EXTRA_COVER_LIMIT ? self::EXTRA_COVER_LIMIT : (int)$request->getPackageValue();
 
-        // Switch between domestic and international shipping methods based
-        // on destination country.
-        if ($destCountry == "AU") {
-            //============= Domestic Shipping ==================
-            $shipping_methods = array('STANDARD', 'EXPRESS');
+        $config = array(
+            'from_postcode' => $fromPostcode,
+            'to_postcode' => $toPostcode,
+            'length' => $slength,
+            'width' => $swidth,
+            'height' => $sheight,
+            'weight' => $sweight,
+            'country_code' => $destCountry
+        );
+        $this->_getQuotes($extraCover, $config);
 
-            foreach ($shipping_methods as $shipping_method) {
-                $drc = $this->_drcRequest($shipping_method, $frompcode, $topcode, $destCountry, $sweight, $slength, $swidth, $sheight, $shipping_num_boxes);
-
-                if ($drc['err_msg'] == 'OK') {
-                    // Check for registered post activation. If so, add extra options
-                    if ($this->getConfigData('registered_post')) {
-	                $title = $this->getConfigData('name') . " " . ucfirst(strtolower($shipping_method));
-	
-	                $charge = $drc['charge'];
-	                $charge += $this->getConfigData('registered_post_charge');
-	
-	                if ($this->getConfigData('person_to_person')) {
-	                    $charge += 5.50;
-	                } elseif ($this->getConfigData('delivery_confirmation')) {
-	                     $charge += 1.85;
-	                }
-	
-	                $method = $this->_createMethod($request, $shipping_method, $title, $charge, $charge);
-	                $result->append($method);
-	
-	                // Insurance only covers up to $5000 worth of goods.
-	                $packageValue = ($request->getPackageValue() > 5000) ? 5000 : $request->getPackageValue();
-	
-	                // Insurance cost is $1.25 per $100 or part thereof. First $100 is
-	                // included in normal registered post costs.
-	                $insurance = (ceil($packageValue / 100) - 1) * 1.25;
-	
-	                // Only add a new method if the insurance is different
-	                if ($insurance > 0) {
-	                    $charge += $insurance;
-	
-	                    $title = $this->getConfigData('name') . " " . ucfirst(strtolower($shipping_method)) . ' with Extra Cover';
-	                    $method = $this->_createMethod($request, $shipping_method . '_EC', $title, $charge, $charge);
-	                    $result->append($method);
-	                }
-                    } else {
-                        $title = $this->getConfigData('name') . " " . ucfirst(strtolower($shipping_method));
-
-                        $method = $this->_createMethod($request, $shipping_method, $title, $drc['charge'], $drc['charge']);
-                        $result->append($method);
-                    }
-                }
-            }
-        } else {
-            //============= International Shipping ==================
-            // International shipping options are highly dependent upon whether
-            // or not you are using registered post.
-
-            if ($this->getConfigData('registered_post')) {
-                //============= Registered Post ================
-                // Registered Post International
-                // Same price as Air Mail, plus $5. Extra cover is not available.
-                // A weight limit of 2kg applies.
-//				if($sweight <= 2000)
-                if (in_array('AIR', $allowedShippingMethods) && $sweight <= 2000) {
-                    $drc = $this->_drcRequest('AIR', $frompcode, $topcode, $destCountry, $sweight, $slength, $swidth, $sheight, $shipping_num_boxes);
-
-                    if ($drc['err_msg'] == 'OK') {
-                        $title = $this->getConfigData('name') . ' Registered Post International';
-
-                        // RPI is another 5 dollars.
-                        $charge = $drc['charge'] + 5;
-
-                        if ($this->getConfigData('delivery_confirmation')) {
-                            $charge += 3.30;
-                        }
-
-                        $charge += $this->getConfigData('registered_post_charge');
-
-                        $method = $this->_createMethod($request, 'AIR', $title, $charge, $charge);
-                        $result->append($method);
-                    }
-                }
-
-                if (in_array('EPI', $allowedShippingMethods)) {
-                    // Express Post International
-                    $drc = $this->_drcRequest('EPI', $frompcode, $topcode, $destCountry, $sweight, $slength, $swidth, $sheight, $shipping_num_boxes);
-
-                    if ($drc['err_msg'] == 'OK') {
-                        $title = $this->getConfigData('name') . ' Express Post International';
-
-                        $charge = $drc['charge'];
-
-                        if ($this->getConfigData('delivery_confirmation')) {
-                            $charge += 3.30;
-                        }
-
-                        $charge += $this->getConfigData('registered_post_charge');
-
-                        $method = $this->_createMethod($request, 'EPI', $title, $charge, $charge);
-                        $result->append($method);
-
-                        // Insurance only covers up to $5000 worth of goods.
-                        $packageValue = ($request->getPackageValue() > 5000) ? 5000 : $request->getPackageValue();
-
-                        // Insurance cost is $2.25 per $100 or part thereof. First $100 is $8.45.
-                        $insurance = 8.45 + (ceil($packageValue / 100) - 1) * 1.25;
-                        $charge += $insurance;
-
-                        $title = $this->getConfigData('name') . ' Express Post International with Extra Cover';
-                        $method = $this->_createMethod($request, 'EPI-EC', $title, $charge, $charge);
-                        $result->append($method);
-                    }
-
-                    // Express Courier International
-                    // TODO: Create a table for this method.
-                }
-            } else {
-                if (in_array('SEA', $allowedShippingMethods)) {
-                    //============= Standard Post ================
-                    // Sea Shipping
-                    $drc = $this->_drcRequest('SEA', $frompcode, $topcode, $destCountry, $sweight, $slength, $swidth, $sheight, $shipping_num_boxes);
-
-                    if ($drc['err_msg'] == 'OK') {
-                        $title = $this->getConfigData('name') . ' Sea Mail';
-
-                        $method = $this->_createMethod($request, 'SEA', $title, $drc['charge'], $drc['charge']);
-                        $result->append($method);
-                    }
-                }
-
-
-                if (in_array('AIR', $allowedShippingMethods)) {
-                    // Air Mail
-                    $drc = $this->_drcRequest('AIR', $frompcode, $topcode, $destCountry, $sweight, $slength, $swidth, $sheight, $shipping_num_boxes);
-
-                    if ($drc['err_msg'] == 'OK') {
-                        $title = $this->getConfigData('name') . ' Air Mail';
-
-                        $method = $this->_createMethod($request, 'AIR', $title, $drc['charge'], $drc['charge']);
-                        $result->append($method);
-                    }
-                }
-
-                if (in_array('EPI', $allowedShippingMethods)) {
-                    // Express Post International
-                    $drc = $this->_drcRequest('EPI', $frompcode, $topcode, $destCountry, $sweight, $slength, $swidth, $sheight, $shipping_num_boxes);
-
-                    if ($drc['err_msg'] == 'OK') {
-                        $title = $this->getConfigData('name') . ' Express Post International';
-
-                        $method = $this->_createMethod($request, 'EPI', $title, $drc['charge'], $drc['charge']);
-                        $result->append($method);
-                    }
-                }
-
-                // Express Courier International
-                // TODO: Create a table for this method.
-            }
+        $_result = $this->_result->asArray();
+        if (empty($_result)) {
+            return false;
         }
-
-        return $result;
+        return $this->_result;
     }
 
-    protected function _createMethod($request, $method_code, $title, $price, $cost)
+    protected function _getQuotes($extraCover, $config)
     {
+        $destCountry = $config['country_code'];
+        try {
+            if ($destCountry == 'AU') {
+                $services = $this->_client->listDomesticParcelServices($config);
+            } else {
+                $services = $this->_client->listInternationalParcelServices($config);
+            }
+        } catch (Exception $e) {
+            Mage::logException($e);
+            return;
+        }
+
+        // TODO: Clean up this logic
+        $allowedMethods = $this->getAllowedMethods();
+        $extraCoverParent = $this->getCode('extra_cover');
+        foreach ($services['services']['service'] as $service) {
+            $serviceCode = $service['code']; // e.g. AUS_PARCEL_REGULAR
+
+            if (in_array($serviceCode, $allowedMethods)) {
+                $serviceName = $service['name']; // e.g. Parcel Post
+                $servicePrice = $service['price'];
+
+                // Just add the shipping method if the call to Australia Post
+                // returns no options for that method
+                if (
+                    !isset($service['options']['option']) &&
+                    $this->_isAvailableShippingMethod($serviceName, $destCountry)
+                ) {
+                    $method = $this->createMethod($serviceCode, $serviceName, $servicePrice);
+                    $this->_result->append($method);
+                    // If a shipping method has a bunch of options, we will have to
+                    // create a specific method for each of the variants
+                } else {
+                    $serviceOption = $service['options']['option'];
+
+                    // Unlike domestic shipping methods where the "default"
+                    // method is listed as simply another service option (this
+                    // allows us to simply loop through each one), we have to
+                    // extrapolate the default international shipping method
+                    // from what we know about the service itself
+                    if (
+                        $destCountry != 'AU' &&
+                        $this->_isAvailableShippingMethod($serviceName, $destCountry)
+                    ) {
+                        $method = $this->createMethod($serviceCode, $serviceName, $servicePrice);
+                        $this->_result->append($method);
+                    }
+
+                    // Checks to see if the API has returned either a single
+                    // service option or an array of them. If it is a single
+                    // option then turn it into an array.
+                    if (isset($serviceOption['name'])) {
+                        $serviceOption = array($serviceOption);
+                    }
+
+                    foreach ($serviceOption as $option) {
+                        $serviceOptionName = $option['name'];
+                        $serviceOptionCode = $option['code'];
+
+                        $config = array_merge($config, array(
+                            'service_code' => $serviceCode,
+                            'option_code' => $serviceOptionCode,
+                            'extra_cover' => $extraCover
+                        ));
+                        try {
+                            if ($destCountry == 'AU') {
+                                $postage = $this->_client->calculateDomesticParcelPostage($config);
+                            } else {
+                                $postage = $this->_client->calculateInternationalParcelPostage($config);
+                            }
+                        } catch (Exception $e) {
+                            continue;
+                        }
+                        $servicePrice = $postage['postage_result']['total_cost'];
+
+                        /** @var Fontis_Australia_Helper_Clickandsend $clickandsendHelper */
+                        $clickandsendHelper = Mage::helper('australia/clickandsend');
+
+                        // Create a shipping method with only the top-level options
+                        $_finalCode = $serviceCode . '_' . $serviceOptionCode;
+                        $_finalName = $serviceName . ' (' . $serviceOptionName . ')';
+                        if (
+                            $this->_isAvailableShippingMethod($_finalName, $destCountry) &&
+                            // The following shipping methods and shipping options don't work with
+                            // the Click & Send CSV import service.
+                            !(
+                                in_array($serviceOptionCode, $clickandsendHelper->getDisallowedServiceOptions()) &&
+                                in_array($serviceCode, $clickandsendHelper->getDisallowedServiceCodes()) &&
+                                $clickandsendHelper->isClickAndSendEnabled() &&
+                                $clickandsendHelper->isFilterShippingMethods()
+                            )
+                        ) {
+                            $method = $this->createMethod($_finalCode, $_finalName, $servicePrice);
+                            $this->_result->append($method);
+                        }
+
+                        // Add the extra cover options (these are suboptions of
+                        // the top-level options)
+                        if (
+                            array_key_exists($serviceOptionCode, $extraCoverParent) &&
+                            // The Click & Send CSV import doesn't work with Extra Cover so we
+                            // will need to disable the option if it has been activated. The
+                            // fields are there in the specification but I couldn't get it to
+                            // import at all.
+                            !(
+                                $clickandsendHelper->isClickAndSendEnabled() &&
+                                $clickandsendHelper->isFilterShippingMethods()
+                            )
+                        ) {
+                            try {
+                                if ($destCountry == 'AU') {
+                                    $config = array_merge($config, array(
+                                        'suboption_code' => ServiceOption::AUS_SERVICE_OPTION_EXTRA_COVER,
+                                    ));
+                                    $postageWithExtraCover = $this->_client->calculateDomesticParcelPostage($config);
+                                } else {
+                                    $postageWithExtraCover = $this->_client->calculateInternationalParcelPostage($config);
+                                }
+                                unset($config['suboption_code']);
+                            } catch (Exception $e) {
+                                continue;
+                            }
+                            if ($serviceOptionName == 'Signature on Delivery') {
+                                $serviceOptionName = $serviceOptionName . ' + Extra Cover';
+                            } else {
+                                $serviceOptionName = 'Extra Cover';
+                            }
+                            if ($serviceOptionCode == ServiceOption::AUS_SERVICE_OPTION_SIGNATURE_ON_DELIVERY) {
+                                $serviceOptionCode = 'FULL_PACKAGE';
+                            } else {
+                                $serviceOptionCode = 'EXTRA_COVER';
+                            }
+                            $servicePrice = $postageWithExtraCover['postage_result']['total_cost'];
+
+                            $_finalCode = $serviceCode . '_' . $serviceOptionCode;
+                            $_finalName = $serviceName . ' (' . $serviceOptionName . ')';
+                            if ($this->_isAvailableShippingMethod($_finalName, $destCountry)) {
+                                $method = $this->createMethod($_finalCode, $_finalName, $servicePrice);
+                                $this->_result->append($method);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Determines whether a shipping method should be added to the result.
+     *
+     * @param string $name Name of the shipping method
+     * @param string $destCountry Country code
+     * @return bool
+     */
+    protected function _isAvailableShippingMethod($name, $destCountry)
+    {
+        return $this->_isOptionVisibilityRequired($name, $destCountry) &&
+            !$this->_isOptionVisibilityNever($name, $destCountry);
+    }
+
+    /**
+     * Checks whether a shipping method option has the visibility "never"
+     *
+     * @param string $name Name of the shipping method
+     * @param string $destCountry Country code
+     * @return bool
+     */
+    protected function _isOptionVisibilityNever($name, $destCountry)
+    {
+        $suboptions = $this->_getOptionVisibilities($destCountry, Fontis_Australia_Model_Shipping_Carrier_Australiapost_Source_Visibility::NEVER);
+        foreach ($suboptions as $suboption) {
+            if (stripos($name, $suboption) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether a shipping method has the visibility "required"
+     *
+     * @param string $name Name of the shipping method
+     * @param string $destCountry Country code
+     * @return bool
+     */
+    protected function _isOptionVisibilityRequired($name, $destCountry)
+    {
+        $suboptions = $this->_getOptionVisibilities($destCountry, Fontis_Australia_Model_Shipping_Carrier_Australiapost_Source_Visibility::REQUIRED);
+        foreach ($suboptions as $suboption) {
+            if (stripos($name, $suboption) === false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns an array of shipping method options, e.g. "signature on
+     * delivery", that have a certain visibility, e.g. "never"
+     *
+     * @param string $destCountry Destination country code
+     * @param int $visibility Shipping method option visibility
+     * @return array
+     */
+    protected function _getOptionVisibilities($destCountry, $visibility)
+    {
+        /** @var Fontis_Australia_Helper_Australiapost $helper */
+        $helper = Mage::helper('australia/australiapost');
+        $suboptions = array();
+        if ($helper->getPickUp() == $visibility && $destCountry != 'AU') {
+            $suboptions[] = 'pick up';
+        }
+        if ($helper->getExtraCover() == $visibility) {
+            $suboptions[] = 'extra cover';
+        }
+        if ($helper->getSignatureOnDelivery() == $visibility && $destCountry == 'AU') {
+            $suboptions[] = 'signature on delivery';
+        }
+        return $suboptions;
+    }
+
+    /**
+     * Simplifies creating a new shipping method.
+     *
+     * @param string $code
+     * @param string $title
+     * @param string $price
+     * @return Mage_Shipping_Model_Rate_Result_Method
+     */
+    protected function createMethod($code, $title, $price)
+    {
+        /** @var Mage_Shipping_Model_Rate_Result_Method $method */
         $method = Mage::getModel('shipping/rate_result_method');
 
-        $method->setCarrier('australiapost');
+        $method->setCarrier($this->_code);
         $method->setCarrierTitle($this->getConfigData('title'));
 
-        $method->setMethod($method_code);
+        $method->setMethod($code);
         $method->setMethodTitle($title);
 
         $method->setPrice($this->getFinalPriceWithHandlingFee($price));
-        $method->setCost($cost);
 
         return $method;
     }
-
-    protected function _curl_get_file_contents($url)
-    {
-        $c = curl_init();
-        curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($c, CURLOPT_URL, $url);
-        $contents = curl_exec($c);
-        curl_close($c);
-
-        if ($contents) {
-            return $contents;
-        } else {
-            return false;
-        }
-    }
-
-    protected function _drcRequest($service, $fromPostCode, $toPostCode, $destCountry, $weight, $length, $width, $height, $num_boxes)
-	{
-            // Construct the appropriate URL and send all the information
-            // to the Australia Post DRC.
-
-            // don't make a call if the postcodes are not populated.
-            if(is_null($fromPostCode) || is_null($toPostCode)) {
-                return array('err_msg' => 'One of To or From Postcodes are missing');
-            }
-
-            /**
-             * Lucas van Staden @ doghouse media (lucas@dhmedia.com.au)
-             * Add a drc call cache to session. (valid for 1 hour)
-             * The call to drc is made at least 3-4 times, using the same data (ugh)
-             *  - Add to cart (sometimes * 2)
-             *  - Checkout * 2
-             *
-             * Create a lookup cache based on FromPostcode->ToPostcode combination, and re-use cached data
-             * The end result will kill lookups in checkout process, as it was actually done at cart, which will speed checkout up.
-             */
-
-            $drcCache = Mage::getSingleton('checkout/session')->getDrcCache();
-            if(!$drcCache) {
-                $drcCache = array();
-            } else {
-                // wrap it in a try block, s it is used durng checkout.
-                // prevents any mistake from stopping checkout as a new lookup will be done.
-                try {
-                    $time = time();
-                    if($this->getConfigFlag('cache')
-                            && array_key_exists($fromPostCode, $drcCache)
-                            && array_key_exists($toPostCode, $drcCache[$fromPostCode])
-                            && $time - $drcCache[$fromPostCode][$toPostCode]['timestamp'] < 3600) {
-                        if ($this->getConfigFlag('debug')) {
-                            Mage::log('Using cached drc lookup for ' . $fromPostCode . '/' . $toPostCode, null, 'fontis_australia.log');
-                        }
-                        return $drcCache[$fromPostCode][$toPostCode]['result'];
-                    }
-                } catch (Exception $e) {
-                    mage::logException($e);
-                }
-            }
-
-            $url = "http://drc.edeliver.com.au/ratecalc.asp?" .
-			"Pickup_Postcode=" . rawurlencode($fromPostCode) .
-			"&Destination_Postcode=" . rawurlencode($toPostCode) .
-			"&Country=" . rawurlencode($destCountry) .
-			"&Weight=" . rawurlencode($weight) .
-			"&Service_Type=" . rawurlencode($service) .
-			"&Height=" . rawurlencode($height) .
-			"&Width=" . rawurlencode($width) .
-			"&Length=" . rawurlencode($length) .
-			"&Quantity=" . rawurlencode($num_boxes);
-
-        if(extension_loaded('curl'))
-        {
-
-            if ($this->getConfigFlag('debug')) {
-                Mage::log('Using curl', null, 'fontis_australia.log');
-            }
-            try {
-                // use CURL rather than php fopen url wroppers.
-                // curl is faster.
-                // see http://stackoverflow.com/questions/555523/file-get-contents-vs-curl-what-has-better-performance
-                // and do it the 'magento way'
-                // @author Lucas van Staden from Doghouse Media (lucas@dhmedia.com.au)
-                $curl = new Varien_Http_Adapter_Curl();
-                $curl->setConfig(array(
-                        'timeout'   => 15    //Timeout in no of seconds
-                 ));
-                $curl->write(Zend_Http_Client::GET, $url);
-                $curlData = $curl->read();
-                $drc_result = Zend_Http_Response::extractBody($curlData);
-                $curl->close();
-            } catch(Exception $e) {
-                Mage::log($e);
-                $drc_result = array();
-                $drc_result['err_msg'] = 'FAIL';
-            }
-
-            $drc_result = explode("\n",$drc_result);
-            //clean up array
-            $drc_result = array_map('trim', $drc_result);
-            $drc_result = array_filter($drc_result);
-
-        }
-        else if(ini_get('allow_url_fopen'))
-        {
-            if ($this->getConfigFlag('debug')) {
-                Mage::log('Using fopen URL wrappers', null, 'fontis_australia.log');
-            }
-
-            $drc_result = file($url);
-        }
-        else
-        {
-            Mage::log('No download method available, could not contact DRC!', null, 'fontis_australia.log');
-            $a = array();
-            $a['err_msg'] = 'FAIL';
-            return $a;
-        }
-        Mage::log("DRC result: " . print_r($drc_result,true), null, 'fontis_australia.log');
-
-		$result = array();
-		foreach($drc_result as $vals)
-		{
-			$tokens = explode("=", $vals);
-			if(isset($tokens[1])) {
-    			$result[$tokens[0]] = trim($tokens[1]);
-    	    } else {
-    	        return array('err_msg' => 'Parsing error on Australia Post results');
-    	    }
-		}
-
-                // save the drc data to lookup cache, with a timestamp.
-                if(is_array($drcCache)){
-                    $drcCache[$fromPostCode][$toPostCode] = array('result'=>$result,'timestamp'=>time());
-                    Mage::getSingleton('checkout/session')->setDrcCache($drcCache);
-                }
-		return $result;
-	}
 
     /**
      * Get allowed shipping methods
@@ -388,21 +380,57 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost extends Mage_Shippin
      */
     public function getAllowedMethods()
     {
-        return array('australiapost' => $this->getConfigData('name'));
+        return explode(',', $this->getConfigData('allowed_methods'));
     }
 
-    public function getAllShippingMethods()
+    /**
+     * Returns an associative array of shipping method codes.
+     *
+     * @param string $type
+     * @param string $code
+     * @return array|bool
+     */
+    public function getCode($type, $code='')
     {
-        $shipping_methods = array(
-            'STANDARD' => 'Registered post',
-            'SEA' => 'Sea Mail',
-            'AIR' => 'Air Mail',
-            'EPI' => 'Express Post International',
+        /** @var Fontis_Australia_Helper_Data $helper */
+        $helper = Mage::helper('australia');
+        $codes = array(
+            'services' => array(
+                'INTL_SERVICE_AIR_MAIL'             => $helper->__('Air Mail'),
+                'AUS_PARCEL_COURIER'                => $helper->__('Courier Post'),
+                'AUS_PARCEL_COURIER_SATCHEL_MEDIUM' => $helper->__('Courier Post Assessed Medium Satchel'),
+                'INTL_SERVICE_ECI_D'                => $helper->__('Express Courier International Documents'),
+                'INTL_SERVICE_ECI_M'                => $helper->__('Express Courier International Merchandise'),
+                'INTL_SERVICE_ECI_PLATINUM'         => $helper->__('Express Courier International Platinum'),
+                'AUS_PARCEL_EXPRESS'                => $helper->__('Express Post'),
+                'INTL_SERVICE_EPI'                  => $helper->__('Express Post International'),
+                'INTL_SERVICE_EPI_B4'               => $helper->__('Express Post International B4'),
+                'INTL_SERVICE_EPI_C5'               => $helper->__('Express Post International C5'),
+                'AUS_LETTER_EXPRESS_SMALL'          => $helper->__('Express Post Small Envelope'),
+                'AUS_LETTER_REGULAR_LARGE'          => $helper->__('Large Letter'),
+                'INTL_SERVICE_PTI'                  => $helper->__('Pack and Track International'),
+                'AUS_PARCEL_REGULAR'                => $helper->__('Parcel Post'),
+                'INTL_SERVICE_RPI'                  => $helper->__('Registered Post International'),
+                'INTL_SERVICE_RPI_B4'               => $helper->__('Registered Post International B4'),
+                'INTL_SERVICE_RPI_DLE'              => $helper->__('Registered Post International DLE'),
+                'INTL_SERVICE_SEA_MAIL'             => $helper->__('Sea Mail'),
+            ),
+            'extra_cover' => array(
+                'AUS_SERVICE_OPTION_SIGNATURE_ON_DELIVERY'       => $helper->__('Signature on Delivery'),
+                'AUS_SERVICE_OPTION_COURIER_EXTRA_COVER_SERVICE' => $helper->__('Standard cover')
+            )
         );
 
-        // TODO: Create a table for this method.
+        if (!isset($codes[$type])) {
+            return false;
+        } elseif (''===$code) {
+            return $codes[$type];
+        }
 
-        return $shipping_methods;
+        if (!isset($codes[$type][$code])) {
+            return false;
+        } else {
+            return $codes[$type][$code];
+        }
     }
-
 }

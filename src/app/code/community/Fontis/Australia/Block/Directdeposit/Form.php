@@ -18,11 +18,9 @@
 
 class Fontis_Australia_Block_Directdeposit_Form extends Mage_Payment_Block_Form
 {
-
     protected function _construct()
     {
         parent::_construct();
         $this->setTemplate('fontis/australia/payment/directdeposit/form.phtml');
     }
-
 }

@@ -37,6 +37,14 @@
     <checkout_onepage_index>
         <reference name="head">
             <action method="addCss" ifconfig="fontis_australia/postcode_autocomplete/enabled"><stylesheet>fontis/australia/css/postcode-autocomplete.css</stylesheet></action>
+            <action method="addJs" ifconfig="fontis_australia/address_validation/enabled"><script>prototype/window.js</script></action>
+            <action method="addCss" ifconfig="fontis_australia/address_validation/enabled"><stylesheet>fontis/australia/css/opcheckout.css</stylesheet></action>
+        </reference>
+        <reference name="content">
+            <block type="core/template" name="fontis.australia.checkout.onepage" template="fontis/australia/checkout/onepage.phtml">
+                <block type="core/template" name="fontis.australia.address.suggestion" template="fontis/australia/checkout/address/suggestion.phtml"/>
+                <block type="core/template" name="fontis.australia.address.failure" template="fontis/australia/checkout/address/failure.phtml"/>
+            </block>
         </reference>
         <reference name="content">
             <block type="core/template" name="fontis_australia_autocomplete" template="fontis/australia/postcode-checkout.phtml"/>
@@ -44,7 +52,9 @@
     </checkout_onepage_index>
     <checkout_onepage_success>
         <reference name="checkout.success">
-            <block type="checkout/onepage_success" name="fontis.australia.bpay.success" template="fontis/australia/payment/bpay/success.phtml"/>
+            <block type="checkout/onepage_success" name="fontis.australia.bpay.success" template="fontis/australia/payment/bpay/success.phtml">
+                <block type="core/template" name="fontis.australia.bpay.details" template="fontis/australia/payment/bpay/details.phtml"/>
+            </block>
             <block type="checkout/onepage_success" name="fontis.australia.directdeposit.success" template="fontis/australia/payment/directdeposit/success.phtml"/>
         </reference>
     </checkout_onepage_success>
