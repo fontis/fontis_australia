@@ -31,7 +31,7 @@ class Fontis_Australia_Block_Autocomplete extends Mage_Core_Block_Abstract
 
         // Get the text that the customer has entered as a query.
         $results = $this->helper('australia')->getPostcodeAutocompleteResults();
-        if (empty($results)) {
+        if (!is_array($results)) {
             return $html;
         }
 
