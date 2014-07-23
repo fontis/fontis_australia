@@ -40,7 +40,9 @@
         var completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", citySuggestUrl, {
             afterUpdateElement: updateAddressBilling,
             minChars: 2,
-            parameters: 'country=' + $F('billing:country_id')
+            callback: function (inputElement, queryString) {
+                return queryString + '&' +  'country=' + $F('billing:country_id');
+            }
         });
     }
 
@@ -64,7 +66,9 @@
         var completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", citySuggestUrl, {
             afterUpdateElement: updateAddressShipping,
             minChars: 2,
-            parameters: 'country=' + $F('shipping:country_id')
+            callback: function (inputElement, queryString) {
+                return queryString + '&' +  'country=' + $F('shipping:country_id');
+            }
         });
     }
     </script>
