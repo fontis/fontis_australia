@@ -20,7 +20,7 @@ $installer = $this;
 $installer->startSetup();
 
 $installer->run(
-    "ALTER TABLE `australia_eparcel`"
+    "ALTER TABLE {$this->getTable('australia_eparcel')}"
     . " ADD `charge_code_individual` VARCHAR( 50 ) NULL DEFAULT NULL,"
     . " ADD `charge_code_business` VARCHAR( 50 ) NULL DEFAULT NULL"
 );
