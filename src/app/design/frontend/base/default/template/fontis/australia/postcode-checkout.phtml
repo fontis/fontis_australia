@@ -8,77 +8,64 @@
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
  *
  * @category   Fontis
  * @package    Fontis_Australia
  * @author     Chris Norton
- * @copyright  Copyright (c) 2008 Fontis Pty. Ltd. (http://www.fontis.com.au)
+ * @copyright  Copyright (c) 2014 Fontis Pty. Ltd. (http://www.fontis.com.au)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
-<script type="text/javascript">
+<?php if (Mage::helper('australia')->isPostcodeAutocompleteEnabled()): ?>
+    <script type="text/javascript">
+    var citySuggestUrl = '<?php echo $this->helper('australia')->getCitySuggestUrl(); ?>';
 
-//============ Billing ============//
-var autocomplete_city_billing = new Element('div', { id: 'autocomplete_city_billing', 'class': 'search-autocomplete' });
-$('billing:city').parentNode.appendChild(autocomplete_city_billing);
+    //============ Billing ============//
+    var autocomplete_city_billing = new Element('div', { id: 'autocomplete_city_billing', 'class': 'fontis-postcode-autocomplete' });
 
-function updateAddressBilling(text, item) {
-	// Update state and postcode fields
-	var id = item.id;
-	var tokens = id.split('-');
-	
-	// Assume item at index 1 is region_id, item at index 3 is postcode
-	$('billing:region_id').value = tokens[1];
-	$('billing:postcode').value = tokens[3];
-}
+    if ($('billing:city')) {    
+        $('billing:city').parentNode.appendChild(autocomplete_city_billing);
+    
+        function updateAddressBilling(text, item) {
+            // Update state and postcode fields
+            var id = item.id;
+            var tokens = id.split('-');
+    
+            // Assume item at index 1 is region_id, item at index 3 is postcode
+            $('billing:region_id').value = tokens[1];
+            $('billing:postcode').value = tokens[3];
+        }
+    
+        // Create the autocompleter and assign it to a variable for future use.
+        var completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", citySuggestUrl, {
+            afterUpdateElement: updateAddressBilling,
+            minChars: 2,
+            parameters: 'country=' + $F('billing:country_id')
+        });
+    }
 
-// Create the autocompleter and assign it to a variable for future use.
-var completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", "<?php echo $this->helper('australia')->getCitySuggestUrl();?>", {
-	afterUpdateElement: updateAddressBilling,
-	minChars: 2,
-	parameters: 'country=' + $F('billing:country_id')
-});
+    //============ Shipping ============//
+    var autocomplete_city_shipping = new Element('div', { id: 'autocomplete_city_shipping', 'class': 'fontis-postcode-autocomplete' });
 
-// Detect when the country has changed and update the parameters sent by the autocompleter.
-$('billing:country_id').observe('change', function() {
-	completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", "<?php echo $this->helper('australia')->getCitySuggestUrl();?>", {
-		afterUpdateElement: updateAddressBilling,
-		minChars: 2,
-		parameters: 'country=' + $F('billing:country_id')
-	});
-});
-
-//============ Shipping ============//
-var autocomplete_city_shipping = new Element('div', { id: 'autocomplete_city_shipping', 'class': 'search-autocomplete' });
-$('shipping:city').parentNode.appendChild(autocomplete_city_shipping);
-
-function updateAddressShipping(text, item) {
-	// Update state and postcode fields
-	var id = item.id;
-	var tokens = id.split('-');
-	
-	// Assume item at index 1 is region_id, item at index 3 is postcode
-	$('shipping:region_id').value = tokens[1];
-	$('shipping:postcode').value = tokens[3];
-}
-
-// Create the autocompleter and assign it to a variable for future use.
-var completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", "<?php echo $this->helper('australia')->getCitySuggestUrl();?>", {
-	afterUpdateElement: updateAddressShipping,
-	minChars: 2,
-	parameters: 'country=' + $F('shipping:country_id')
-});
-
-// Detect when the country has changed and update the parameters sent by the autocompleter.
-$('shipping:country_id').observe('change', function() {
-	completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", "<?php echo $this->helper('australia')->getCitySuggestUrl();?>", {
-		afterUpdateElement: updateAddressShipping,
-		minChars: 2,
-		parameters: 'country=' + $F('shipping:country_id')
-	});
-});
-
-</script>
+    if ($('shipping:city')) {    
+        $('shipping:city').parentNode.appendChild(autocomplete_city_shipping);
+    
+        function updateAddressShipping(text, item) {
+            // Update state and postcode fields
+            var id = item.id;
+            var tokens = id.split('-');
+    
+            // Assume item at index 1 is region_id, item at index 3 is postcode
+            $('shipping:region_id').value = tokens[1];
+            $('shipping:postcode').value = tokens[3];
+        }
+    
+        // Create the autocompleter and assign it to a variable for future use.
+        var completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", citySuggestUrl, {
+            afterUpdateElement: updateAddressShipping,
+            minChars: 2,
+            parameters: 'country=' + $F('shipping:country_id')
+        });
+    }
+    </script>
+<?php endif ?>

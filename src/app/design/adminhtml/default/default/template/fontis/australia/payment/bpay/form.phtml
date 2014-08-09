@@ -15,7 +15,7 @@
  * @category   Fontis
  * @package    Fontis_Australia
  * @author     Chris Norton
- * @copyright  Copyright (c) 2008 Fontis Pty. Ltd. (http://www.fontis.com.au)
+ * @copyright  Copyright (c) 2014 Fontis Pty. Ltd. (http://www.fontis.com.au)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
@@ -62,7 +62,7 @@
 				    color: #142C61;
 				    white-space: nowrap;
 				    line-height: 20px;
-				    font-weight: bold;	
+				    font-weight: bold;
 			    }
 			    .billerText{
 				    font-size: 11px;
@@ -72,9 +72,9 @@
 			    </style>
 			    <div align="left">
 			        <table border="0" cellpadding="0" cellspacing="0" class="bpay">
-			        <tr> 
+			        <tr>
 				        <td width="1%" class="bpayLogo"><img src="http://www.bpay.com.au/images/bpay.jpg" width="51" height="82" /></td>
-				        <td class="customerReferenceBox"> 
+				        <td class="customerReferenceBox">
 					        <p class="customerReferenceBoxText">
 					        <?php if ($this->getMethod()->getBillerCode()): ?>
 						        <?php echo $this->__('<b>Biller Code</b>: %s', $this->getMethod()->getBillerCode()); ?><br />

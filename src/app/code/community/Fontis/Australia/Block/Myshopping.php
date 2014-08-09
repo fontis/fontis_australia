@@ -8,16 +8,13 @@
 * that is bundled with this package in the file LICENSE.txt.
 * It is also available through the world-wide-web at this URL:
 * http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@magentocommerce.com and you will be sent a copy immediately.
 *
 * @category   Fontis
 * @package    Fontis_Australia
 * @author     Tom Greenaway
 * @copyright  Copyright (c) 2008 Fontis Pty. Ltd. (http://www.fontis.com.au)
 * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*/                   
+*/
 class Fontis_Australia_Block_Myshopping extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
 {
     protected $magentoOptions = array('instock' => 'instock', 'brand' => 'brand', 'final_price' => 'final_price', 'product_id' => 'product_id', "category" => "category", "link" => "link", "image_url" => "image_url");
@@ -34,10 +31,10 @@ class Fontis_Australia_Block_Myshopping extends Mage_Adminhtml_Block_System_Conf
         ));
         $this->_addAfter = false;
         $this->_addButtonLabel = Mage::helper('adminhtml')->__('Add linked attribute');
-        
+
         parent::__construct();
         $this->setTemplate('fontis/australia/system/config/form/field/array_dropdown.phtml');
-        
+
         // product options
         $eav_config_model = Mage::getModel('eav/config');
         $attributes = $eav_config_model->getEntityAttributeCodes('catalog_product');

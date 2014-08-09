@@ -9,14 +9,11 @@
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
  *
  * @category   Fontis
  * @package    Fontis_Australia
  * @author     Chris Norton
- * @copyright  Copyright (c) 2008 Fontis Pty. Ltd. (http://www.fontis.com.au)
+ * @copyright  Copyright (c) 2014 Fontis Pty. Ltd. (http://www.fontis.com.au)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 -->
@@ -88,7 +85,7 @@
                             <label>Products Use Units</label>
                             <frontend_type>select</frontend_type>
                             <source_model>australia/shipping_config_weightunits</source_model>
-                            <sort_order>20</sort_order>                            
+                            <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -213,7 +210,7 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                         <handling_type translate="label">
+                        <handling_type translate="label">
                             <label>Calculate Handling Fee</label>
                             <frontend_type>select</frontend_type>
                             <source_model>shipping/source_handlingType</source_model>
@@ -231,8 +228,8 @@
                             <show_in_store>1</show_in_store>
                         </handling_fee>
                         <merchant_location_id translate="label">
-                        	<label>Merchant Location ID</label>
-                        	<frontend_type>text</frontend_type>
+                            <label>Merchant Location ID</label>
+                            <frontend_type>text</frontend_type>
                             <sort_order>9</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -240,35 +237,43 @@
                             <comment>Provided by Australia Post. The unique ID specifying a specific merchant location.</comment>
                         </merchant_location_id>
                         <post_charge_account translate="label">
-                        	<label>Post Charge To Account</label>
-                        	<frontend_type>text</frontend_type>
+                            <label>Post Charge To Account</label>
+                            <frontend_type>text</frontend_type>
                             <sort_order>11</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Merchant account to which Australia Post “post” the charges against for invoicing purposes.</comment>
+                            <comment>Merchant account to which Australia Post "post" the charges against for invoicing purposes.</comment>
                         </post_charge_account>
-                        
+
                         <signature_required translate="label">
-                        	<label>Signature Required</label>
-                        	<frontend_type>select</frontend_type>
+                            <label>Signature Required</label>
+                            <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>12</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>If Yes Australia Post will attempt to capture a signature and if no-one is in attendance the consignment will be “carded”.</comment>
+                            <comment>If Yes, Australia Post will attempt to capture a signature and if no-one is in attendance the consignment will be "carded".</comment>
                         </signature_required>
                         <signature_cost translate="label">
-                        	<label>Signature Cost</label>
+                            <label>Signature Cost</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>13</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Additonal amount to charge for requiring a signature.</comment>
+                            <comment>Additional amount to charge for requiring a signature.</comment>
                         </signature_cost>
-
+                        <insurance_enable translate="label">
+                            <label>Enable Insurance</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>19</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </insurance_enable>
                         <insurance_step translate="label">
                             <label>Insurance Step</label>
                             <frontend_type>text</frontend_type>
@@ -309,7 +314,8 @@
                         </condition_name>
                         <export translate="label">
                             <label>Export</label>
-                            <frontend_type>export</frontend_type>
+                            <frontend_type>button</frontend_type>
+                            <frontend_model>australia/eparcel_rate_export</frontend_model>
                             <sort_order>5</sort_order>
                             <show_in_default>0</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -357,47 +363,47 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </return_name>
-                        <return_addressline_1> 
+                        <return_addressline_1>
                             <label>Return Address Line 1</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>61</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </return_addressline_1> 
-                        <return_addressline_2> 
+                        </return_addressline_1>
+                        <return_addressline_2>
                             <label>Return Address Line 2</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>62</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </return_addressline_2> 
-                        <return_addressline_3> 
+                        </return_addressline_2>
+                        <return_addressline_3>
                             <label>Return Address Line 3</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>63</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </return_addressline_3> 
-                        <return_addressline_4> 
+                        </return_addressline_3>
+                        <return_addressline_4>
                             <label>Return Address Line 4</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>64</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </return_addressline_4> 
-                        <return_suburb> 
+                        </return_addressline_4>
+                        <return_suburb>
                             <label>Return Suburb</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>65</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </return_suburb> 
-                        <return_state> 
+                        </return_suburb>
+                        <return_state>
                             <label>Return State Code</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>66</sort_order>
@@ -405,15 +411,15 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>Must be a two- or three-letter state code</comment>
-                        </return_state> 
-                        <return_postcode> 
+                        </return_state>
+                        <return_postcode>
                             <label>Return Postcode</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>67</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </return_postcode> 
+                        </return_postcode>
 
                         <sallowspecific translate="label">
                             <label>Ship to applicable countries</label>
@@ -456,7 +462,7 @@
             </groups>
         </carriers>
         <payment translate="label" module="payment">
-        	<groups>
+            <groups>
                 <bpay translate="label">
                     <label>BPAY</label>
                     <frontend_type>text</frontend_type>
@@ -474,24 +480,33 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </active>
-						<customer_group_access translate="label">
-							<label>Customer Group Access</label>
-							<frontend_type>select</frontend_type>
-							<source_model>australia/config_customerGroupAccess</source_model>
-							<sort_order>3</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>0</show_in_store>
-						</customer_group_access>
-						<customer_group translate="label">
-							<label>Customer Group</label>
-							<frontend_type>select</frontend_type>
-							<source_model>australia/config_customerGroups</source_model>
-							<sort_order>4</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>0</show_in_store>
-						</customer_group>
+                        <order_status>
+                            <label>New Order Status</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_order_status_new</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_status>
+                        <customer_group_access translate="label">
+                            <label>Customer Group Access</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>australia/config_customerGroupAccess</source_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </customer_group_access>
+                        <customer_group translate="label">
+                            <label>Customer Group</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>australia/config_customerGroups</source_model>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </customer_group>
                         <sort_order translate="label">
                             <label>Sort order</label>
                             <frontend_type>text</frontend_type>
@@ -508,40 +523,40 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </title>
-						<biller_code translate="label">
-							<label>Biller Code</label>
-							<sort_order>61</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</biller_code>
-						<calculate_using_customerid translate="label">
-							<label>Use Customer ID for Ref</label>
-							<frontend_type>select</frontend_type>
+                        <biller_code translate="label">
+                            <label>Biller Code</label>
+                            <sort_order>61</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </biller_code>
+                        <calculate_using_customerid translate="label">
+                            <label>Use Customer ID for Ref</label>
+                            <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-							<sort_order>62</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-							<comment>Normally set to NO unless you use BPAY for recurring payments. Guest checkouts are NOT supported if this is set to YES.</comment>
-						</calculate_using_customerid>
-						<accept_credit_cards translate="label">
-	                        <label>Accepts Credit Cards</label>
-	                        <frontend_type>select</frontend_type>
+                            <sort_order>62</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Normally set to NO unless you use BPAY for recurring payments. Guest checkouts are NOT supported if this is set to YES.</comment>
+                        </calculate_using_customerid>
+                        <accept_credit_cards translate="label">
+                            <label>Accepts Credit Cards</label>
+                            <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-	                        <sort_order>63</sort_order>
-	                        <show_in_default>1</show_in_default>
-	                        <show_in_website>1</show_in_website>
-	                        <show_in_store>1</show_in_store>
-	                        <comment>Set to NO if you do not accept credit card payments through BPAY. This simply changes the text presented to the customer.</comment>
+                            <sort_order>63</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Set to NO if you do not accept credit card payments through BPAY. This simply changes the text presented to the customer.</comment>
                         </accept_credit_cards>
                         <message translate="label">
-	                        <label>Message</label>
-	                        <sort_order>64</sort_order>
-	                        <show_in_default>1</show_in_default>
-	                        <show_in_website>1</show_in_website>
-	                        <show_in_store>1</show_in_store>
-	                        <comment>Displayed during checkout. Customise this to notify your customers that they will be presented with BPAY information after checkout.</comment>
+                            <label>Message</label>
+                            <sort_order>64</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Displayed during checkout. Customise this to notify your customers that they will be presented with BPAY information after checkout.</comment>
                         </message>
                         <allowspecific translate="label">
                             <label>Payment from applicable countries</label>
@@ -581,7 +596,7 @@
                         </model>
                     </fields>
                 </bpay>
-        		<directdeposit_au translate="label">
+                <directdeposit_au translate="label">
                     <label>Direct Deposit (AU)</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>1</sort_order>
@@ -598,24 +613,33 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </active>
-						<customer_group_access translate="label">
-							<label>Customer Group Access</label>
-							<frontend_type>select</frontend_type>
-							<source_model>australia/config_customerGroupAccess</source_model>
-							<sort_order>3</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>0</show_in_store>
-						</customer_group_access>
-						<customer_group translate="label">
-							<label>Customer Group</label>
-							<frontend_type>select</frontend_type>
-							<source_model>australia/config_customerGroups</source_model>
-							<sort_order>4</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>0</show_in_store>
-						</customer_group>
+                        <order_status>
+                            <label>New Order Status</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_order_status_new</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_status>
+                        <customer_group_access translate="label">
+                            <label>Customer Group Access</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>australia/config_customerGroupAccess</source_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </customer_group_access>
+                        <customer_group translate="label">
+                            <label>Customer Group</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>australia/config_customerGroups</source_model>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </customer_group>
                         <sort_order translate="label">
                             <label>Sort order</label>
                             <frontend_type>text</frontend_type>
@@ -632,34 +656,34 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </title>
-						<account_name translate="label">
-							<label>Account Name</label>
-							<sort_order>61</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</account_name>
-						<account_bsb translate="label">
-							<label>Account BSB</label>
-							<sort_order>62</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</account_bsb>
-						<account_number translate="label">
-							<label>Account Number</label>
-							<sort_order>63</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</account_number>
-						<message translate="label">
-							<label>Message</label>
-							<sort_order>64</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</message>
+                        <account_name translate="label">
+                            <label>Account Name</label>
+                            <sort_order>61</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </account_name>
+                        <account_bsb translate="label">
+                            <label>Account BSB</label>
+                            <sort_order>62</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </account_bsb>
+                        <account_number translate="label">
+                            <label>Account Number</label>
+                            <sort_order>63</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </account_number>
+                        <message translate="label">
+                            <label>Message</label>
+                            <sort_order>64</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </message>
                         <allowspecific translate="label">
                             <label>Payment from applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
@@ -697,10 +721,10 @@
                         <model>
                         </model>
                     </fields>
-                </directdeposit_au>                
-	       	</groups>
+                </directdeposit_au>
+            </groups>
         </payment>
-        
+
         <fontis_australia>
             <label>Australia</label>
             <tab>fontis_extensions</tab>
@@ -709,35 +733,63 @@
             <show_in_default>1</show_in_default>
             <show_in_website>1</show_in_website>
             <show_in_store>1</show_in_store>
-        	<groups>
-        		<business translate="label">
-					<label>Business Details</label>
-					<frontend_type>text</frontend_type>
-					<sort_order>0</sort_order>
-					<show_in_default>1</show_in_default>
-					<show_in_website>1</show_in_website>
-					<show_in_store>1</show_in_store>
-					<fields>
-						<abn translate="label">
-							<label>ABN</label>
-							<frontend_type>text</frontend_type>
-							<sort_order>1</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-							<comment>(Australian Business Number)</comment>
-						</abn>
-						<phone translate="label">
-							<label>Phone Number</label>
-							<frontend_type>text</frontend_type>
-							<sort_order>2</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</phone>
-					</fields>
-        		</business>
-        	</groups>
+            <groups>
+                <business translate="label">
+                    <label>Business Details</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>0</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <abn translate="label">
+                            <label>ABN</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>(Australian Business Number)</comment>
+                        </abn>
+                        <phone translate="label">
+                            <label>Phone Number</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </phone>
+                    </fields>
+                </business>
+                <postcode_autocomplete translate="label">
+                    <label>Postcode Autocomplete</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        <max_results translate="label">
+                            <label>Maximum Number of Results</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-number</validate>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </max_results>
+                    </fields>
+                </postcode_autocomplete>
+            </groups>
         </fontis_australia>
 
         <fontis_feeds>
@@ -1111,10 +1163,10 @@
                 </googleproductsfeed>
             </groups>
         </fontis_feeds>
-        
+
         <doghouse_eparcelexport translate="label comment">
             <tab>sales</tab>
-            <label>Eparcel Export</label>
+            <label>eParcel Export</label>
             <frontend_type>text</frontend_type>
             <sort_order>600</sort_order>
             <show_in_default>1</show_in_default>
@@ -1129,7 +1181,7 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                    	<use_cubicweight translate="label">
+                        <use_cubicweight translate="label">
                             <label>Use Cubic Weight ?</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
@@ -1164,7 +1216,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Centimeters - no decimals</comment>
+                            <comment>Centimetres - no decimals</comment>
                         </height>
                         <length translate="label">
                             <label>Parcel Length</label>
@@ -1178,7 +1230,7 @@
                     </fields>
                 </parcel>
                 <consignement translate="label comment">
-                    <label>Consignement Defaults</label>
+                    <label>Consignment Defaults</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>20</sort_order>
                     <show_in_default>1</show_in_default>
@@ -1193,7 +1245,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Should signature be required by default ?  Specific shipping methods will override this setting.  Check cost of service on your Australia Post contract.</comment>
+                            <comment>Should signature be required by default ? Specific shipping methods will override this setting. Check cost of service on your Australia Post contract.</comment>
                         </is_signature_required>
                         <add_to_address_book translate="label">
                             <label>Add to Address Book ?</label>
@@ -1235,7 +1287,7 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                    	<product_type translate="label">
+                        <product_type translate="label">
                             <label>Product type</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>10</sort_order>
@@ -1252,12 +1304,12 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Australia Post's documentation says to use multiple good lines but their tech support says no.  Also, it only seems to work when set to 'No'.</comment>
+                            <comment>Australia Post's documentation says to use multiple good lines but their tech support says no. Also, it only seems to work when set to 'No'.</comment>
                         </use_multiplegoodrecords>
-                        
-					</fields>
-				</good>
-				<charge_codes translate="label comment">
+
+                    </fields>
+                </good>
+                <charge_codes translate="label comment">
                     <label>Charge codes</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>20</sort_order>
@@ -1266,8 +1318,8 @@
                     <show_in_store>1</show_in_store>
                     <fields>
                         <default_charge_code_individual translate="label">
-                        	<label>Default charge Code (individual)</label>
-                        	<frontend_type>text</frontend_type>
+                            <label>Default charge Code (individual)</label>
+                            <frontend_type>text</frontend_type>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -1275,8 +1327,8 @@
                             <comment>The default charge code for individuals. Will be overridden by values in your table rates.</comment>
                         </default_charge_code_individual>
                         <default_charge_code_business translate="label">
-                        	<label>Default charge Code (business)</label>
-                        	<frontend_type>text</frontend_type>
+                            <label>Default charge Code (business)</label>
+                            <frontend_type>text</frontend_type>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -1291,10 +1343,40 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The selected customer groups will use the "Business" version of the "Standard" and "Express" charge codes.  Make sure your contract supports business (B2B) charge codes.</comment>
+                            <comment>The selected customer groups will use the "Business" version of the "Standard" and "Express" charge codes. Make sure your contract supports business (B2B) charge codes.</comment>
                         </business_groups>
-					</fields>
-				</charge_codes>
+                    </fields>
+                </charge_codes>
+                <email_notification translate="label comment">
+                    <label>Email Notification</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>40</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled>
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Add the customer's email address to the CSV file.</comment>
+                        </enabled>
+                        <level>
+                            <label>Notification Level</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>australia/config_emailNotificationLevel</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Set what kind of email notification the customer will receive.</comment>
+                        </level>
+                    </fields>
+                </email_notification>
             </groups>
         </doghouse_eparcelexport>
     </sections>
