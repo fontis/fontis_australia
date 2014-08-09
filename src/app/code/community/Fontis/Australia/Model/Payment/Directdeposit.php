@@ -28,8 +28,8 @@ class Fontis_Australia_Model_Payment_Directdeposit extends Mage_Payment_Model_Me
 {
 
     protected $_code  = 'directdeposit_au';
-    protected $_formBlockType = 'fontis_australia_block_directdeposit_form';
-    protected $_infoBlockType = 'fontis_australia_block_directdeposit_info';
+    protected $_formBlockType = 'Fontis_Australia_Block_Directdeposit_Form';
+    protected $_infoBlockType = 'Fontis_Australia_Block_Directdeposit_Info';
 
     // Set to allow the admin to set whether or not payment has been received
     protected $_canCapture = true;
