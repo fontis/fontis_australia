@@ -26,7 +26,9 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
         $eparcel = new Doghouse_Australia_Eparcel();
 
         foreach ($orders as $order) {
-            $order = Mage::getModel('sales/order')->load($order);
+            if(!($order instanceof Mage_Sales_Model_Order)) {
+                $order = Mage::getModel('sales/order')->load($order);
+            }
 
             if ( ! $order->getShippingCarrier() instanceof Fontis_Australia_Model_Shipping_Carrier_Eparcel ) {
                 throw new Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Exception(
