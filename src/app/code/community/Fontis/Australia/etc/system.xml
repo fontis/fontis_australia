@@ -1317,6 +1317,16 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
+                        <allow_custom_charge_codes translate="label">
+                            <label>Custom eParcel Charge Code</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Is the charge code in your uploaded CSV non-standard e.g. "3I55"?</comment>
+                        </allow_custom_charge_codes>
                         <default_charge_code_individual translate="label">
                             <label>Default charge Code (individual)</label>
                             <frontend_type>text</frontend_type>

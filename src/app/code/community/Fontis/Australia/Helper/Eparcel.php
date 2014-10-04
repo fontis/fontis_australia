@@ -22,7 +22,7 @@ class Fontis_Australia_Helper_Eparcel extends Mage_Core_Helper_Abstract
     const XML_PATH_EMAIL_NOTIFICATION_LEVEL = 'doghouse_eparcelexport/email_notification/level';
 
     /* AUSTRALIA POST CHARGE CODES */
-    private $chargeCodes = array(
+    private $standardChargeCodes = array(
 
         /* Domestic / Standard / Individual */
         'S1', // EPARCEL 1       Domestic
@@ -112,6 +112,11 @@ class Fontis_Australia_Helper_Eparcel extends Mage_Core_Helper_Abstract
      */
     public function isValidChargeCode($chargeCode)
     {
-        return in_array($chargeCode, $this->chargeCodes);
+        $bIsStandard = in_array($chargeCode, $this->standardChargeCodes);
+        if(!$bIsStandard && Mage::getStoreConfigFlag('doghouse_eparcelexport/charge_codes/allow_custom_charge_codes')){
+            //charge code not found in the standard list of codes, but system config tells us this is OK @see https://github.com/fontis/fontis_australia/issues/39
+            return true;
+        }
+        return false;
     }
 }
