@@ -27,10 +27,10 @@ class Fontis_Australia_Helper_Bpay extends Mage_Core_Helper_Abstract
 
         $output = '
         <div id="bpay" style="border: 2px solid rgb(16, 32, 75); margin: 0px; padding: 6px; width: 238px; font-family: Arial,Helvetica,sans-serif; background-color: rgb(255, 255, 255);">
-        <div class="bpayLogo" style="border: 2px solid rgb(20, 44, 97); width: 51px; height: 87px; float: left;">
-            <img alt="BPAY" src="' . Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN) . 'frontend/base/default/images/fontis/australia/bpay.png' . '" height="82" width="51">
+        <div class="bpayLogo" style="border: 2px solid rgb(20, 44, 97); width: 54px; height: 77px; float: left;">
+            <img alt="BPAY" src="' . Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN) . 'frontend/base/default/fontis/australia/images/bpay.png' . '" height="73" width="50">
         </div>
-        <div class="customerReferenceBox" style="border: 2px solid rgb(20, 44, 97); padding: 0px 8px; height: 87px; width: 158px; margin-left: 60px; margin-bottom: 4px;">
+        <div class="customerReferenceBox" style="border: 2px solid rgb(20, 44, 97); padding: 0px 8px; height: 77px; width: 158px; margin-left: 60px; margin-bottom: 4px;">
             <p class="customerReferenceBoxText" style="font-size: 13px; text-transform: capitalize; color: rgb(20, 44, 97); white-space: nowrap; line-height: 22px; font-weight: normal;">
             <b>Biller Code</b>: ' . $billerCode . '<br>
             <b>Ref</b>: ' . $customerReferenceNumber . '<br>
