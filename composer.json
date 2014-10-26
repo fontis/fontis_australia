@@ -45,9 +45,14 @@
                     "path":"modules/Fontis_Australia.xml"
                 },
                 {
+                    "type":"magelib",
+                    "structure":"dir",
+                    "path":"Doghouse/Australia"
+                },
+                {
                     "type":"mageskin",
-                    "structure":"file",
-                    "path":"frontend/default/default/images/fontis/bpay.png"
+                    "structure":"dir",
+                    "path":"frontend/base/default/fontis/australia"
                 }
             ]
         }
