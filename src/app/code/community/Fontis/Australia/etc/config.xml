@@ -233,6 +233,7 @@
                 <allowspecific>0</allowspecific>
                 <calculate_using_customerid>0</calculate_using_customerid>
                 <accept_credit_cards>1</accept_credit_cards>
+                <use_mod_10_v_5>0</use_mod_10_v_5>
                 <message>Payment details will be displayed on order confirmation screen.</message>
             </bpay>
             <directdeposit_au>

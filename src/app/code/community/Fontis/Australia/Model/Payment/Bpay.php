@@ -28,8 +28,6 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
     protected $_formBlockType = 'fontis_australia_block_bpay_form';
     protected $_infoBlockType = 'fontis_australia_block_bpay_info';
 
-    protected $_ref = null;
-
 	public function isAvailable($quote = null)
 	{
         if($this->getConfigData('active') == 0)
@@ -68,6 +66,23 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
 		return false;
 	}
 
+     /**
+      * Validate.
+      * 
+      * This is just a little hack in order to generate REF from Order ID after Order is created. 
+      */
+     public function validate()
+     {
+         $order = $this->getInfoInstance()->getOrder();
+         
+         if ($order) {
+             // Force to generate REF from Order ID.
+             $this->assignData(NULL);
+         } 
+          
+        return parent::validate();         
+     }
+	
     /**
      * Assign data to info model instance
      *
@@ -76,24 +91,27 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
      */
     public function assignData($data)
     {
+        $billerCode = $this->getBillerCode();
+        $ref        = $this->getRef();
+        
         $info = $this->getInfoInstance();
-        $info->setBillerCode($this->getBillerCode());
-        $info->setRef($this->getRef());
+        $info->setBillerCode($billerCode);
+        $info->setRef($ref);
 
 		$details = array();
-		if ($this->getBillerCode())
-		{
-			$details['biller_code'] = $this->getBillerCode();
+		
+		if ($this->getBillerCode()) {
+			$details['biller_code'] = $billerCode;
 
-			if($this->getRef())
-			{
-				$details['ref'] = $this->getRef();
+			if($this->getRef()) {
+				$details['ref'] = $ref;
 			}
 		}
-        if (!empty($details))
-        {
+		
+        if (!empty($details)) {
             $this->getInfoInstance()->setAdditionalData(serialize($details));
         }
+        
         return $this;
     }
 
@@ -104,32 +122,40 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
 
 	public function getRef()
 	{
-		if($this->_ref)	{
-			return $this->_ref;
-		} else {
-			// Check whether we will be calculating the reference code based on
-			// the customer ID or the order ID.
-			if($this->getConfigData('calculate_using_customerid')) {
-			    $customer_id = Mage::getSingleton('customer/session')->getCustomerId();
-        		if($customer_id) {
+		// Check whether we will be calculating the reference code based on
+		// the customer ID or the order ID.
+		if($this->getConfigData('calculate_using_customerid')) {
+		    $customer_id = Mage::getSingleton('customer/session')->getCustomerId();
+    		if($customer_id) {
+		        $customer = Mage::getModel('customer/customer')->load($customer_id);
+			    $number   = $customer->getIncrementId();
+		    } else {
+		        $customer_id = Mage::getSingleton('checkout/session')->getQuote()->getCustomerId();
+			    if($customer_id) {
 			        $customer = Mage::getModel('customer/customer')->load($customer_id);
-				    $this->_ref = $this->_calculateRef($customer->getIncrementId());
+				    $number   = $customer->getIncrementId();
 			    } else {
-			        $customer_id = Mage::getSingleton('checkout/session')->getQuote()->getCustomerId();
-				    if($customer_id) {
-				        $customer = Mage::getModel('customer/customer')->load($customer_id);
-					    $this->_ref = $this->_calculateRef($customer->getIncrementId());
-				    } else {
-				        return null;
-				    }
-				}
-			} else {
-				$order_id = Mage::getSingleton('checkout/session')->getLastRealOrderId();
-				$this->_ref = $this->_calculateRef($order_id);
+			        return null;
+			    }
 			}
-			//$this->assignData();
+		} else {
+			$order = $this->getInfoInstance()->getOrder();
+			
+			if ($order) {
+			    $number = $order->getRealOrderId();
+			} else {
+			    // Dont generate REF without Order - this is for Quote stage. 
+			    return null;
+			}
 		}
-		return $this->_ref;
+				
+		if ($this->getConfigData('use_mod_10_v_5')) {
+		    $ref = $this->_caculateRefMod10v5($number);
+		} else {
+		    $ref = $this->_calculateRef($number);
+		}
+		
+		return $ref;
 	}
 
 	public function getMessage()
@@ -158,6 +184,44 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
 
 	    $check_digit = (10 - ($total % 10))%10;
 	    $crn = str_pad(ltrim($ref, "0"),$crn_length-1,0,STR_PAD_LEFT) .$seperator. $check_digit;
+
 	    return $crn;
+    }
+
+    /**
+     * Calculate Modulus 10 Version 5.
+     * 
+     * http://stackoverflow.com/a/11605561/747834
+     *
+     * @param integer $number
+     *
+     * @return integer
+     */
+    protected function _caculateRefMod10v5($number)
+    {
+        $number = preg_replace("/\D/", "", $number);
+
+        // The seed number needs to be numeric
+        if(!is_numeric($number)) 
+            return false;
+
+        // Must be a positive number
+        if($number <= 0) 
+            return false;
+
+        // Get the length of the seed number
+        $length = strlen($number);
+
+        $total = 0;
+
+        // For each character in seed number, sum the character multiplied by its one based array position (instead of normal PHP zero based numbering)
+        for($i = 0; $i < $length; $i++) 
+            $total += $number{$i} * ($i + 1);
+
+        // The check digit is the result of the sum total from above mod 10
+        $checkdigit = fmod($total, 10);
+        
+        // Return the original seed plus the check digit
+        return $number . $checkdigit;
     }
 }
