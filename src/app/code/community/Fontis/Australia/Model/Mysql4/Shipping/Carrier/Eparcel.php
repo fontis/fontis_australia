@@ -302,7 +302,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                         if (isset($csvLine[10]) && intval($csvLine[10]) < 0) {
                             $exceptions[] = Mage::helper('shipping')->__('Invalid Warehouse ID "%s" in the Row #%s', $csvLine[10], ($k+1));
                         } else {
-                            $csvLine[10] = isset($csvLine[10]) ? (int)$csvLine[10] : null;
+                            $csvLine[10] = isset($csvLine[10]) ? (int)$csvLine[10] : 0;
                         }
 
                         $data[] = array(
