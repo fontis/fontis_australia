@@ -27,8 +27,10 @@ class Fontis_Australia_Model_Shipping_Carrier_Clickandsend
     {
         /** @var Fontis_Australia_Helper_Australiapost $helper */
         $helper = Mage::helper('australia/australiapost');
+
         /** @var Mage_Sales_Model_Order_Address $shippingAddress */
         $shippingAddress = $order->getShippingAddress();
+
         $item = array(
             // TODO: Add feature to export address books to and from Click & Send.
             'addressCode' => '',
@@ -49,15 +51,17 @@ class Fontis_Australia_Model_Shipping_Carrier_Clickandsend
             'width' => $helper->getAttribute($order, 'width'),
             'height' => $helper->getAttribute($order, 'height'),
             'declaredWeight' => sprintf('%0.3f', $order->getWeight()),
+
             // Extra Cover doesn't work with Click & Send
             'extraCover' => '',
+
             'insuranceValue' => '',
             'descriptionOfGoods' => '',
             'categoryOfItems' => Mage::getStoreConfig('fontis_australia/clickandsend/category_of_items'),
-            // This number is sometimes needed when you're exporting a package to a
-            // foreign country.
-            // TODO: Figure out a way to add this as an option for the merchant.
+
+            // This number is sometimes needed when you're exporting a package to a foreign country.
             'exportDeclarationNumber' => '',
+
             'categoryOfItemsExplanation' => Mage::getStoreConfig('fontis_australia/clickandsend/category_of_items_explanation'),
             'articleLodgerName' => Mage::getStoreConfig('fontis_australia/clickandsend/from_name'),
             'nonDeliveryInstructions' => Mage::getStoreConfig('fontis_australia/clickandsend/nondelivery_instructions'),
@@ -75,10 +79,11 @@ class Fontis_Australia_Model_Shipping_Carrier_Clickandsend
             'fromState' => Mage::getStoreConfig('fontis_australia/clickandsend/from_state'),
             'fromPostcode' => Mage::getStoreConfig('fontis_australia/clickandsend/from_postcode'),
             'fromCountry' => Mage::getStoreConfig('fontis_australia/clickandsend/from_country'),
+
             // A value that can used for reconciliations with shipments, e.g. order number,
             // invoice number, recipient name, etc.
-            // TODO: Allow the merchant to choose a reference system, e.g. invoice number
             'yourReference' => $order->getIncrementId(),
+
             'deliveryInstructions' => '',
             'additionalServices' => '',
             'boxOrIrregularShapedItem' => '',
@@ -87,15 +92,11 @@ class Fontis_Australia_Model_Shipping_Carrier_Clickandsend
             'hasCommercialValue' => ''
         );
 
-        // The Click & Send CSV specification only allows for four items to be
-        // listed. It shouldn't be a problem as the shipping price is calculated
-        // by other things, e.g. declared weight, but it's still rather
-        // unfortunate.
-        // TODO: Add feature to export items to and from Click & Send.
-        $itemLimit = 4;
+        // The Click & Send CSV specification only allows up to four items to be listed.
+        $maxItems = 4;
 
-        // Initialise the four items
-        for ($i = 0; $i < $itemLimit; $i++) {
+        // Initialise the items
+        for ($i = 0; $i < $maxItems; $i++) {
             $item['itemCode' . $i] = '';
             $item['itemDescription' . $i] = '';
             $item['itemHsTariffNumber' . $i] = '';
@@ -106,7 +107,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Clickandsend
         }
 
         $allSimpleItems = $helper->getAllSimpleItems($order);
-        for ($i = 0; $i < $itemLimit; $i++) {
+        for ($i = 0; $i < $maxItems; $i++) {
             if (isset($allSimpleItems[$i])) {
                 $simpleItem = $allSimpleItems[$i];
                 $item['itemCode' . $i] = $simpleItem->getId();
@@ -167,9 +168,9 @@ class Fontis_Australia_Model_Shipping_Carrier_Clickandsend
         } else if (Mage::helper('australia/clickandsend')->isExportAll()) {
             return null;
         }
-        throw new Fontis_Australia_Model_Shipping_Carrier_Clickandsend_Export_Exception(
-            "Order #" . $order->getIncrementId() . " can't be imported into Click & Send!"
-        );
+
+        $message = "Order #" . $order->getIncrementId() . " can't be imported into Click & Send";
+        throw new Fontis_Australia_Model_Shipping_Carrier_Clickandsend_Export_Exception($message);
     }
 
     /**
@@ -180,7 +181,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Clickandsend
      */
     private function getArticleType(Mage_Sales_Model_Order $order)
     {
-        if ($order->getShippingAddress()->getCountry() == 'AU') {
+        if ($order->getShippingAddress()->getCountry() == Fontis_Australia_Helper_Data::AUSTRALIA_COUNTRY_CODE) {
             return 7;
         } else {
             $shippingMethod = $this->getShippingConfiguration($order);

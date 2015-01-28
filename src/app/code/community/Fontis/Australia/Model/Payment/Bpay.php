@@ -24,14 +24,11 @@
  */
 class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abstract
 {
-    protected $_code  = 'bpay';
+    const CODE = 'bpay';
+
+    protected $_code  = self::CODE;
     protected $_formBlockType = 'fontis_australia_block_bpay_form';
     protected $_infoBlockType = 'fontis_australia_block_bpay_info';
-
-    /**
-     * @var string
-     */
-    protected $_ref = null;
 
     /**
      * @param $quote
@@ -58,8 +55,7 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
         } elseif ($groupAccess == 2) {
             // Only allow customer to access this method if they are NOT part
             // of the specified group
-            if ($group != $quote->getCustomerGroupId())
-            {
+            if ($group != $quote->getCustomerGroupId()) {
                 return true;
             }
         }
@@ -68,23 +64,23 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
         return false;
     }
 
-     /**
-      * Validate.
-      * 
-      * This is just a little hack in order to generate REF from Order ID after Order is created. 
-      */
-     public function validate()
-     {
-         $order = $this->getInfoInstance()->getOrder();
-         
-         if ($order) {
-             // Force to generate REF from Order ID.
-             $this->assignData(NULL);
-         } 
-          
-        return parent::validate();         
-     }
-    
+    /**
+     * Validate.
+     *
+     * This is just a little hack in order to generate REF from Order ID after Order is created.
+     */
+    public function validate()
+    {
+        $order = $this->getInfoInstance()->getOrder();
+
+        if ($order) {
+            // Force to generate REF from Order ID.
+            $this->assignData(null);
+        }
+
+        return parent::validate();
+    }
+
     /**
      * Assign data to info model instance
      *
@@ -101,11 +97,11 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
         $info->setRef($ref);
 
         $details = array();
-        
+
         if ($this->getBillerCode()) {
             $details['biller_code'] = $billerCode;
 
-            if($this->getRef()) {
+            if ($this->getRef()) {
                 $details['ref'] = $ref;
             }
         }
@@ -126,37 +122,37 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
     {
         // Check whether we will be calculating the reference code based on
         // the customer ID or the order ID.
-        if($this->getConfigData('calculate_using_customerid')) {
+        if ($this->getConfigData('calculate_using_customerid')) {
             $customer_id = Mage::getSingleton('customer/session')->getCustomerId();
-            if($customer_id) {
+            if ($customer_id) {
                 $customer = Mage::getModel('customer/customer')->load($customer_id);
-                $number   = $customer->getIncrementId();
+                $number = $customer->getIncrementId();
             } else {
                 $customer_id = Mage::getSingleton('checkout/session')->getQuote()->getCustomerId();
-                if($customer_id) {
+                if ($customer_id) {
                     $customer = Mage::getModel('customer/customer')->load($customer_id);
-                    $number   = $customer->getIncrementId();
+                    $number = $customer->getIncrementId();
                 } else {
                     return null;
                 }
             }
         } else {
             $order = $this->getInfoInstance()->getOrder();
-            
+
             if ($order) {
                 $number = $order->getRealOrderId();
             } else {
-                // Dont generate REF without Order - this is for Quote stage. 
+                // Don't generate REF without Order - this is for Quote stage.
                 return null;
             }
         }
-                
+
         if ($this->getConfigData('use_mod_10_v_5')) {
-            $ref = $this->_caculateRefMod10v5($number);
+            $ref = $this->_calculateRefMod10v5($number);
         } else {
             $ref = $this->_calculateRef($number);
         }
-        
+
         return $ref;
     }
 
@@ -165,65 +161,70 @@ class Fontis_Australia_Model_Payment_Bpay extends Mage_Payment_Model_Method_Abst
         return $this->getConfigData('message');
     }
 
-    protected function _calculateRef($ref, $seperator = '', $crn_length = 6)
+    protected function _calculateRef($ref, $separator = '', $length = 6)
     {
         $revstr = strrev(intval($ref));
         $total = 0;
-        for ($i = 0;$i < strlen($revstr); $i++) {
+        for ($i = 0; $i < strlen($revstr); $i++) {
 
-            if ($i%2 == 0) {
+            if ($i % 2 == 0) {
                 $multiplier = 2;
+            } else {
+                $multiplier = 1;
             }
-            else $multiplier = 1;
 
-            $sub_total = intval($revstr[$i]) * $multiplier;
-            if ($sub_total >= 10) {
-                $temp = (string) $sub_total;
-                $sub_total = intval($temp[0]) + intval($temp[1]);
+            $subtotal = intval($revstr[$i]) * $multiplier;
+            if ($subtotal >= 10) {
+                $temp = (string)$subtotal;
+                $subtotal = intval($temp[0]) + intval($temp[1]);
             }
-            $total += $sub_total;
+            $total += $subtotal;
         }
 
-        $check_digit = (10 - ($total % 10))%10;
-        $crn = str_pad(ltrim($ref, "0"),$crn_length-1,0,STR_PAD_LEFT) .$seperator. $check_digit;
+        $checkDigit = (10 - ($total % 10)) % 10;
+        $crn = str_pad(ltrim($ref, "0"), $length - 1, 0, STR_PAD_LEFT) . $separator . $checkDigit;
 
         return $crn;
     }
 
     /**
      * Calculate Modulus 10 Version 5.
-     * 
+     *
      * http://stackoverflow.com/a/11605561/747834
      *
      * @param integer $number
      *
      * @return integer
      */
-    protected function _caculateRefMod10v5($number)
+    protected function _calculateRefMod10v5($number)
     {
         $number = preg_replace("/\D/", "", $number);
 
         // The seed number needs to be numeric
-        if(!is_numeric($number)) 
+        if (!is_numeric($number)) {
             return false;
+        }
 
         // Must be a positive number
-        if($number <= 0) 
+        if ($number <= 0) {
             return false;
+        }
 
         // Get the length of the seed number
         $length = strlen($number);
 
         $total = 0;
 
-        // For each character in seed number, sum the character multiplied by its one based array position (instead of normal PHP zero based numbering)
-        for($i = 0; $i < $length; $i++) 
+        // For each character in seed number, sum the character multiplied by its one
+        // based array position (instead of normal PHP zero based numbering)
+        for ($i = 0; $i < $length; $i++) {
             $total += $number{$i} * ($i + 1);
+        }
 
         // The check digit is the result of the sum total from above mod 10
-        $checkdigit = fmod($total, 10);
-        
+        $checkDigit = fmod($total, 10);
+
         // Return the original seed plus the check digit
-        return $number . $checkdigit;
+        return $number . $checkDigit;
     }
 }

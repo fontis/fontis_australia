@@ -19,6 +19,9 @@
 
 /**
  * Helper functions for address validation
+ *
+ * @category   Fontis
+ * @package    Fontis_Australia
  */
 class Fontis_Australia_Helper_Address extends Mage_Core_Helper_Abstract
 {

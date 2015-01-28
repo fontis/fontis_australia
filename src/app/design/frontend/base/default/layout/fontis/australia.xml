@@ -45,8 +45,6 @@
                 <block type="core/template" name="fontis.australia.address.suggestion" template="fontis/australia/checkout/address/suggestion.phtml"/>
                 <block type="core/template" name="fontis.australia.address.failure" template="fontis/australia/checkout/address/failure.phtml"/>
             </block>
-        </reference>
-        <reference name="content">
             <block type="core/template" name="fontis_australia_autocomplete" template="fontis/australia/postcode-checkout.phtml"/>
         </reference>
     </checkout_onepage_index>

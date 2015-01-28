@@ -11,7 +11,9 @@
         }
     ],
     "require": {
-        "magento-hackathon/magento-composer-installer": "*"
+        "magento-hackathon/magento-composer-installer": "*",
+        "fontis/auspost-api-php": "1.x",
+        "fontis/composer-autoloader" : "*"
     },
     "extra":{
         "magento_connect":{

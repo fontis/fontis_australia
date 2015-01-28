@@ -18,9 +18,15 @@
 
 /**
  * Controller for address validation requests
+ *
+ * @category   Fontis
+ * @package    Fontis_Australia
  */
 class Fontis_Australia_AddressController extends Mage_Core_Controller_Front_Action
 {
+    /**
+     * @var Fontis_Australia_Model_Address_Interface
+     */
     protected $client;
 
     protected function _construct()
@@ -45,41 +51,39 @@ class Fontis_Australia_AddressController extends Mage_Core_Controller_Front_Acti
      */
     public function validateAction()
     {
-        if ($this->getRequest()->isPost()) {
-            $request = $this->getRequest();
-            if ($request->getPost('billing')) {
-                $data = $request->getPost('billing');
-            } else {
-                $data = $request->getPost('shipping', array());
-            }
-            if (
-                !empty($data) &&
-                isset($data['country_id']) &&
-                isset($data['region_id']) &&
-                isset($data['street']) &&
-                isset($data['city']) &&
-                isset($data['postcode'])
-            ) {
-                $country = Mage::getModel('directory/country')->load($data['country_id'])->getName();
-                $region = Mage::getModel('directory/region')->load($data['region_id'])->getCode();
-
-                $result = $this->client->validateAddress(
-                    $data['street'],
-                    $region,
-                    $data['city'],
-                    $data['postcode'],
-                    $country
-                );
-
-                $this->getResponse()->setHeader('Content-type', 'application/json');
-                $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
-            } else {
-                Mage::log('Address validation failed. Please fill in all required fields.');
-                $this->_redirect('noRoute');
-            }
-        } else {
-            Mage::log('Address validation requests must use the POST method.');
-            $this->_redirect('noRoute');
+        // Check for a valid POST request
+        if (!$this->getRequest()->isPost()) {
+            // Return a "405 Method Not Allowed" response
+            $this->getResponse()->setHttpResponseCode(405);
+            return;
         }
+
+        $request = $this->getRequest();
+        if ($request->getPost('billing')) {
+            $data = $request->getPost('billing');
+        } else {
+            $data = $request->getPost('shipping', array());
+        }
+
+        // Check that all of the required fields are present
+        if (empty($data) || !isset($data['country_id'], $data['region_id'], $data['street'], $data['city'], $data['postcode'])) {
+            // Return a "400 Bad Request" response
+            $this->getResponse()->setHttpResponseCode(400);
+            return;
+        }
+
+        $country = Mage::getModel('directory/country')->load($data['country_id'])->getName();
+        $region = Mage::getModel('directory/region')->load($data['region_id'])->getCode();
+
+        $result = $this->client->validateAddress(
+            $data['street'],
+            $region,
+            $data['city'],
+            $data['postcode'],
+            $country
+        );
+
+        $this->getResponse()->setHeader('Content-type', 'application/json');
+        $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
     }
 }

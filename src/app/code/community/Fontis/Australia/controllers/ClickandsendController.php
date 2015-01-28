@@ -18,6 +18,9 @@
 
 /**
  * Controller handling order export requests.
+ *
+ * @category   Fontis
+ * @package    Fontis_Australia
  */
 class Fontis_Australia_ClickandsendController extends Mage_Adminhtml_Controller_Action
 {
@@ -37,13 +40,8 @@ class Fontis_Australia_ClickandsendController extends Mage_Adminhtml_Controller_
 
             // Download the file
             $this->_prepareDownloadResponse(basename($filePath), file_get_contents($filePath));
-        } catch (Fontis_Australia_Model_Shipping_Carrier_Clickandsend_Export_Exception $e) {
-            Mage::getSingleton('core/session')->addError($e->getMessage());
-
-            $this->_redirect('adminhtml/sales_order/index');
         } catch (Exception $e) {
-            Mage::getSingleton('core/session')->addError('An error occurred. ' . $e->getMessage());
-
+            Mage::getSingleton('core/session')->addError($e->getMessage());
             $this->_redirect('adminhtml/sales_order/index');
         }
     }

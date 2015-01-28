@@ -18,6 +18,9 @@
 
 /**
  * Data helper
+ *
+ * @category   Fontis
+ * @package    Fontis_Australia
  */
 class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
 {
@@ -26,6 +29,8 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
     const MAX_QUERY_LEN = 100;
 
     const MAX_AUTOCOMPLETE_RESULTS_DEFAULT = 20;
+
+    const AUSTRALIA_COUNTRY_CODE = 'AU';
 
     protected $_queryText;
 

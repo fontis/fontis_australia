@@ -18,10 +18,10 @@
 ?>
 <?php if (Mage::helper('australia/address')->isAddressValidationEnabled()): ?>
     <script>
-        var addressValidationUrl = '<?php echo $this->getUrl('australia/address/validate') ?>';
-        var australiaCountryRegions = <?php echo $this->helper('directory')->getRegionJson() ?>;
-        var addressSuggestTemplate = <?php echo json_encode($this->getChildHtml('fontis.australia.address.suggestion')) ?>;
-        var addressFailureTemplate = <?php echo json_encode($this->getChildHtml('fontis.australia.address.failure')) ?>;
+        var addressValidationUrl = '<?php echo $this->getUrl('australia/address/validate'); ?>';
+        var australiaCountryRegions = <?php echo $this->helper('directory')->getRegionJson(); ?>;
+        var addressSuggestTemplate = <?php echo Zend_Json::encode($this->getChildHtml('fontis.australia.address.suggestion')); ?>;
+        var addressFailureTemplate = <?php echo Zend_Json::encode($this->getChildHtml('fontis.australia.address.failure')); ?>;
     </script>
     <script src="<?php echo $this->getSkinUrl('fontis/australia/js/opcheckout.js') ?>"></script>
 <?php endif ?>

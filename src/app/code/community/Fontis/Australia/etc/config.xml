@@ -20,11 +20,7 @@
 <config>
     <modules>
         <Fontis_Australia>
-            <version>3.0.0</version>
-            <depends>
-                <Mage_Shipping />
-                <Mage_Payment />
-            </depends>
+            <version>3.0.10</version>
         </Fontis_Australia>
     </modules>
     <global>
@@ -107,29 +103,6 @@
             </order>
         </sales>
         <events>
-            <controller_front_init_before>
-                <observers>
-                    <fontis_australia_autoload>
-                        <type>singleton</type>
-                        <class>Fontis_Australia_Model_Observer</class>
-                        <method>autoload</method>
-                    </fontis_australia_autoload>
-                </observers>
-            </controller_front_init_before>
-            <adminhtml_block_html_before>
-                <observers>
-                    <fontis_australia_shipment_clickandsend_export_bulkaction>
-                        <type>singleton</type>
-                        <class>australia/shipping_carrier_clickandsend</class>
-                        <method>addExportToBulkAction</method>
-                    </fontis_australia_shipment_clickandsend_export_bulkaction>
-                    <fontis_australia_shipment_eparcel_export_bulkaction>
-                        <type>singleton</type>
-                        <class>australia/shipping_carrier_eparcel</class>
-                        <method>addExportToBulkAction</method>
-                    </fontis_australia_shipment_eparcel_export_bulkaction>
-                </observers>
-            </adminhtml_block_html_before>
             <checkout_type_onepage_save_order>
                 <observers>
                     <fontis_australia_payment_place>
@@ -183,6 +156,24 @@
             </adminhtml>
         </routers>
     </admin>
+    <adminhtml>
+        <events>
+            <adminhtml_block_html_before>
+                <observers>
+                    <fontis_australia_shipment_clickandsend_export_bulkaction>
+                        <type>singleton</type>
+                        <class>australia/shipping_carrier_clickandsend</class>
+                        <method>addExportToBulkAction</method>
+                    </fontis_australia_shipment_clickandsend_export_bulkaction>
+                    <fontis_australia_shipment_eparcel_export_bulkaction>
+                        <type>singleton</type>
+                        <class>australia/shipping_carrier_eparcel</class>
+                        <method>addExportToBulkAction</method>
+                    </fontis_australia_shipment_eparcel_export_bulkaction>
+                </observers>
+            </adminhtml_block_html_before>
+        </events>
+    </adminhtml>
     <default>
         <carriers>
             <australiapost>

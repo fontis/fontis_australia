@@ -24,7 +24,19 @@ class Fontis_Australia_Block_Bpay_Info extends Mage_Payment_Block_Info
     protected function _construct()
     {
         parent::_construct();
+        // This is the default template we want to use for this block. We need to set it here as this block
+        // is instantiated by core directly rather than in layout
         $this->setTemplate('fontis/australia/payment/bpay/info.phtml');
+    }
+
+    protected function _beforeToHtml()
+    {
+        // If we are not on a checkout page we want to display a different template
+        $request = $this->getRequest();
+        if (!($request->getRequestedRouteName() == 'checkout' && $request->getRequestedControllerName() == 'onepage')) {
+            $this->setTemplate('fontis/australia/payment/bpay/details.phtml');
+        }
+        parent::_beforeToHtml();
     }
 
     /**
@@ -37,6 +49,7 @@ class Fontis_Australia_Block_Bpay_Info extends Mage_Payment_Block_Info
         if (is_null($this->_billerCode)) {
             $this->_convertAdditionalData();
         }
+
         return $this->_billerCode;
     }
 
@@ -50,6 +63,7 @@ class Fontis_Australia_Block_Bpay_Info extends Mage_Payment_Block_Info
         if (is_null($this->_ref)) {
             $this->_convertAdditionalData();
         }
+
         return $this->_ref;
     }
 
@@ -61,6 +75,7 @@ class Fontis_Australia_Block_Bpay_Info extends Mage_Payment_Block_Info
     protected function _convertAdditionalData()
     {
         $details = @unserialize($this->getInfo()->getAdditionalData());
+
         if (is_array($details)) {
             $this->_billerCode = isset($details['biller_code']) ? (string) $details['biller_code'] : '';
             $this->_ref = isset($details['ref']) ? (string) $details['ref'] : '';
@@ -68,6 +83,7 @@ class Fontis_Australia_Block_Bpay_Info extends Mage_Payment_Block_Info
             $this->_billerCode = '';
             $this->_ref = '';
         }
+
         return $this;
     }
 

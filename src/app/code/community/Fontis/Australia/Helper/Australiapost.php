@@ -18,14 +18,37 @@
 
 /**
  * Collection of Australia Post utility functions.
+ *
+ * @category   Fontis
+ * @package    Fontis_Australia
  */
 class Fontis_Australia_Helper_Australiapost extends Mage_Core_Helper_Data
 {
     const XML_PATH_AUSTRALIA_POST_DEVELOPER_MODE = 'carriers/australiapost/developer_mode';
 
     /**
-     * Returns whether the Australia Post functionality is enabled in the
-     * backend.
+     * Determine if a provided config option is optional
+     *
+     * @param int $value Config value to check
+     * @return bool
+     */
+    protected function isOptional($value)
+    {
+        return (bool)($value == Fontis_Australia_Model_Shipping_Carrier_Australiapost_Source_Visibility::OPTIONAL);
+    }
+
+    /**
+     * Determine if the shipping address country is Australia
+     *
+     * @return bool
+     */
+    protected function isAustralia()
+    {
+        return $this->getCountryId() == Fontis_Australia_Helper_Data::AUSTRALIA_COUNTRY_CODE;
+    }
+
+    /**
+     * Returns whether the Australia Post functionality is enabled in the backend
      *
      * @return bool
      */
@@ -63,8 +86,7 @@ class Fontis_Australia_Helper_Australiapost extends Mage_Core_Helper_Data
      */
     public function isSignatureOnDelivery()
     {
-        return Fontis_Australia_Model_Shipping_Carrier_Australiapost_Source_Visibility::OPTIONAL == $this->getSignatureOnDelivery() &&
-            $this->getCountryId() == 'AU';
+        return $this->isOptional($this->getSignatureOnDelivery()) && $this->isAustralia();
     }
 
     /**
@@ -84,7 +106,7 @@ class Fontis_Australia_Helper_Australiapost extends Mage_Core_Helper_Data
      */
     public function isExtraCover()
     {
-        return Fontis_Australia_Model_Shipping_Carrier_Australiapost_Source_Visibility::OPTIONAL == $this->getExtraCover();
+        return $this->isOptional($this->getExtraCover());
     }
 
     /**
@@ -105,8 +127,7 @@ class Fontis_Australia_Helper_Australiapost extends Mage_Core_Helper_Data
      */
     public function isPickUp()
     {
-        return Fontis_Australia_Model_Shipping_Carrier_Australiapost_Source_Visibility::OPTIONAL == $this->getPickUp() &&
-            $this->getCountryId() != 'AU';
+        return $this->isOptional($this->getPickUp()) && $this->isAustralia();
     }
 
     /**
@@ -122,17 +143,20 @@ class Fontis_Australia_Helper_Australiapost extends Mage_Core_Helper_Data
     /**
      * Get all the simple items in an order.
      *
-     * @param Mage_Shipping_Model_Rate_Request $order
-     * @return array
+     * @param Mage_Shipping_Model_Rate_Request|Mage_Sales_Model_Order $order Order to retrieve items for
+     *
+     * @return array List of simple products from order
      */
-    public function getAllSimpleItems(Mage_Shipping_Model_Rate_Request $order)
+    public function getAllSimpleItems($order)
     {
         $items = array();
+
         foreach ($order->getAllItems() as $item) {
             if ($item->getProductType() == 'simple') {
                 $items[] = $item;
             }
         }
+
         return $items;
     }
 
@@ -140,26 +164,31 @@ class Fontis_Australia_Helper_Australiapost extends Mage_Core_Helper_Data
      * Get the attribute value for a product, e.g. its length attribute. If the
      * order only has one item and we've set which product attribute we want to
      * to get the attribute value from, use that product attribute. For all
-     * other cases, because we can't assume the dimensions of the order, just
-     * use the default config setting.
+     * other cases just use the default config setting, since we can't assume
+     * the dimensions of the order.
      *
-     * @param $order
-     * @param $attribute
-     * @return string
+     * @param Mage_Shipping_Model_Rate_Request $request Order object
+     * @param string $attribute Attribute code
+     *
+     * @return string Attribute value
      */
-    public function getAttribute($order, $attribute)
+    public function getAttribute(Mage_Shipping_Model_Rate_Request $request, $attribute)
     {
-        $items = $this->getAllSimpleItems($order);
+        // Check if an appropriate product attribute has been assigned in the backend and, if not,
+        // just return the default weight value as later code won't work
+        $attributeCode = Mage::getStoreConfig('carriers/australiapost/' . $attribute . '_attribute');
+        if (!$attributeCode) {
+            return Mage::getStoreConfig('carriers/australiapost/default_' . $attribute);
+        }
+
+        $items = $this->getAllSimpleItems($request);
         if (count($items) == 1) {
-            $attributeCode = Mage::getStoreConfig('carriers/australiapost/' . $attribute . '_attribute');
-            if (empty($attributeCode)) {
+            $attributeValue = $items[0]->getData($attributeCode);
+            if (empty($attributeValue)) {
                 return Mage::getStoreConfig('carriers/australiapost/default_' . $attribute);
             }
-            $_attribute = $items[0]->getData($attributeCode);
-            if (empty($_attribute)) {
-                return Mage::getStoreConfig('carriers/australiapost/default_' . $attribute);
-            }
-            return $_attribute;
+
+            return $attributeValue;
         } else {
             return Mage::getStoreConfig('carriers/australiapost/default_' . $attribute);
         }

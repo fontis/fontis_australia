@@ -31,7 +31,10 @@ class Fontis_Australia_Model_Address_Config_Backend
     public function toOptionArray()
     {
         return array(
-            array('value' => self::AUSTRALIA_POST, 'label' => Mage::helper('australia')->__('Australia Post Delivery Choices'))
+            array(
+                'value' => self::AUSTRALIA_POST,
+                'label' => Mage::helper('australia')->__('Australia Post Delivery Choices'),
+            ),
         );
     }
 }

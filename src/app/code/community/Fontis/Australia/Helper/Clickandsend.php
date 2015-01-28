@@ -15,9 +15,16 @@
  * @copyright  Copyright (c) 2014 Fontis Pty. Ltd. (http://www.fontis.com.au)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+
 use Auspost\Postage\Enum\ServiceCode;
 use Auspost\Postage\Enum\ServiceOption;
 
+/**
+ * Class Fontis_Australia_Helper_Clickandsend
+ *
+ * @category   Fontis
+ * @package    Fontis_Australia
+ */
 class Fontis_Australia_Helper_Clickandsend extends Mage_Core_Helper_Abstract
 {
     const XML_PATH_CLICK_AND_SEND_ENABLED = 'fontis_australia/clickandsend/active';

@@ -130,7 +130,11 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Product attribute code used for length. This will be used to calculate shipping rates for orders with only one product. For orders with more than one product (or if this field is not set) then Default Parcel Length will be used for calculating prices.</comment>
+                            <comment>
+                                Product attribute code used for length. This will be used to calculate shipping
+                                rates for orders with only one product. For orders with more than one product (or
+                                if this field is not set) then Default Parcel Length will be used for calculating prices.
+                            </comment>
                         </length_attribute>
                         <default_length>
                             <label>Default Parcel Length (cm)</label>
