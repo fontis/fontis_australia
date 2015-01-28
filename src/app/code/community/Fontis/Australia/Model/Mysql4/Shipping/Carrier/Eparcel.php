@@ -37,11 +37,11 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
         $table = $this->getMainTable();
         $storeId = $request->getStoreId();
 
-        $insuranceStep = (float)Mage::getStoreConfig('default/carriers/eparcel/insurance_step', $storeId);
-        $insuranceCostPerStep = (float)Mage::getStoreConfig('default/carriers/eparcel/insurance_cost_per_step', $storeId);
-        $signatureRequired = Mage::getStoreConfigFlag('default/carriers/eparcel/signature_required', $storeId);
-        if($signatureRequired) {
-            $signatureCost = (float)Mage::getStoreConfig('default/carriers/eparcel/signature_cost', $storeId);
+        $insuranceStep = (float)Mage::getStoreConfig('carriers/eparcel/insurance_step', $storeId);
+        $insuranceCostPerStep = (float)Mage::getStoreConfig('carriers/eparcel/insurance_cost_per_step', $storeId);
+        $signatureRequired = Mage::getStoreConfigFlag('carriers/eparcel/signature_required', $storeId);
+        if ($signatureRequired) {
+            $signatureCost = (float)Mage::getStoreConfig('carriers/eparcel/signature_cost', $storeId);
         } else {
             $signatureCost = 0;
         }
@@ -59,7 +59,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
             if ($request->getWarehouseId() > 0) {
                 $select->where('stock_id = ?', $request->getWarehouseId());
             }
-            
+
             switch($j) {
                 case 0:
                     $select->where(
@@ -297,10 +297,10 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                         } else {
                             $csvLine[9] = isset($csvLine[9]) ? (string)$csvLine[9] : null;
                         }
-                        
+
                         // If Multi Warehouse Ext is not used the value is 0 (as for no warehouse) otherwise is positive integer from table "warehouse"
                         if (isset($csvLine[10]) && intval($csvLine[10]) < 0) {
-                            $exceptions[] = Mage::helper('shipping')->__('Invalid Warehouse ID "%s" in the Row #%s', $csvLine[10], ($k+1));
+                            $exceptions[] = Mage::helper('shipping')->__('Invalid warehouse ID "%s" on row #%s', $csvLine[10], ($k+1));
                         } else {
                             $csvLine[10] = isset($csvLine[10]) ? (int)$csvLine[10] : 0;
                         }

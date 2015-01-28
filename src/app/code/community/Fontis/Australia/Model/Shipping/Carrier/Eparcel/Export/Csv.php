@@ -61,7 +61,7 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
                 $goodRecord = new Doghouse_Australia_Eparcel_Record_Good();
                 $goodRecord->originCountryCode = '';
                 $goodRecord->hsTariffCode = '';
-                $goodRecord->description = str_replace(',', '', $item['name']); // remove commas
+                $goodRecord->description = substr(str_replace(',', '', $item['name']), 0, 50); // remove commas and cap at maximum length
                 $goodRecord->productType = $this->getDefault('good/product_type');
                 $goodRecord->productClassification = null;
                 $goodRecord->quantity = $itemQuantity;
