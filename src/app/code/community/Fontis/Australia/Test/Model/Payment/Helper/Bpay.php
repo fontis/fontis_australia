@@ -6,9 +6,9 @@ class Fontis_Australia_Test_Model_Payment_Bpay_Helper_Bpay extends Fontis_Austra
 
     /**
      * Proxy method to expose the protected method.
-     * 
+     *
      * @param integer $number
-     * 
+     *
      * @return integer
      */
     public function _caculateRefMod10v5($number)
