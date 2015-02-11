@@ -22,6 +22,8 @@
 
     //============ Billing ============//
     var autocomplete_city_billing = new Element('div', { id: 'autocomplete_city_billing', 'class': 'fontis-postcode-autocomplete' });
+    var billing_completer;
+    var shipping_completer;
 
     if ($('billing:city')) {    
         $('billing:city').parentNode.appendChild(autocomplete_city_billing);
@@ -37,12 +39,16 @@
         }
     
         // Create the autocompleter and assign it to a variable for future use.
-        var completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", citySuggestUrl, {
+        billing_completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", citySuggestUrl, {
             afterUpdateElement: updateAddressBilling,
             minChars: 2,
             parameters: 'country=' + $F('billing:country_id')
         });
     }
+
+    $('billing:country_id').observe('change', function(event) {
+        billing_completer.options.defaultParams = 'country=' + $F('billing:country_id');
+    });
 
     //============ Shipping ============//
     var autocomplete_city_shipping = new Element('div', { id: 'autocomplete_city_shipping', 'class': 'fontis-postcode-autocomplete' });
@@ -61,11 +67,14 @@
         }
     
         // Create the autocompleter and assign it to a variable for future use.
-        var completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", citySuggestUrl, {
+        shipping_completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", citySuggestUrl, {
             afterUpdateElement: updateAddressShipping,
             minChars: 2,
             parameters: 'country=' + $F('shipping:country_id')
         });
     }
+    $('shipping:country_id').observe('change', function(event) {
+        shipping_completer.options.defaultParams = 'country=' + $F('shipping:country_id');
+    });
     </script>
 <?php endif ?>
