@@ -41,6 +41,8 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
             } elseif ($this->_getRequest()->getParam('shipping')) {
                 $tmp = $this->_getRequest()->getParam('shipping');
                 $this->_queryText = $tmp['city'];
+            } elseif ($this->_getRequest()->getParam('estimate_city')) {
+                $this->_queryText = $this->_getRequest()->getParam('estimate_city');
             } else {
                 $this->_queryText = $this->_getRequest()->getParam('city');
             }
