@@ -41,7 +41,7 @@
             // Create the autocompleter and assign it to a variable for future use.
             billing_completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", citySuggestUrl, {
                 afterUpdateElement: updateAddressBilling,
-                minChars: 2,
+                minChars: 3,
                 parameters: 'country=' + $F('billing:country_id')
             });
         }
@@ -69,7 +69,7 @@
             // Create the autocompleter and assign it to a variable for future use.
             shipping_completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", citySuggestUrl, {
                 afterUpdateElement: updateAddressShipping,
-                minChars: 2,
+                minChars: 3,
                 parameters: 'country=' + $F('shipping:country_id')
             });
         }

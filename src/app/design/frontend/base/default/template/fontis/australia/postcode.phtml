@@ -38,7 +38,7 @@
     // Create the autocompleter and assign it to a variable for future use.
     var completer = new Ajax.Autocompleter("city", "autocomplete_city", citySuggestUrl, {
         afterUpdateElement: updateAddress,
-        minChars: 2,
+        minChars: 3,
         parameters: 'country=' + $F('country')
     });
     </script>
