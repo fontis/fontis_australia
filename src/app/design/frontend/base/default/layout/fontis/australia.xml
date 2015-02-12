@@ -47,4 +47,12 @@
             <action method="addCss" ifconfig="fontis_australia/postcode_autocomplete/enabled"><stylesheet>fontis/australia/css/postcode-autocomplete.css</stylesheet></action>
         </reference>
     </checkout_cart_index>
+    <onestepcheckout_index_index>
+        <reference name="head">
+            <action method="addCss" ifconfig="fontis_australia/postcode_autocomplete/enabled"><stylesheet>fontis/australia/css/postcode-autocomplete.css</stylesheet></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="core/template" name="fontis_australia_autocomplete" template="fontis/australia/postcode-checkout.phtml"/>
+        </reference>
+    </onestepcheckout_index_index>
 </layout>
