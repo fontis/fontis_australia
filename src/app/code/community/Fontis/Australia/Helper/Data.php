@@ -100,17 +100,23 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
         if ($country != "AU") {
             return array();
         }
-
         $res = Mage::getSingleton('core/resource');
         /* @var $conn Varien_Db_Adapter_Pdo_Mysql */
         $conn = $res->getConnection('australia_read');
-        return $conn->fetchAll(
-            'SELECT au.*, dcr.region_id FROM ' . $res->getTableName('australia_postcode') . ' AS au
-             INNER JOIN ' . $res->getTableName('directory_country_region') . ' AS dcr ON au.region_code = dcr.code
-             and dcr.country_id = "AU"
-             WHERE city LIKE :city ORDER BY city, region_code, postcode
-             LIMIT ' . $this->getPostcodeAutocompleteMaxResults(),
-            array('city' => $this->getQueryText() . '%')
-        );
+        try {
+
+            return $conn->fetchAll(
+                'SELECT au.*, dcr.region_id FROM ' . $res->getTableName('australia_postcode') . ' AS au
+                 INNER JOIN ' . $res->getTableName('directory_country_region') . ' AS dcr ON au.region_code = dcr.code
+                 and dcr.country_id = "AU"
+                 WHERE city LIKE :city ORDER BY city, region_code, postcode
+                 LIMIT ' . $this->getPostcodeAutocompleteMaxResults(),
+                array('city' => $this->getQueryText() . '%')
+            );
+        }
+        catch (Exception $e) {
+            Mage::logException($e);
+        }
+        return false;
     }
 }
