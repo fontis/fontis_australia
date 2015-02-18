@@ -41,6 +41,8 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
             } elseif ($this->_getRequest()->getParam('shipping')) {
                 $tmp = $this->_getRequest()->getParam('shipping');
                 $this->_queryText = $tmp['city'];
+            } elseif ($this->_getRequest()->getParam('estimate_city')) {
+                $this->_queryText = $this->_getRequest()->getParam('estimate_city');
             } else {
                 $this->_queryText = $this->_getRequest()->getParam('city');
             }
@@ -55,6 +57,11 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
     public function getQueryCountry()
     {
         return $this->_getRequest()->getParam('country');
+    }
+
+    public function getQueryRegion()
+    {
+        return $this->_getRequest()->getParam('region_id');
     }
 
     public function getCitySuggestUrl()
@@ -99,15 +106,24 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
             return array();
         }
 
+        $region = $this->getQueryRegion();
+
         $res = Mage::getSingleton('core/resource');
         /* @var $conn Varien_Db_Adapter_Pdo_Mysql */
         $conn = $res->getConnection('australia_read');
+        $select =  "SELECT au.*, dcr.region_id " .
+                   "FROM " . $res->getTableName('australia_postcode') . " AS au " .
+                   "INNER JOIN " . $res->getTableName('directory_country_region') . " AS dcr ON au.region_code = dcr.code " .
+                   "AND dcr.country_id = 'AU' ";
+        if($region != '') {
+            $select .= " AND dcr.region_id = " . $region . " ";
+        }
+         $select .= "WHERE MATCH(au.city) AGAINST (:city IN BOOLEAN MODE) " .
+                    "ORDER BY city, region_code, postcode " .
+                    "LIMIT " . $this->getPostcodeAutocompleteMaxResults();
         return $conn->fetchAll(
-            'SELECT au.*, dcr.region_id FROM ' . $res->getTableName('australia_postcode') . ' AS au
-             INNER JOIN ' . $res->getTableName('directory_country_region') . ' AS dcr ON au.region_code = dcr.code
-             WHERE city LIKE :city ORDER BY city, region_code, postcode
-             LIMIT ' . $this->getPostcodeAutocompleteMaxResults(),
-            array('city' => '%' . $this->getQueryText() . '%')
+           $select,
+            array('city' => $this->getQueryText() . '*')
         );
     }
 }

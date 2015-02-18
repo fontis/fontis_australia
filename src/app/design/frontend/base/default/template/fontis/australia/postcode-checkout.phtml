@@ -18,54 +18,69 @@
 ?>
 <?php if (Mage::helper('australia')->isPostcodeAutocompleteEnabled()): ?>
     <script type="text/javascript">
-    var citySuggestUrl = '<?php echo $this->helper('australia')->getCitySuggestUrl(); ?>';
+        var citySuggestUrl = '<?php echo $this->helper('australia')->getCitySuggestUrl(); ?>';
 
-    //============ Billing ============//
-    var autocomplete_city_billing = new Element('div', { id: 'autocomplete_city_billing', 'class': 'fontis-postcode-autocomplete' });
+        //============ Billing ============//
+        var autocomplete_city_billing = new Element('div', { id: 'autocomplete_city_billing', 'class': 'fontis-postcode-autocomplete' });
+        var billing_completer;
+        var shipping_completer;
 
-    if ($('billing:city')) {    
-        $('billing:city').parentNode.appendChild(autocomplete_city_billing);
-    
-        function updateAddressBilling(text, item) {
-            // Update state and postcode fields
-            var id = item.id;
-            var tokens = id.split('-');
-    
-            // Assume item at index 1 is region_id, item at index 3 is postcode
-            $('billing:region_id').value = tokens[1];
-            $('billing:postcode').value = tokens[3];
+        if ($('billing:city')) {
+            $('billing:city').parentNode.appendChild(autocomplete_city_billing);
+
+            function updateAddressBilling(text, item) {
+                // Update state and postcode fields
+                var id = item.id;
+                var tokens = id.split('-');
+
+                // Assume item at index 1 is region_id, item at index 3 is postcode
+                $('billing:region_id').value = tokens[1];
+                $('billing:postcode').value = tokens[3];
+            }
+
+            // Create the autocompleter and assign it to a variable for future use.
+            billing_completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", citySuggestUrl, {
+                afterUpdateElement: updateAddressBilling,
+                minChars: 3,
+                parameters: 'country=' + $F('billing:country_id')+'&region_id=' +$F('billing:region_id')
+            });
         }
-    
-        // Create the autocompleter and assign it to a variable for future use.
-        var completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", citySuggestUrl, {
-            afterUpdateElement: updateAddressBilling,
-            minChars: 2,
-            parameters: 'country=' + $F('billing:country_id')
+
+        $('billing:country_id').observe('change', function(event) {
+            billing_completer.options.defaultParams = 'country=' + $F('billing:country_id')+'&region_id=' +$F('billing:region_id');
         });
-    }
+        $('billing:region_id').observe('change', function(event) {
+            billing_completer.options.defaultParams = 'country=' + $F('billing:country_id')+'&region_id=' +$F('billing:region_id');
+        });
 
-    //============ Shipping ============//
-    var autocomplete_city_shipping = new Element('div', { id: 'autocomplete_city_shipping', 'class': 'fontis-postcode-autocomplete' });
+        //============ Shipping ============//
+        var autocomplete_city_shipping = new Element('div', { id: 'autocomplete_city_shipping', 'class': 'fontis-postcode-autocomplete' });
 
-    if ($('shipping:city')) {    
-        $('shipping:city').parentNode.appendChild(autocomplete_city_shipping);
-    
-        function updateAddressShipping(text, item) {
-            // Update state and postcode fields
-            var id = item.id;
-            var tokens = id.split('-');
-    
-            // Assume item at index 1 is region_id, item at index 3 is postcode
-            $('shipping:region_id').value = tokens[1];
-            $('shipping:postcode').value = tokens[3];
+        if ($('shipping:city')) {
+            $('shipping:city').parentNode.appendChild(autocomplete_city_shipping);
+
+            function updateAddressShipping(text, item) {
+                // Update state and postcode fields
+                var id = item.id;
+                var tokens = id.split('-');
+
+                // Assume item at index 1 is region_id, item at index 3 is postcode
+                $('shipping:region_id').value = tokens[1];
+                $('shipping:postcode').value = tokens[3];
+            }
+
+            // Create the autocompleter and assign it to a variable for future use.
+            shipping_completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", citySuggestUrl, {
+                afterUpdateElement: updateAddressShipping,
+                minChars: 3,
+                parameters: 'country=' + $F('shipping:country_id')+'&region_id=' +$F('shipping:region_id')
+            });
         }
-    
-        // Create the autocompleter and assign it to a variable for future use.
-        var completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", citySuggestUrl, {
-            afterUpdateElement: updateAddressShipping,
-            minChars: 2,
-            parameters: 'country=' + $F('shipping:country_id')
+        $('shipping:country_id').observe('change', function(event) {
+            shipping_completer.options.defaultParams = 'country=' + $F('shipping:country_id')+'&region_id=' +$F('shipping:region_id');
         });
-    }
+        $('shipping:region_id').observe('change', function(event) {
+            shipping_completer.options.defaultParams = 'country=' + $F('shipping:country_id')+'&region_id=' +$F('shipping:region_id');
+        });
     </script>
 <?php endif ?>

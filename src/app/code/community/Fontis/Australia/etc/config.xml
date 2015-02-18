@@ -20,14 +20,14 @@
 <config>
     <modules>
         <Fontis_Australia>
-            <version>2.5.0</version>
+            <version>2.5.1</version>
             <depends>
                 <Mage_Shipping />
                 <Mage_Payment />
             </depends>
         </Fontis_Australia>
     </modules>
-    <crontab>
+  <!--  <crontab>
         <jobs>
             <Fontis_Australia_Shoppingdotcom>
                 <schedule>
@@ -70,22 +70,22 @@
                 </run>
             </Fontis_Australia_Googleproducts>
         </jobs>
-    </crontab>
+    </crontab> -->
     <global>
-        <models>
+       <!-- <models>
             <australia>
                 <class>Fontis_Australia_Model</class>
                 <resourceModel>australia_mysql4</resourceModel>
             </australia>
             <australia_mysql4>
                 <class>Fontis_Australia_Model_Mysql4</class>
-                <entities>
+                <!-<entities>
                     <eparcel>
                         <table>australia_eparcel</table>
                     </eparcel>
-                </entities>
-            </australia_mysql4>
-        </models>
+                </entities> -->
+          <!--  </australia_mysql4>
+        </models> -->
         <helpers>
             <australia>
                 <class>Fontis_Australia_Helper</class>
@@ -116,7 +116,7 @@
                 </connection>
             </australia_read>
         </resources>
-        <sales>
+       <!-- <sales>
             <shipping>
                 <carriers>
                     <australiapost>
@@ -149,8 +149,8 @@
                     </new>
                 </states>
             </order>
-        </sales>
-        <events>
+        </sales> -->
+       <!-- <events>
             <adminhtml_block_html_before>
                 <observers>
                     <fontis_australia_shipment_eparcel_export_bulkaction>
@@ -168,7 +168,7 @@
                     </fontis_australia_payment_place>
                 </observers>
             </checkout_type_onepage_save_order>
-        </events>
+        </events> -->
     </global>
     <frontend>
         <routers>
@@ -189,7 +189,7 @@
         </layout>
     </frontend>
     <default>
-        <carriers>
+     <!--   <carriers>
             <australiapost>
                 <active>0</active>
                 <sallowspecific>0</sallowspecific>
@@ -249,7 +249,7 @@
                 <allowspecific>0</allowspecific>
                 <message>Please quote order number (displayed after checkout confirmation) when making your deposit. Order will be processed once payment has been received.</message>
             </directdeposit_au>
-        </payment>
+        </payment> -->
 
         <fontis_australia>
             <postcode_autocomplete>
@@ -257,7 +257,7 @@
             </postcode_autocomplete>
         </fontis_australia>
 
-        <fontis_feeds>
+       <!-- <fontis_feeds>
             <shoppingdotcomfeed>
                 <output>shoppingdotcom-feeds/</output>
                 <include_all_products>1</include_all_products>
@@ -283,6 +283,6 @@
                 <include_all_products>1</include_all_products>
                 <default_condition>new</default_condition>
             </googleproductsfeed>
-        </fontis_feeds>
+        </fontis_feeds> -->
     </default>
 </config>
