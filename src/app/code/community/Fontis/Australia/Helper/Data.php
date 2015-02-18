@@ -111,17 +111,19 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
         $res = Mage::getSingleton('core/resource');
         /* @var $conn Varien_Db_Adapter_Pdo_Mysql */
         $conn = $res->getConnection('australia_read');
-        $select =  'SELECT au.*, dcr.region_id FROM ' . $res->getTableName('australia_postcode') . ' AS au
-             INNER JOIN ' . $res->getTableName('directory_country_region') . ' AS dcr ON au.region_code = dcr.code
-             and dcr.country_id = "AU"';
+        $select =  "SELECT au.*, dcr.region_id " .
+                   "FROM " . $res->getTableName('australia_postcode') . " AS au " .
+                   "INNER JOIN " . $res->getTableName('directory_country_region') . " AS dcr ON au.region_code = dcr.code " .
+                   "AND dcr.country_id = 'AU' ";
         if($region != '') {
-            $select .= ' and dcr.region_id = ' .$region;
+            $select .= " AND dcr.region_id = " . $region . " ";
         }
-         $select .= ' WHERE city LIKE :city ORDER BY city, region_code, postcode
-             LIMIT ' . $this->getPostcodeAutocompleteMaxResults();
+         $select .= "WHERE MATCH(au.city) AGAINST (:city IN BOOLEAN MODE) " .
+                    "ORDER BY city, region_code, postcode " .
+                    "LIMIT " . $this->getPostcodeAutocompleteMaxResults();
         return $conn->fetchAll(
            $select,
-            array('city' => $this->getQueryText() . '%')
+            array('city' => $this->getQueryText() . '*')
         );
     }
 }
