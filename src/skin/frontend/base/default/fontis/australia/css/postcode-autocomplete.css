@@ -18,6 +18,9 @@
 .fontis-postcode-autocomplete li.odd {
     background-color: #ffffff;
 }
+.fontis-postcode-autocomplete li.even {
+    background-color: #ffffff;
+}
 .fontis-postcode-autocomplete li.selected {
     background-color:#ffffff;
 }
