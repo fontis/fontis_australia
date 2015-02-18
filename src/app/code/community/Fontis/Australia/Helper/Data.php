@@ -59,6 +59,11 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
         return $this->_getRequest()->getParam('country');
     }
 
+    public function getQueryRegion()
+    {
+        return $this->_getRequest()->getParam('region_id');
+    }
+
     public function getCitySuggestUrl()
     {
         return $this->_getUrl('australia/ajax/suggest', array('_secure'=>true));
@@ -100,23 +105,23 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
         if ($country != "AU") {
             return array();
         }
+
+        $region = $this->getQueryRegion();
+
         $res = Mage::getSingleton('core/resource');
         /* @var $conn Varien_Db_Adapter_Pdo_Mysql */
         $conn = $res->getConnection('australia_read');
-        try {
-
-            return $conn->fetchAll(
-                'SELECT au.*, dcr.region_id FROM ' . $res->getTableName('australia_postcode') . ' AS au
-                 INNER JOIN ' . $res->getTableName('directory_country_region') . ' AS dcr ON au.region_code = dcr.code
-                 and dcr.country_id = "AU"
-                 WHERE city LIKE :city ORDER BY city, region_code, postcode
-                 LIMIT ' . $this->getPostcodeAutocompleteMaxResults(),
-                array('city' => $this->getQueryText() . '%')
-            );
+        $select =  'SELECT au.*, dcr.region_id FROM ' . $res->getTableName('australia_postcode') . ' AS au
+             INNER JOIN ' . $res->getTableName('directory_country_region') . ' AS dcr ON au.region_code = dcr.code
+             and dcr.country_id = "AU"';
+        if($region != '') {
+            $select .= ' and dcr.region_id = ' .$region;
         }
-        catch (Exception $e) {
-            Mage::logException($e);
-        }
-        return false;
+         $select .= ' WHERE city LIKE :city ORDER BY city, region_code, postcode
+             LIMIT ' . $this->getPostcodeAutocompleteMaxResults();
+        return $conn->fetchAll(
+           $select,
+            array('city' => $this->getQueryText() . '%')
+        );
     }
 }

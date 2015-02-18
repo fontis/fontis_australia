@@ -42,12 +42,15 @@
             billing_completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", citySuggestUrl, {
                 afterUpdateElement: updateAddressBilling,
                 minChars: 3,
-                parameters: 'country=' + $F('billing:country_id')
+                parameters: 'country=' + $F('billing:country_id')+'&region_id=' +$F('billing:region_id')
             });
         }
 
         $('billing:country_id').observe('change', function(event) {
-            billing_completer.options.defaultParams = 'country=' + $F('billing:country_id');
+            billing_completer.options.defaultParams = 'country=' + $F('billing:country_id')+'&region_id=' +$F('billing:region_id');
+        });
+        $('billing:region_id').observe('change', function(event) {
+            billing_completer.options.defaultParams = 'country=' + $F('billing:country_id')+'&region_id=' +$F('billing:region_id');
         });
 
         //============ Shipping ============//
@@ -70,11 +73,14 @@
             shipping_completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", citySuggestUrl, {
                 afterUpdateElement: updateAddressShipping,
                 minChars: 3,
-                parameters: 'country=' + $F('shipping:country_id')
+                parameters: 'country=' + $F('shipping:country_id')+'&region_id=' +$F('shipping:region_id')
             });
         }
         $('shipping:country_id').observe('change', function(event) {
-            shipping_completer.options.defaultParams = 'country=' + $F('shipping:country_id');
+            shipping_completer.options.defaultParams = 'country=' + $F('shipping:country_id')+'&region_id=' +$F('shipping:region_id');
+        });
+        $('shipping:region_id').observe('change', function(event) {
+            shipping_completer.options.defaultParams = 'country=' + $F('shipping:country_id')+'&region_id=' +$F('shipping:region_id');
         });
     </script>
 <?php endif ?>
