@@ -39,7 +39,13 @@
     var completer = new Ajax.Autocompleter("city", "autocomplete_city", citySuggestUrl, {
         afterUpdateElement: updateAddress,
         minChars: 3,
-        parameters: 'country=' + $F('country')
+        parameters: 'country=' + $F('country')+'&region_id=' +$F('region_id')
+    });
+    $('country').observe('change', function(event) {
+        completer.options.defaultParams = 'country=' + $F('country')+'&region_id=' +$F('region_id');
+    });
+    $('region_id').observe('change', function(event) {
+        completer.options.defaultParams = 'country=' + $F('country')+'&region_id=' +$F('region_id');
     });
     </script>
 <?php endif ?>
