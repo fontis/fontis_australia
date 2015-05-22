@@ -3,34 +3,35 @@
  * @package    Fontis_Australia
  */
 
-
-
-class Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Csv
-extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
+class Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Csv extends Fontis_Australia_Model_Shipping_Carrier_Common_Export_Csv_Abstract
 {
     const ENCLOSURE = '"';
     const DELIMITER = ',';
 
     const DEBUG = false;
 
+    /**
+     * @var array
+     */
     protected $_defaults = null;
 
     /**
      * Implementation of abstract method to export given orders to csv file in var/export.
      *
-     * @param $orders List of orders of type Mage_Sales_Model_Order or order ids to export.
-     * @return String The name of the written csv file in var/export
+     * @param int[]|Mage_Sales_Model_Order[] $orders List of orders of type Mage_Sales_Model_Order or order IDs to export.
+     * @return string The name of the written csv file in var/export
+     * @throws Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Exception
      */
     public function exportOrders($orders)
     {
         $eparcel = new Doghouse_Australia_Eparcel();
 
         foreach ($orders as $order) {
-            if(!($order instanceof Mage_Sales_Model_Order)) {
+            if (!($order instanceof Mage_Sales_Model_Order)) {
                 $order = Mage::getModel('sales/order')->load($order);
             }
 
-            if ( ! $order->getShippingCarrier() instanceof Fontis_Australia_Model_Shipping_Carrier_Eparcel ) {
+            if (!$order->getShippingCarrier() instanceof Fontis_Australia_Model_Shipping_Carrier_Eparcel) {
                 throw new Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Exception(
                     "Order #" . $order->getIncrementId() . " doesn't use Australia Post eParcel as its carrier!"
                 );
@@ -42,13 +43,17 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
 
             foreach ($orderItems as $item) {
                 /* Check item is valid */
-                if ( $item->isDummy() ) continue;
+                if ($item->isDummy()) {
+                    continue;
+                }
 
                 /* Calculate item quantity */
                 $itemQuantity = $item->getData('qty_ordered') - $item->getData('qty_canceled') - $item->getData('qty_shipped');
 
                 /* Check item quantity */
-                if ( $itemQuantity == 0 ) continue;
+                if ($itemQuantity == 0) {
+                    continue;
+                }
 
                 /*
                  * Populate Good Record
@@ -61,7 +66,7 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
                 $goodRecord = new Doghouse_Australia_Eparcel_Record_Good();
                 $goodRecord->originCountryCode = '';
                 $goodRecord->hsTariffCode = '';
-                $goodRecord->description = str_replace(',', '', $item['name']); // remove commas
+                $goodRecord->description = substr(str_replace(',', '', $item['name']), 0, 50); // remove commas and cap at maximum length
                 $goodRecord->productType = $this->getDefault('good/product_type');
                 $goodRecord->productClassification = null;
                 $goodRecord->quantity = $itemQuantity;
@@ -126,6 +131,11 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
         return $parcel;
     }
 
+    /**
+     * @param Doghouse_Australia_Eparcel $eparcel
+     * @param Doghouse_Australia_Eparcel_Parcel $parcel
+     * @return bool
+     */
     protected function closeParcel(Doghouse_Australia_Eparcel $eparcel, Doghouse_Australia_Eparcel_Parcel $parcel)
     {
         $articleRecordClass = (bool) $this->getDefault('parcel/use_cubicweight') ?
@@ -148,8 +158,7 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
             foreach ($parcel->getGoodRecords() as $_goodRecord) {
                 $eparcel->addRecord($_goodRecord);
             }
-        }
-        else {
+        } else {
             $goodRecord = new Doghouse_Australia_Eparcel_Record_Good();
             $goodRecord->originCountryCode = '';
             $goodRecord->hsTariffCode = '';
@@ -215,6 +224,10 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
         return $consignmentRecord;
     }
 
+    /**
+     * @param Mage_Sales_Model_Order $order
+     * @return string
+     */
     protected function _getChargeCode(Mage_Sales_Model_Order $order)
     {
         list ($carrierCode, $chargeCode) = explode('_', $order->getData('shipping_method'));
@@ -239,15 +252,19 @@ extends Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Abstract
             Mage::getStoreConfig('doghouse_eparcelexport/charge_codes/default_charge_code_individual');
     }
 
+    /**
+     * @param string $key
+     * @return mixed
+     */
     protected function getDefault($key)
     {
-        if (! is_array($this->_defaults)) {
+        if (!is_array($this->_defaults)) {
             $this->_defaults = Mage::getStoreConfig('doghouse_eparcelexport');
         }
 
         $_defaults = $this->_defaults;
 
-        foreach (explode('/',$key) as $keyPart) {
+        foreach (explode('/', $key) as $keyPart) {
             $_defaults = $_defaults[$keyPart];
         }
 

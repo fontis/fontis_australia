@@ -24,12 +24,16 @@
  */
 class Fontis_Australia_Model_Config_CustomerGroupAccess
 {
+    /**
+     * @return array
+     */
     public function toOptionArray()
     {
+        $helper = Mage::helper('adminhtml');
         return array(
-            array('value' => 0, 'label' => Mage::helper('adminhtml')->__('No restrictions')),
-            array('value' => 1, 'label' => Mage::helper('adminhtml')->__('Only allow group ...')),
-            array('value' => 2, 'label' => Mage::helper('adminhtml')->__('Allow all groups except ...'))
+            array('value' => 0, 'label' => $helper->__('No restrictions')),
+            array('value' => 1, 'label' => $helper->__('Only allow group ...')),
+            array('value' => 2, 'label' => $helper->__('Allow all groups except ...')),
         );
     }
 }

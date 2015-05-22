@@ -18,6 +18,9 @@
 
 /**
  * Data helper
+ *
+ * @category   Fontis
+ * @package    Fontis_Australia
  */
 class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
 {
@@ -27,10 +30,14 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
 
     const MAX_AUTOCOMPLETE_RESULTS_DEFAULT = 20;
 
+    const AUSTRALIA_COUNTRY_CODE = 'AU';
+
     protected $_queryText;
 
     /**
      * Gets the query text for city lookups in the postcode database.
+     *
+     * @return string
      */
     public function getQueryText()
     {
@@ -52,14 +59,20 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
         return $this->_queryText;
     }
 
+    /**
+     * @return string
+     */
     public function getQueryCountry()
     {
         return $this->_getRequest()->getParam('country');
     }
 
+    /**
+     * @return string
+     */
     public function getCitySuggestUrl()
     {
-        return $this->_getUrl('australia/ajax/suggest', array('_secure'=>true));
+        return $this->_getUrl('australia/ajax/suggest', array('_secure' => true));
     }
 
     /**
