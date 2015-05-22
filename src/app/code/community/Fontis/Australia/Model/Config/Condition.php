@@ -18,6 +18,9 @@
 
 class Fontis_Australia_Model_Config_Condition
 {
+    /**
+     * @return array
+     */
     public function toOptionArray()
     {
         return array(

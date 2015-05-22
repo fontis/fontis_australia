@@ -1,0 +1,43 @@
+<?php
+/**
+ * Fontis Australia Extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Fontis
+ * @package    Fontis_Australia
+ * @author     Chris Norton
+ * @copyright  Copyright (c) 2014 Fontis Pty. Ltd. (http://www.fontis.com.au)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<?php $billerCode = $this->getBillerCode(); ?>
+<?php $customerReferenceNumber = $this->getRef(); ?>
+<?php $acceptCreditCards = Mage::getStoreConfig('payment/bpay/accept_credit_cards'); ?>
+<div id="bpay" style="border: 2px solid rgb(16, 32, 75); margin: 0; padding: 6px; width: 238px; font-family: Arial,Helvetica,sans-serif; background-color: rgb(255, 255, 255);">
+    <div class="bpayLogo" style="border: 2px solid rgb(20, 44, 97); width: 55px; height: 87px; float: left;">
+        <img alt="BPAY" src="<?php echo $this->getSkinUrl('fontis/australia/images/bpay.png'); ?>" height="82" width="51">
+    </div>
+    <div class="customerReferenceBox" style="border: 2px solid rgb(20, 44, 97); padding: 0 8px; height: 87px; width: 158px; margin-left: 60px; margin-bottom: 4px;">
+        <p class="customerReferenceBoxText" style="font-size: 13px; text-transform: capitalize; color: rgb(20, 44, 97); white-space: nowrap; line-height: 22px; font-weight: normal;">
+            <b>Biller Code</b>: <?php echo $billerCode; ?><br>
+            <b>Ref</b>: <?php echo $customerReferenceNumber; ?><br>
+        </p>
+    </div>
+    <?php if ($acceptCreditCards): ?>
+        <div>
+            <p class="billerTextHeading" style="font-size: 11px; text-transform: capitalize; color: rgb(20, 44, 97); white-space: nowrap; line-height: 20px; font-weight: bold;">Telephone &amp; Internet Banking &mdash; BPAY&reg;</p>
+            <p class="billerText" style="font-size: 11px; color: rgb(20, 44, 97);">Contact your bank or financial institution to make this payment from your cheque, savings, debit, credit card or transaction account. More info: www.bpay.com.au</p>
+        </div>
+    <?php else: ?>
+        <div>
+            <p class="billerTextHeading" style="font-size: 11px; text-transform: capitalize; color: rgb(20, 44, 97); white-space: nowrap; line-height: 20px; font-weight: bold;">Telephone &amp; Internet Banking &mdash; BPAY&reg;</p>
+            <p class="billerText" style="font-size: 11px; color: rgb(20, 44, 97);">Contact your bank or financial institution to make this payment from your cheque, savings, debit or transaction account. More info: www.bpay.com.au</p>
+        </div>
+    <?php endif; ?>
+</div>

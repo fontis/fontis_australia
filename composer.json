@@ -1,7 +1,7 @@
 {
     "name":"fontis/australia",
     "type":"magento-module",
-    "license":"Open Software License (OSL 3.0)",
+    "license":"OSL-3.0",
     "description":"This extension is intended to provide most of the functionality needed to run a Magento store in Australia. This includes all essential payment and shipping methods as well as small localisations such as adding the store's ABN, adding Australian states and territories to the region directory and adding in a postcode database.",
     "homepage":"http://www.fontis.com.au",
     "authors":[
@@ -10,6 +10,11 @@
             "email":"magento@fontis.com.au"
         }
     ],
+    "require": {
+        "magento-hackathon/magento-composer-installer": "*",
+        "fontis/auspost-api-php": "1.x",
+        "fontis/composer-autoloader" : "*"
+    },
     "extra":{
         "magento_connect":{
             "channel":"community",
@@ -17,7 +22,7 @@
             "php_max":"6.0.0",
             "stability":"stable",
             "license_uri":"http://opensource.org/licenses/osl-3.0.php",
-            "summary":"Broad extension that provides functionality for Australian stores.",
+            "summary":"Adds Australian states and territories, support for Australia Post and eParcel shipping, direct deposit and BPAY payment methods, and postcode autocomplete for Australian stores.",
             "content":[
                 {
                     "type":"magecommunity",

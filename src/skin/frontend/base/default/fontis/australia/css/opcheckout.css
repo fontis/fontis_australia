@@ -1,0 +1,58 @@
+/** Core styles for the modal */
+.dialog {
+    display: block;
+    position: absolute;
+}
+
+.dialog table.table_window  {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    margin: 0px;
+    padding:0px;
+}
+
+.dialog table.table_window td , .dialog table.table_window th {
+    padding: 0;
+}
+
+.dialog .title_window {
+    -moz-user-select:none;
+}
+/** End core styles for the modal */
+
+.address-validator-message {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.address-validator-message li {
+    margin-bottom: 4px;
+}
+
+.address-validator-message .title {
+    display: inline-block;
+    font-weight: bold;
+    width: 84px;
+}
+
+.address-validator-buttons .submit-button {
+    margin-right: 10px;
+    padding: 3px;
+}
+
+.address-validator-buttons .cancel-link {
+    vertical-align: middle;
+}
+
+.address-validator-message .incorrect-address-title {
+    font-weight: bold;
+}
+
+#address-validator-window_content {
+    min-height: 100px;
+}
+
+.address-validator .magento_message {
+    padding: 10px 18px;
+}

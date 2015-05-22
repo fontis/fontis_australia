@@ -26,10 +26,13 @@
  */
 class Fontis_Australia_Model_Shipping_Config_Eparcelcondition
 {
-	public function toOptionArray()
-	{
-		return array(
-			array('value' => 'package_weight', 'label' => Mage::helper('adminhtml')->__('Weight vs Destination')),
-		);
-	}
+    /**
+     * @return array
+     */
+    public function toOptionArray()
+    {
+        return array(
+            array('value' => 'package_weight', 'label' => Mage::helper('adminhtml')->__('Weight vs Destination')),
+        );
+    }
 }

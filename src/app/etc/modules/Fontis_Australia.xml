@@ -22,6 +22,10 @@
         <Fontis_Australia>
             <active>true</active>
             <codePool>community</codePool>
+            <depends>
+                <Mage_Shipping />
+                <Mage_Payment />
+            </depends>
         </Fontis_Australia>
     </modules>
 </config>

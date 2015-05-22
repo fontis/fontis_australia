@@ -30,7 +30,7 @@
                 <australiapost translate="label" module="australia">
                     <label>Australia Post</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>1</sort_order>
+                    <sort_order>1000</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -39,173 +39,159 @@
                             <label>Enabled</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1</sort_order>
+                            <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </active>
-                        <name translate="label">
-                            <label>Method name prefix</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>3</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Shown before each shipping method</comment>
-                        </name>
-
-                        <shipping_methods translate="label">
-                            <label>Allowed Shipping Methods</label>
-                            <frontend_type>multiselect</frontend_type>
-                            <source_model>australia/shipping_config_shippingmethods</source_model>
-                            <sort_order>3</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </shipping_methods>
-
-                         <handling_type translate="label">
-                            <label>Calculate Handling Fee</label>
+                        <developer_mode translate="label comment">
+                            <label>Developer Mode</label>
                             <frontend_type>select</frontend_type>
-                            <source_model>shipping/source_handlingType</source_model>
-                            <sort_order>7</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </handling_type>
-                        <handling_fee translate="label">
-                            <label>Handling Fee</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>8</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </handling_fee>
-                        <weight_units translate="label">
-                            <label>Products Use Units</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>australia/shipping_config_weightunits</source_model>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Specify the weight units that products use - they will be converted to grams</comment>
-                        </weight_units>
-                        <registered_post translate="label">
-                        	<label>Use Registered Post</label>
+                            <comment>Use the Australia Post test environment to get shipping rates. Not recommended for production use.</comment>
+                        </developer_mode>
+                        <api_key translate="label">
+                            <label>API Key</label>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Register for an API key at: http://auspost.com.au/devcentre/registration.html</comment>
+                        </api_key>
+                        <allowed_methods translate="label">
+                            <label>Allowed Methods</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>australia/shipping_carrier_australiapost_source_method</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </allowed_methods>
+                        <signature_on_delivery>
+                            <label>Signature on Delivery</label>
                             <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>22</sort_order>
+                            <source_model>australia/shipping_carrier_australiapost_source_visibility</source_model>
+                            <sort_order>50</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Will enable extra options for insurance, calculated at standard Australia Post rates, and will use Registered Post methods instead of regular post.</comment>
-                        </registered_post>
-                        <registered_post_charge translate="label">
-                        	<label>Registered Post Charge</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>23</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Surcharge that is added to shipping when using Registered Post.</comment>
-                        </registered_post_charge>
-                        <delivery_confirmation translate="label">
-                        	<label>Use Delivery Confirmation</label>
+                            <comment>Controls whether shipping methods with the Signature on Delivery option are shown. If set to 'Required', only shipping methods with this option will be shown. If set to 'Never', shipping methods with this option will not be shown. If set to 'Optional', shipping methods both with and without this option will be shown, allowing the customer to choose.</comment>
+                        </signature_on_delivery>
+                        <extra_cover>
+                            <label>Extra Cover</label>
                             <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>24</sort_order>
+                            <source_model>australia/shipping_carrier_australiapost_source_visibility</source_model>
+                            <sort_order>60</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The sender of a Registered Post article receives a card signed by the recipient. A $1.85 surcharge will be applied for domestic shipments, $3.30 for international.</comment>
-                        </delivery_confirmation>
-                        <person_to_person translate="label">
-                        	<label>Use Person-to-Person</label>
+                            <comment>Controls whether shipping methods with the Extra Cover option are shown (see above).</comment>
+                        </extra_cover>
+                        <pick_up>
+                            <label>Pick Up (Metro Only)</label>
                             <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>26</sort_order>
+                            <source_model>australia/shipping_carrier_australiapost_source_visibility</source_model>
+                            <sort_order>70</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The Registered Post article must be signed for by the person named in the address. A $5.50 surcharge will be applied.</comment>
-                        </person_to_person>
-                        <sort_order translate="label">
-                            <label>Sort order</label>
+                            <comment>Controls whether shipping methods with the Pick Up option are shown (see above).</comment>
+                        </pick_up>
+                        <sallowspecific label="label">
+                            <label>Ship to Applicable Countries</label>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>80</sort_order>
+                            <frontend_class>shipping-applicable-country</frontend_class>
+                            <source_model>adminhtml/system_config_source_shipping_allspecificcountries</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sallowspecific>
+                        <specificcountry translate="label">
+                            <label>Ship to Specific Countries</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <sort_order>90</sort_order>
+                            <source_model>adminhtml/system_config_source_country</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <can_be_empty>1</can_be_empty>
+                        </specificcountry>
+                        <length_attribute>
+                            <label>Length Attribute</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>100</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </sort_order>
-                        <title translate="label">
-                            <label>Title</label>
+                            <comment>
+                                Product attribute code used for length. This will be used to calculate shipping
+                                rates for orders with only one product. For orders with more than one product (or
+                                if this field is not set) then Default Parcel Length will be used for calculating prices.
+                            </comment>
+                        </length_attribute>
+                        <default_length>
+                            <label>Default Parcel Length (cm)</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>2</sort_order>
+                            <sort_order>110</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </title>
-                        <sallowspecific translate="label">
-                            <label>Ship to applicable countries</label>
-                            <frontend_type>select</frontend_type>
-                            <sort_order>90</sort_order>
-                            <frontend_class>shipping-applicable-country</frontend_class>
-                            <source_model>adminhtml/system_config_source_shipping_allspecificcountries</source_model>
+                        </default_length>
+                        <width_attribute>
+                            <label>Width Attribute</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>120</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </sallowspecific>
-                        <specificcountry translate="label">
-                            <label>Ship to Specific countries</label>
-                            <frontend_type>multiselect</frontend_type>
-                            <sort_order>91</sort_order>
-                            <source_model>adminhtml/system_config_source_country</source_model>
+                            <comment>Product attribute code used for width (see above).</comment>
+                        </width_attribute>
+                        <default_width>
+                            <label>Default Parcel Width (cm)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>130</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </specificcountry>
-                        <showmethod translate="label">
-                            <label>Show method if not applicable</label>
-                            <frontend_type>select</frontend_type>
-                            <sort_order>92</sort_order>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </default_width>
+                        <height_attribute>
+                            <label>Height Attribute</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>140</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </showmethod>
-                        <specificerrmsg translate="label">
-                            <label>Displayed Error Message</label>
-                            <frontend_type>textarea</frontend_type>
-                            <sort_order>93</sort_order>
+                            <comment>Product attribute code used for height (see above).</comment>
+                        </height_attribute>
+                        <default_height>
+                            <label>Default Parcel Height (cm)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>150</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </specificerrmsg>
-                        <cache translate="label">
-                            <label>Cache Lookups</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>999</sort_order>
+                        </default_height>
+                        <default_weight>
+                            <label>Default Parcel Weight (kg)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>160</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </cache>
-                        <debug translate="label">
-                            <label>Debug</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1000</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </debug>
+                        </default_weight>
                     </fields>
                 </australiapost>
                 <eparcel translate="label">
                     <label>Australia Post eParcel</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>2</sort_order>
+                    <sort_order>1001</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -774,7 +760,7 @@
                 <postcode_autocomplete translate="label">
                     <label>Postcode Autocomplete</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>30</sort_order>
+                    <sort_order>10</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -799,381 +785,252 @@
                         </max_results>
                     </fields>
                 </postcode_autocomplete>
+                <address_validation translate="label">
+                    <label>Address Validation</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label comment">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Turn on address validation during the billing and shipping sections of the checkout.</comment>
+                        </enabled>
+                        <backend translate="label comment">
+                            <label>Backend</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>australia/address_config_backend</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>You will need to fill in the Australia Post Delivery Choices section to use the Australia Post address validation service.</comment>
+                        </backend>
+                        <delivery_choices_developer_mode translate="label">
+                            <label>Delivery Choices Developer Mode</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><backend>australia/address_australiapost</backend></depends>
+                        </delivery_choices_developer_mode>
+                        <delivery_choices_account_email translate="label comment">
+                            <label>Delivery Choices Email Address</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><backend>australia/address_australiapost</backend></depends>
+                            <comment>Your Australia Post Delivery Choices email address is required.</comment>
+                        </delivery_choices_account_email>
+                        <delivery_choices_account_password translate="label comment">
+                            <label>Delivery Choices Password</label>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><backend>australia/address_australiapost</backend></depends>
+                            <comment>Your Australia Post Delivery Choices password is required.</comment>
+                        </delivery_choices_account_password>
+                    </fields>
+                </address_validation>
+                <clickandsend translate="label">
+                    <label>Australia Post Click &amp; Send</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment>Allows merchants to export a CSV of selected orders into the Click &amp; Send service for bulk processing. Please note the generated CSV file won't work if you select "Pick and Ship" when importing into Click &amp; Send.</comment>
+                    <fields>
+                        <active translate="label comment">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Please note you won't be able to import the Courier Post shipping methods or standard shipping methods that have options, e.g. "Parcel Post + Extra Cover", into Click &amp; Send.</comment>
+                        </active>
+                        <filter translate="label comment">
+                            <label>Filter Shipping Methods</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>11</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Don't display Australia Post shipping methods that can't be imported into Click &amp; Send during checkout.</comment>
+                        </filter>
+                        <export_all translate="label comment">
+                            <label>Allow Export All Shipping Methods</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>12</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Allows the merchant to export any order with an Australia Post shipping method even if it can't be imported into Click &amp; Send.</comment>
+                        </export_all>
+                        <category_of_items>
+                            <label>Category of Items</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>australia/shipping_carrier_clickandsend_source_categories_item</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </category_of_items>
+                        <category_of_items_explanation>
+                            <label>Category of Items Explanation</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>This is mandatory if Category of Items is Other.</comment>
+                        </category_of_items_explanation>
+                        <nondelivery_instructions>
+                            <label>Non-delivery instructions</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>australia/shipping_carrier_clickandsend_source_instructions_nondelivery</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </nondelivery_instructions>
+                        <return_address>
+                            <label>Return Address</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Return to the following address if undeliverable</comment>
+                        </return_address>
+                        <from_name>
+                            <label>From Name</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </from_name>
+                        <from_company_name>
+                            <label>From Company Name</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </from_company_name>
+                        <from_phone>
+                            <label>From Phone</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </from_phone>
+                        <from_fax>
+                            <label>From Fax</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </from_fax>
+                        <from_email>
+                            <label>From Email</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </from_email>
+                        <from_abn>
+                            <label>From ABN</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Click &amp; Send does not support adding spaces to your ABN.</comment>
+                        </from_abn>
+                        <from_address_line_1>
+                            <label>From Address (Line 1)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </from_address_line_1>
+                        <from_address_line_2>
+                            <label>From Address (Line 2)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </from_address_line_2>
+                        <from_address_line_3>
+                            <label>From Address (Line 3)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </from_address_line_3>
+                        <from_city>
+                            <label>From City / Suburb</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>150</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </from_city>
+                        <from_state>
+                            <label>From State</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>160</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </from_state>
+                        <from_postcode>
+                            <label>From Postcode</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>170</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </from_postcode>
+                        <from_country>
+                            <label>From Country</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_country</source_model>
+                            <sort_order>180</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </from_country>
+                    </fields>
+                </clickandsend>
             </groups>
         </fontis_australia>
-
-        <fontis_feeds>
-            <label>Feeds Generator</label>
-            <tab>fontis_extensions</tab>
-            <frontend_type>text</frontend_type>
-            <sort_order>999999</sort_order>
-            <show_in_default>1</show_in_default>
-            <show_in_website>1</show_in_website>
-            <show_in_store>1</show_in_store>
-            <groups>
-                <shoppingdotcomfeed>
-                    <label>Shopping.Com</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>-1</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <active translate="label">
-                            <label>Enabled</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </active>
-                        <include_all_products translate="label">
-                            <label>Include products by default</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>2</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                            <comment>If 'yes', products will be included by default and excluded if the override attribute resolves true for the product. If 'no', products will be excluded by default and only included if the override attribute resolves true for the product.</comment>
-                        </include_all_products>
-                        <custom_filter_attribute translate="label">
-                            <label>Override individual products with attribute</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>australia/config_productAttributes</source_model>
-                            <sort_order>3</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Products with this selected attribute and where the attribute resolves to true for the product will be excluded from the feed if inclusion is set to default (see above option). Otherwise products will only be included if this attribute is available for the product and the attribute resolves to true when inclusion by default is turned off (see above option).</comment>
-                        </custom_filter_attribute>
-                        <output translate="label">
-                            <label>Output Path</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>4</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>XML files will be generated into this path.</comment>
-                        </output>
-                        <m_to_xml_attributes translate="comment">
-                            <label>Optional attributes to include in product feed</label>
-                            <frontend_model>fontis_australia_block_shoppingdotcom</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>25</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment></comment>
-                        </m_to_xml_attributes>
-                    </fields>
-                </shoppingdotcomfeed>
-                <getpricefeed>
-                    <label>GetPrice</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>0</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <active translate="label">
-                            <label>Enabled</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </active>
-                        <include_all_products translate="label">
-                            <label>Include products by default</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>2</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                            <comment>If 'yes', products will be included by default and excluded if the override attribute resolves true for the product. If 'no', products will be excluded by default and only included if the override attribute resolves true for the product.</comment>
-                        </include_all_products>
-                        <custom_filter_attribute translate="label">
-                            <label>Override individual products with attribute</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>australia/config_productAttributes</source_model>
-                            <sort_order>3</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Products with this selected attribute and where the attribute resolves to true for the product will be excluded from the feed if inclusion is set to default (see above option). Otherwise products will only be included if this attribute is available for the product and the attribute resolves to true when inclusion by default is turned off (see above option).</comment>
-                        </custom_filter_attribute>
-                        <output translate="label">
-                            <label>Output Path</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>4</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>XML files will be generated into this path.</comment>
-                        </output>
-                        <defaultcategory translate="label">
-                            <label>Default Category</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>5</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Products with no category assigned will be assigned this category label.</comment>
-                        </defaultcategory>
-                        <manufacturer translate="label">
-                            <label>Show Manufacturer</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>6</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </manufacturer>
-                        <currency translate="label">
-                            <label>Currency</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>7</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </currency>
-                        <m_to_xml_attributes translate="comment">
-                            <label>Attributes to include in product feed</label>
-                            <frontend_model>fontis_australia_block_getprice</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>25</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment></comment>
-                        </m_to_xml_attributes>
-                    </fields>
-                </getpricefeed>
-                <shopbotfeed>
-                    <label>ShopBot</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>0</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <active translate="label">
-                            <label>Enabled</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </active>
-                        <include_all_products translate="label">
-                            <label>Include products by default</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>2</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                            <comment>If 'yes', products will be included by default and excluded if the override attribute resolves true for the product. If 'no', products will be excluded by default and only included if the override attribute resolves true for the product.</comment>
-                        </include_all_products>
-                        <custom_filter_attribute translate="label">
-                            <label>Override individual products with attribute</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>australia/config_productAttributes</source_model>
-                            <sort_order>3</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Products with this selected attribute and where the attribute resolves to true for the product will be excluded from the feed if inclusion is set to default (see above option). Otherwise products will only be included if this attribute is available for the product and the attribute resolves to true when inclusion by default is turned off (see above option).</comment>
-                        </custom_filter_attribute>
-                        <output translate="label">
-                            <label>Output Path</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>4</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>XML files will be generated into this path.</comment>
-                        </output>
-                        <defaultcategory translate="label">
-                            <label>Default Category</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>5</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Products with no category assigned will be assigned this category label.</comment>
-                        </defaultcategory>
-                        <m_to_xml_attributes translate="comment">
-                            <label>Attributes to include in product feed</label>
-                            <frontend_model>fontis_australia_block_shopbot</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>25</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment></comment>
-                        </m_to_xml_attributes>
-                    </fields>
-                </shopbotfeed>
-                <myshoppingfeed>
-                    <label>MyShopping</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>0</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <active translate="label">
-                            <label>Enabled</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </active>
-                        <include_all_products translate="label">
-                            <label>Include products by default</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>2</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                            <comment>If 'yes', products will be included by default and excluded if the override attribute resolves true for the product. If 'no', products will be excluded by default and only included if the override attribute resolves true for the product.</comment>
-                        </include_all_products>
-                        <custom_filter_attribute translate="label">
-                            <label>Override individual products with attribute</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>australia/config_productAttributes</source_model>
-                            <sort_order>3</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Products with this selected attribute and where the attribute resolves to true for the product will be excluded from the feed if inclusion is set to default (see above option). Otherwise products will only be included if this attribute is available for the product and the attribute resolves to true when inclusion by default is turned off (see above option).</comment>
-                        </custom_filter_attribute>
-                        <output translate="label">
-                            <label>Output Path</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>4</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>XML files will be generated into this path.</comment>
-                        </output>
-                        <defaultcategory translate="label">
-                            <label>Default Category</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>5</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Products with no category assigned will be assigned this category label.</comment>
-                        </defaultcategory>
-                        <m_to_xml_attributes translate="comment">
-                            <label>Attributes to include in product feed</label>
-                            <frontend_model>fontis_australia_block_myshopping</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>25</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment></comment>
-                        </m_to_xml_attributes>
-                    </fields>
-                </myshoppingfeed>
-                <googleproductsfeed>
-                    <label>Google Products</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>3</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <active>
-                            <label>Enabled</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </active>
-                        <include_all_products>
-                            <label>Include products by default</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>2</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                            <comment>If 'yes', products will be included by default and excluded if the override attribute resolves true for the product. If 'no', products will be excluded by default and only included if the override attribute resolves true for the product.</comment>
-                        </include_all_products>
-                        <custom_filter_attribute>
-                            <label>Override individual products with attribute</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>australia/config_productAttributes</source_model>
-                            <sort_order>3</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Products with this selected attribute and where the attribute resolves to true for the product will be excluded from the feed if inclusion is set to default (see above option). Otherwise products will only be included if this attribute is available for the product and the attribute resolves to true when inclusion by default is turned off (see above option).</comment>
-                        </custom_filter_attribute>
-                        <output>
-                            <label>Output Path</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>4</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>XML files will be generated into this path.</comment>
-                        </output>
-                        <title>
-                            <label>Title</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>5</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </title>
-                        <author>
-                            <label>Author</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>5</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </author>
-                        <default_condition>
-                            <label>Default Condition</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>australia/config_condition</source_model>
-                            <sort_order>6</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The default value for the condition attribute in the product feed</comment>
-                        </default_condition>
-                        <m_to_xml_attributes translate="comment">
-                            <label>Optional attributes to include in product feed</label>
-                            <frontend_model>fontis_australia_block_googleproducts</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>25</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment></comment>
-                        </m_to_xml_attributes>
-                    </fields>
-                </googleproductsfeed>
-            </groups>
-        </fontis_feeds>
-
         <doghouse_eparcelexport translate="label comment">
             <tab>sales</tab>
             <label>eParcel Export</label>
@@ -1217,7 +1074,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Centimeters - no decimals</comment>
+                            <comment>Centimetres - no decimals</comment>
                         </width>
                         <height translate="label">
                             <label>Parcel Height</label>
@@ -1235,7 +1092,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Centimeters - no decimals</comment>
+                            <comment>Centimetres - no decimals</comment>
                         </length>
                     </fields>
                 </parcel>
@@ -1307,14 +1164,14 @@
                             <comment></comment>
                         </product_type>
                         <use_multiplegoodrecords translate="label">
-                            <label>Use multiple good records</label>
+                            <label>Use Multiple Good Records</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Australia Post's documentation says to use multiple good lines but their tech support says no. Also, it only seems to work when set to 'No'.</comment>
+                            <comment>Sets whether to add each good as a row in the generated consignment (Yes) or just the last one (No). Leave as "No" unless otherwise advised by Australia Post.</comment>
                         </use_multiplegoodrecords>
 
                     </fields>
@@ -1328,7 +1185,7 @@
                     <show_in_store>1</show_in_store>
                     <fields>
                         <default_charge_code_individual translate="label">
-                            <label>Default charge Code (individual)</label>
+                            <label>Default Charge Code (Individual)</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
@@ -1337,7 +1194,7 @@
                             <comment>The default charge code for individuals. Will be overridden by values in your table rates.</comment>
                         </default_charge_code_individual>
                         <default_charge_code_business translate="label">
-                            <label>Default charge Code (business)</label>
+                            <label>Default Charge Code (Business)</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
@@ -1346,7 +1203,7 @@
                             <comment>The default charge code for businesses, as defined by the customer groups below. Will be overridden by values in your table rates.</comment>
                         </default_charge_code_business>
                         <business_groups translate="label">
-                            <label>Business customer groups</label>
+                            <label>Business Customer Groups</label>
                             <frontend_type>multiselect</frontend_type>
                             <source_model>adminhtml/system_config_source_customer_group</source_model>
                             <sort_order>50</sort_order>

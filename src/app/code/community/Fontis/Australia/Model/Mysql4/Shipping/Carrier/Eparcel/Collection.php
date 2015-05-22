@@ -32,10 +32,11 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel_Collection extends 
 
     public function __construct()
     {
-        parent::__construct(Mage::getSingleton('core/resource')->getConnection('australia_read'));
-        $this->_shipTable = Mage::getSingleton('core/resource')->getTableName('australia/eparcel');
-        $this->_countryTable = Mage::getSingleton('core/resource')->getTableName('directory/country');
-        $this->_regionTable = Mage::getSingleton('core/resource')->getTableName('directory/country_region');
+        $coreResource = Mage::getSingleton('core/resource');
+        parent::__construct($coreResource->getConnection('australia_read'));
+        $this->_shipTable = $coreResource->getTableName('australia/eparcel');
+        $this->_countryTable = $coreResource->getTableName('directory/country');
+        $this->_regionTable = $coreResource->getTableName('directory/country_region');
         $this->_select->from(array("s" => $this->_shipTable))
             ->joinLeft(array("c" => $this->_countryTable), 'c.country_id = s.dest_country_id', 'iso3_code AS dest_country')
             ->joinLeft(array("r" => $this->_regionTable), 'r.region_id = s.dest_region_id', 'code AS dest_region')

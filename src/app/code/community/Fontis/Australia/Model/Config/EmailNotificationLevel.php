@@ -18,12 +18,16 @@
 
 class Fontis_Australia_Model_Config_EmailNotificationLevel
 {
+    /**
+     * @return array
+     */
     public function toOptionArray()
     {
+        $helper = Mage::helper('australia');
         return array(
-            array('value' => 'NONE',     'label' => Mage::helper('australia')->__('None')),
-            array('value' => 'DESPATCH', 'label' => Mage::helper('australia')->__('Despatch')),
-            array('value' => 'TRACKADV', 'label' => Mage::helper('australia')->__('Track Advice')),
+            array('value' => 'NONE',     'label' => $helper->__('None')),
+            array('value' => 'DESPATCH', 'label' => $helper->__('Despatch')),
+            array('value' => 'TRACKADV', 'label' => $helper->__('Track Advice')),
         );
     }
 }
