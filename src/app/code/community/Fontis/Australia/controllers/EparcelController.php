@@ -44,7 +44,7 @@ class Fontis_Australia_EparcelController extends Mage_Adminhtml_Controller_Actio
 
             // Download the file
             $this->_prepareDownloadResponse(basename($filePath), file_get_contents($filePath));
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
             $this->_redirect(self::ADMINHTML_SALES_ORDER_INDEX);
         }
@@ -104,5 +104,13 @@ class Fontis_Australia_EparcelController extends Mage_Adminhtml_Controller_Actio
         $this->_prepareDownloadResponse('tablerates.csv', $contents);
 
         fclose($temp);
+    }
+
+    /**
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton("admin/session")->isAllowed("sales/order");
     }
 }
