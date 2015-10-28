@@ -120,7 +120,11 @@ class Fontis_Australia_Helper_Eparcel extends Mage_Core_Helper_Abstract
     {
         $isStandard = in_array($chargeCode, $this->standardChargeCodes);
 
-        if (!$isStandard && Mage::getStoreConfigFlag('doghouse_eparcelexport/charge_codes/allow_custom_charge_codes')) {
+        if ($isStandard)
+        {
+            return true;
+        }
+        elseif (!$isStandard && Mage::getStoreConfigFlag('doghouse_eparcelexport/charge_codes/allow_custom_charge_codes')) {
             // Charge code not found in the standard list of codes, but system config tells us this is OK
             // @see https://github.com/fontis/fontis_australia/issues/39
             return true;
