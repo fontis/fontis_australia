@@ -783,6 +783,15 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </max_results>
+                        <match_start translate="label">
+                            <label>Match 'Starts with'</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>15</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </match_start>
                     </fields>
                 </postcode_autocomplete>
                 <address_validation translate="label">
