@@ -21,3 +21,10 @@
 .fontis-postcode-autocomplete li.selected {
     background-color:#f7e8dd;
 }
+.fontis-postcode-autocomplete-indicator {
+    background-image: url('../images/ajax-loader.gif');
+    height: 16px;
+    width: 16px;
+    float: right;
+}
+
