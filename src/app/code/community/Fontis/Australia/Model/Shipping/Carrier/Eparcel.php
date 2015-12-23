@@ -245,7 +245,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
             $tracking->setCarrier($this->_code);
             $tracking->setCarrierTitle($this->getConfigData('title'));
             $tracking->setTracking($t);
-            $tracking->setUrl('http://www.eparcel.com.au/');
+            $tracking->setUrl('http://auspost.com.au/track/');
             $result->append($tracking);
         }
 
@@ -264,7 +264,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
 
         $observer->block->getMassactionBlock()->addItem('eparcelexport', array(
             'label' => $observer->block->__('Export to CSV (eParcel)'),
-            'url' => $observer->block->getUrl('australia/eparcel/export')
+            'url' => $observer->block->getUrl('*/eparcel/export')
         ));
     }
 }

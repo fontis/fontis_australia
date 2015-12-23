@@ -45,4 +45,12 @@ class Fontis_Australia_ClickandsendController extends Mage_Adminhtml_Controller_
             $this->_redirect('adminhtml/sales_order/index');
         }
     }
+
+    /**
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton("admin/session")->isAllowed("sales/order");
+    }
 }
