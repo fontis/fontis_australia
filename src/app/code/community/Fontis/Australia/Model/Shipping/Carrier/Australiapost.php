@@ -103,7 +103,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost
         /** @var Fontis_Australia_Helper_Australiapost $helper */
         $helper = Mage::helper('australia/australiapost');
 
-        $weight = (int)$request->getPackageWeight();
+        $weight = (float) $request->getPackageWeight();
         $length = (int)$helper->getAttribute($request, 'length');
         $width = (int)$helper->getAttribute($request, 'width');
         $height = (int)$helper->getAttribute($request, 'height');
