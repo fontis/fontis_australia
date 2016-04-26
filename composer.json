@@ -1,12 +1,12 @@
 {
-    "name": "fontis/australia",
-    "type": "magento-module",
-    "license": "OSL-3.0",
-    "description": "Magento extension that provides functionality for Australian stores.",
-    "homepage": "https://www.fontis.com.au/australia-magento-extension",
+    "name":"fontis/australia",
+    "type":"magento-module",
+    "license":"OSL-3.0",
+    "description":"Provides essential functionality for Australian stores",
+    "homepage":"https://www.fontis.com.au/australia-magento-extension",
     "require": {
         "magento-hackathon/magento-composer-installer": "*",
         "fontis/auspost-api-php": "1.x",
-        "fontis/composer-autoloader": "*"
+        "fontis/composer-autoloader" : "*"
     }
 }

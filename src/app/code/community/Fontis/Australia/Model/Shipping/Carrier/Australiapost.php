@@ -55,6 +55,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost
                 'developer_mode' => true
             );
         } else if ($apiKey) {
+            //TODO: Specify the encrypted backend model in config.xml so we no longer need to decrypt this manually. This will be a breaking change.
             $config = array(
                 'auth_key' => Mage::helper('core')->decrypt($apiKey)
             );

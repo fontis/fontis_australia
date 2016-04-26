@@ -21,7 +21,7 @@ class Fontis_Australia_Block_Eparcel_Rate_Export extends Mage_Adminhtml_Block_Sy
     protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
         $this->setElement($element);
-        $url = $this->getUrl('*/eparcel/exportTablerates');
+        $url = $this->getUrl('*/australia_eparcel/exportTablerates');
 
         $html = $this->getLayout()->createBlock('adminhtml/widget_button')
             ->setType('button')

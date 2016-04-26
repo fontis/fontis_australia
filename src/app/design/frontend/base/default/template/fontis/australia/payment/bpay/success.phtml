@@ -17,7 +17,8 @@
  */
 ?>
 <?php
-$order = Mage::getModel('sales/order')->loadByIncrementId($this->getOrderId());
+/** @var $order Mage_Sales_Model_Order */
+$order = Mage::getSingleton("checkout/session")->getLastRealOrder();
 $payment = $order->getPayment();
 ?>
 <?php if ($payment->getMethod() == 'bpay'): ?>

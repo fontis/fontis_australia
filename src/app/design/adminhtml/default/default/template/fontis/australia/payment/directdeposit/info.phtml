@@ -21,8 +21,17 @@
 ?>
 <p><?php echo $this->getMethod()->getTitle(); ?>
 <?php if($this->getInfo()->getAdditionalData()): ?>
-    <?php if($this->getAccountName()):?><br /><?=$this->__('Account Name: %s', $this->getAccountName()); ?><?php endif; ?>
-	<?php if($this->getAccountBSB()):?><br /><?=$this->__('Account BSB: %s', $this->getAccountBSB()); ?><?php endif; ?>
-	<?php if($this->getAccountNumber()):?><br /><?=$this->__('Account Number: %s', $this->getAccountNumber()); ?><?php endif; ?>
+    <?php if ($this->getAccountName()): ?>
+        <br />
+        <?php echo $this->__('Account Name: %s', $this->getAccountName()); ?>
+    <?php endif; ?>
+    <?php if ($this->getAccountBSB()): ?>
+        <br />
+        <?php echo $this->__('Account BSB: %s', $this->getAccountBSB()); ?>
+    <?php endif; ?>
+    <?php if ($this->getAccountNumber()): ?>
+        <br />
+        <?php echo $this->__('Account Number: %s', $this->getAccountNumber()); ?>
+    <?php endif; ?>
 <?php endif; ?>
 </p>
