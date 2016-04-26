@@ -400,24 +400,18 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost
         $helper = Mage::helper('australia');
         $codes = array(
             'services' => array(
-                'INTL_SERVICE_AIR_MAIL'             => $helper->__('Air Mail'),
-                'AUS_PARCEL_COURIER'                => $helper->__('Courier Post'),
-                'AUS_PARCEL_COURIER_SATCHEL_MEDIUM' => $helper->__('Courier Post Assessed Medium Satchel'),
-                'INTL_SERVICE_ECI_D'                => $helper->__('Express Courier International Documents'),
-                'INTL_SERVICE_ECI_M'                => $helper->__('Express Courier International Merchandise'),
-                'INTL_SERVICE_ECI_PLATINUM'         => $helper->__('Express Courier International Platinum'),
-                'AUS_PARCEL_EXPRESS'                => $helper->__('Express Post'),
-                'INTL_SERVICE_EPI'                  => $helper->__('Express Post International'),
-                'INTL_SERVICE_EPI_B4'               => $helper->__('Express Post International B4'),
-                'INTL_SERVICE_EPI_C5'               => $helper->__('Express Post International C5'),
                 'AUS_LETTER_EXPRESS_SMALL'          => $helper->__('Express Post Small Envelope'),
                 'AUS_LETTER_REGULAR_LARGE'          => $helper->__('Large Letter'),
-                'INTL_SERVICE_PTI'                  => $helper->__('Pack and Track International'),
+                'AUS_PARCEL_COURIER'                => $helper->__('Courier Post'),
+                'AUS_PARCEL_COURIER_SATCHEL_MEDIUM' => $helper->__('Courier Post Assessed Medium Satchel'),
+                'AUS_PARCEL_EXPRESS'                => $helper->__('Express Post'),
                 'AUS_PARCEL_REGULAR'                => $helper->__('Parcel Post'),
-                'INTL_SERVICE_RPI'                  => $helper->__('Registered Post International'),
-                'INTL_SERVICE_RPI_B4'               => $helper->__('Registered Post International B4'),
-                'INTL_SERVICE_RPI_DLE'              => $helper->__('Registered Post International DLE'),
-                'INTL_SERVICE_SEA_MAIL'             => $helper->__('Sea Mail'),
+
+                'INT_PARCEL_COR_OWN_PACKAGING'      => $helper->__('International Courier'),
+                'INT_PARCEL_EXP_OWN_PACKAGING'      => $helper->__('International Express'),
+                'INT_PARCEL_STD_OWN_PACKAGING'      => $helper->__('International Standard'),
+                'INT_PARCEL_AIR_OWN_PACKAGING'      => $helper->__('International Economy Air'),
+                'INT_PARCEL_SEA_OWN_PACKAGING'      => $helper->__('International Economy Sea'),
             ),
             'extra_cover' => array(
                 'AUS_SERVICE_OPTION_SIGNATURE_ON_DELIVERY'       => $helper->__('Signature on Delivery'),
