@@ -120,6 +120,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Clickandsend
             }
         }
 
+        // Alt options
         $item['atlOptions'] = '';
 
         $this->items[] = $item;
