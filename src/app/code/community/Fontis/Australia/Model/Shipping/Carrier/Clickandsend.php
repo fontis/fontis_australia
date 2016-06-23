@@ -156,7 +156,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Clickandsend
             ),
             'AUS' => array(
                 'REGULAR' => 6,
-                'EXPRESSS' => 8
+                'EXPRESS' => 8
             )
         );
 
