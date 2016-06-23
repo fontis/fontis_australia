@@ -120,6 +120,9 @@ class Fontis_Australia_Model_Shipping_Carrier_Clickandsend
             }
         }
 
+        // Include ATL options column to satisfy new specification
+        $item['atlOptions'] = '';
+
         $this->items[] = $item;
     }
 
@@ -156,7 +159,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Clickandsend
             ),
             'AUS' => array(
                 'REGULAR' => 6,
-                'EXPRESSS' => 8
+                'EXPRESS' => 8
             )
         );
 
