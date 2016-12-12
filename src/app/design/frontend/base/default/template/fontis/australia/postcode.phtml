@@ -22,8 +22,14 @@
 
     // Create and insert the div that will hold the list of autocomplete items. This
     // is added to the DOM immediately following the #city field.
+    var autocomplete_city_indicator = new Element('div', {
+        id: 'autocomplete_city_indicator',
+        'class': 'fontis-postcode-autocomplete-indicator',
+        'style': 'display:none;'
+    });
     var autocomplete_city = new Element('div', { id: 'autocomplete_city', 'class': 'fontis-postcode-autocomplete' });
-    $('city').parentNode.appendChild(autocomplete_city);
+    $('city').parentNode.appendChild(autocomplete_city_indicator)
+        .parentNode.appendChild(autocomplete_city);
 
     function updateAddress(text, item) {
         // Update state and postcode fields
@@ -39,6 +45,7 @@
     var completer = new Ajax.Autocompleter("city", "autocomplete_city", citySuggestUrl, {
         afterUpdateElement: updateAddress,
         minChars: 2,
+        indicator: 'autocomplete_city_indicator',
         parameters: 'country=' + $F('country')
     });
     </script>

@@ -21,10 +21,16 @@
     var citySuggestUrl = '<?php echo $this->helper('australia')->getCitySuggestUrl(); ?>';
 
     //============ Billing ============//
+    var autocomplete_city_billing_indicator = new Element('div', {
+        id: 'autocomplete_city_billing_indicator',
+        'class': 'fontis-postcode-autocomplete-indicator',
+        'style': 'display:none;'
+    });
     var autocomplete_city_billing = new Element('div', { id: 'autocomplete_city_billing', 'class': 'fontis-postcode-autocomplete' });
 
-    if ($('billing:city')) {    
-        $('billing:city').parentNode.appendChild(autocomplete_city_billing);
+    if ($('billing:city')) {
+        $('billing:city').parentNode.appendChild(autocomplete_city_billing_indicator)
+            .parentNode.appendChild(autocomplete_city_billing);
     
         function updateAddressBilling(text, item) {
             // Update state and postcode fields
@@ -40,6 +46,7 @@
         var completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", citySuggestUrl, {
             afterUpdateElement: updateAddressBilling,
             minChars: 2,
+            indicator: 'autocomplete_city_billing_indicator',
             callback: function (inputElement, queryString) {
                 return queryString + '&' +  'country=' + $F('billing:country_id');
             }
@@ -47,10 +54,16 @@
     }
 
     //============ Shipping ============//
+    var autocomplete_city_shipping_indicator = new Element('div', {
+        id: 'autocomplete_city_shipping_indicator',
+        'class': 'fontis-postcode-autocomplete-indicator',
+        'style': 'display:none;'
+    });
     var autocomplete_city_shipping = new Element('div', { id: 'autocomplete_city_shipping', 'class': 'fontis-postcode-autocomplete' });
 
-    if ($('shipping:city')) {    
-        $('shipping:city').parentNode.appendChild(autocomplete_city_shipping);
+    if ($('shipping:city')) {
+        $('shipping:city').parentNode.appendChild(autocomplete_city_shipping_indicator)
+            .parentNode.appendChild(autocomplete_city_shipping);
     
         function updateAddressShipping(text, item) {
             // Update state and postcode fields
@@ -66,6 +79,7 @@
         var completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", citySuggestUrl, {
             afterUpdateElement: updateAddressShipping,
             minChars: 2,
+            indicator: 'autocomplete_city_shipping_indicator',
             callback: function (inputElement, queryString) {
                 return queryString + '&' +  'country=' + $F('shipping:country_id');
             }
