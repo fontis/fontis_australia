@@ -25,27 +25,6 @@
 class Fontis_Australia_AddressController extends Mage_Core_Controller_Front_Action
 {
     /**
-     * @var Fontis_Australia_Model_Address_Interface
-     */
-    protected $client;
-
-    protected function _construct()
-    {
-        $model = Mage::getStoreConfig('fontis_australia/address_validation/backend');
-        $this->setClient($model);
-    }
-
-    /**
-     * Set the address validation backend client.
-     *
-     * @param string $client The model alias of the backend client
-     */
-    public function setClient($client)
-    {
-        $this->client = Mage::getModel($client);
-    }
-
-    /**
      * Sends a request to the address validation backend to validate the address
      * the customer provided on the checkout page.
      */
@@ -58,12 +37,7 @@ class Fontis_Australia_AddressController extends Mage_Core_Controller_Front_Acti
             return;
         }
 
-        $request = $this->getRequest();
-        if ($request->getPost('billing')) {
-            $data = $request->getPost('billing');
-        } else {
-            $data = $request->getPost('shipping', array());
-        }
+        $data = $this->getRequest()->getPost();
 
         // Check that all of the required fields are present
         if (empty($data) || !isset($data['country_id'], $data['region_id'], $data['street'], $data['city'], $data['postcode'])) {
@@ -75,7 +49,7 @@ class Fontis_Australia_AddressController extends Mage_Core_Controller_Front_Acti
         $country = Mage::getModel('directory/country')->load($data['country_id'])->getName();
         $region = Mage::getModel('directory/region')->load($data['region_id'])->getCode();
 
-        $result = $this->client->validateAddress(
+        $result = Mage::helper('australia/address')->validate(
             $data['street'],
             $region,
             $data['city'],

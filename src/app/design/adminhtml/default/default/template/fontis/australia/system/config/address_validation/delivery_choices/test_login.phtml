@@ -1,0 +1,37 @@
+<?php /** @var $this Fontis_Australia_Block_Adminhtml_System_Config_AddressValidation_DeliveryChoices_TestLogin */ ?>
+<?php $fieldPrefix = $this->getFieldPrefix(); ?>
+
+<script type="text/javascript">
+    var deliveryChoicesGoodStatusCodes = [<?php echo implode(", ", $this->getGoodStatusCodes()); ?>];
+    function testDeliveryChoicesLogin() {
+        var data = {
+            email: $F('<?php echo "{$fieldPrefix}_email"; ?>'),
+            password: $F('<?php echo "{$fieldPrefix}_password"; ?>')
+        };
+
+        new Ajax.Request('<?php echo $this->getTestUrl(); ?>', {
+            parameters: data,
+            onSuccess: function(response) {
+                var $testResult = $('<?php echo "{$fieldPrefix}_test_login_result"; ?>');
+                if (deliveryChoicesGoodStatusCodes.indexOf(response.responseJSON.status_code) >= 0) {
+                    $testResult.addClassName("success");
+                    $testResult.removeClassName("error");
+                } else {
+                    $testResult.addClassName("error");
+                    $testResult.removeClassName("success");
+                }
+                $testResult.title = response.responseJSON.status_code;
+            },
+            onFailure: function() {
+                alert("There was a problem testing the connection. Please try again.");
+            }
+        });
+        return false;
+    }
+</script>
+<div id="<?php echo "{$fieldPrefix}_test_login"; ?>">
+    <button onclick="testDeliveryChoicesLogin();" type="button" id="<?php echo "{$fieldPrefix}_test_login_button"; ?>">
+        <span><?php echo $this->__("Test Login"); ?>
+    </button>
+    <span id="<?php echo "{$fieldPrefix}_test_login_result"; ?>" class="delivery_choices_test_result_icon"></span>
+</div>

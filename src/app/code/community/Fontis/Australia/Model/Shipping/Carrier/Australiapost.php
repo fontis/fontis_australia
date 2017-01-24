@@ -60,7 +60,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost
                 'auth_key' => Mage::helper('core')->decrypt($apiKey)
             );
         } else {
-            Mage::log('You need a valid API key in order to use this feature.', null, 'fontis_australia.log');
+            Mage::log('You need a valid API key in order to use this feature.', null, Fontis_Australia_Helper_Data::LOG_FILE);
         }
 
         if (!empty($config)) {

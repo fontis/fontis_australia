@@ -20,7 +20,7 @@
 <config>
     <modules>
         <Fontis_Australia>
-            <version>3.1.5</version>
+            <version>3.3.4</version>
         </Fontis_Australia>
     </modules>
     <global>
@@ -131,11 +131,20 @@
                 <observers>
                     <fontis_australia_load_magento_css>
                         <type>singleton</type>
-                        <class>Fontis_Australia_Model_Observer</class>
+                        <class>australia/observer</class>
                         <method>addMagentoCss</method>
                     </fontis_australia_load_magento_css>
                 </observers>
             </controller_action_layout_render_before_checkout_onepage_index>
+            <sales_model_service_quote_submit_success>
+                <observers>
+                    <fontis_australia_validate_address_order_complete>
+                        <type>singleton</type>
+                        <class>australia/observer</class>
+                        <method>validateCompletedOrderAddress</method>
+                    </fontis_australia_validate_address_order_complete>
+                </observers>
+            </sales_model_service_quote_submit_success>
         </events>
         <layout>
             <updates>
@@ -172,7 +181,23 @@
                     </fontis_australia_shipment_eparcel_export_bulkaction>
                 </observers>
             </adminhtml_block_html_before>
+            <controller_action_postdispatch_adminhtml_sales_order_addressSave>
+                <observers>
+                    <fontis_australia_validate_address_admin_save>
+                        <type>singleton</type>
+                        <class>australia/observer</class>
+                        <method>validateAdminOrderAddressSave</method>
+                    </fontis_australia_validate_address_admin_save>
+                </observers>
+            </controller_action_postdispatch_adminhtml_sales_order_addressSave>
         </events>
+        <layout>
+            <updates>
+                <fontis_australia module="Fontis_Australia">
+                    <file>fontis/australia.xml</file>
+                </fontis_australia>
+            </updates>
+        </layout>
     </adminhtml>
     <default>
         <carriers>
@@ -242,7 +267,9 @@
                 <from_country>AU</from_country>
             </clickandsend>
             <address_validation>
+                <enabled>0</enabled>
                 <delivery_choices_account_password backend_model="adminhtml/system_config_backend_encrypted" />
+                <validate_order_save>0</validate_order_save>
             </address_validation>
         </fontis_australia>
     </default>

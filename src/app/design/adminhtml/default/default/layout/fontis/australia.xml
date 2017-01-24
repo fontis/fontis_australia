@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<layout>
+    <adminhtml_sales_order_address>
+        <reference name="head">
+            <action method="addJs"><script>fontis/australia/adminhtml/address.js</script></action>
+        </reference>
+        <reference name="sales_order_address.form.container">
+            <action method="addButton"><id>ignore_validation</id><data helper="australia/adminhtml/getIgnoreValidationButtonData" /><level>-1</level><sort>0</sort><area>header</area></action>
+        </reference>
+    </adminhtml_sales_order_address>
+
+    <adminhtml_system_config_edit>
+        <reference name="head">
+            <action method="addCss"><name>fontis/australia/css/system-config.css</name></action>
+        </reference>
+    </adminhtml_system_config_edit>
+</layout>

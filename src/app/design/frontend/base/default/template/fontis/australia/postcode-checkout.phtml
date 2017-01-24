@@ -18,58 +18,68 @@
 ?>
 <?php if (Mage::helper('australia')->isPostcodeAutocompleteEnabled()): ?>
     <script type="text/javascript">
-    var citySuggestUrl = '<?php echo $this->helper('australia')->getCitySuggestUrl(); ?>';
+    document.observe('dom:loaded', function() {
+        var citySuggestUrl = '<?php echo $this->helper('australia')->getCitySuggestUrl(); ?>';
 
-    //============ Billing ============//
-    var autocomplete_city_billing = new Element('div', { id: 'autocomplete_city_billing', 'class': 'fontis-postcode-autocomplete' });
-
-    if ($('billing:city')) {    
-        $('billing:city').parentNode.appendChild(autocomplete_city_billing);
-    
-        function updateAddressBilling(text, item) {
-            // Update state and postcode fields
-            var id = item.id;
-            var tokens = id.split('-');
-    
-            // Assume item at index 1 is region_id, item at index 3 is postcode
-            $('billing:region_id').value = tokens[1];
-            $('billing:postcode').value = tokens[3];
-        }
-    
-        // Create the autocompleter and assign it to a variable for future use.
-        var completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", citySuggestUrl, {
-            afterUpdateElement: updateAddressBilling,
-            minChars: 2,
-            callback: function (inputElement, queryString) {
-                return queryString + '&' +  'country=' + $F('billing:country_id');
-            }
+        //============ Billing ============//
+        var autocomplete_city_billing = new Element('div', {
+            id: 'autocomplete_city_billing',
+            'class': 'fontis-postcode-autocomplete'
         });
-    }
 
-    //============ Shipping ============//
-    var autocomplete_city_shipping = new Element('div', { id: 'autocomplete_city_shipping', 'class': 'fontis-postcode-autocomplete' });
+        if ($('billing:city')) {
+            $('billing:city').setAttribute('autocomplete', 'off');
+            $('billing:city').parentNode.appendChild(autocomplete_city_billing);
 
-    if ($('shipping:city')) {    
-        $('shipping:city').parentNode.appendChild(autocomplete_city_shipping);
-    
-        function updateAddressShipping(text, item) {
-            // Update state and postcode fields
-            var id = item.id;
-            var tokens = id.split('-');
-    
-            // Assume item at index 1 is region_id, item at index 3 is postcode
-            $('shipping:region_id').value = tokens[1];
-            $('shipping:postcode').value = tokens[3];
-        }
-    
-        // Create the autocompleter and assign it to a variable for future use.
-        var completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", citySuggestUrl, {
-            afterUpdateElement: updateAddressShipping,
-            minChars: 2,
-            callback: function (inputElement, queryString) {
-                return queryString + '&' +  'country=' + $F('shipping:country_id');
+            function updateAddressBilling(text, item) {
+                // Update state and postcode fields
+                var id = item.id;
+                var tokens = id.split('-');
+
+                // Assume item at index 1 is region_id, item at index 3 is postcode
+                $('billing:region_id').value = tokens[1];
+                $('billing:postcode').value = tokens[3];
             }
+
+            // Create the autocompleter and assign it to a variable for future use.
+            var completer = new Ajax.Autocompleter("billing:city", "autocomplete_city_billing", citySuggestUrl, {
+                afterUpdateElement: updateAddressBilling,
+                minChars: 2,
+                callback: function (inputElement, queryString) {
+                    return queryString + '&' + 'country=' + $F('billing:country_id');
+                }
+            });
+        }
+
+        //============ Shipping ============//
+        var autocomplete_city_shipping = new Element('div', {
+            id: 'autocomplete_city_shipping',
+            'class': 'fontis-postcode-autocomplete'
         });
-    }
+
+        if ($('shipping:city')) {
+            $('shipping:city').setAttribute('autocomplete', 'off');
+            $('shipping:city').parentNode.appendChild(autocomplete_city_shipping);
+
+            function updateAddressShipping(text, item) {
+                // Update state and postcode fields
+                var id = item.id;
+                var tokens = id.split('-');
+
+                // Assume item at index 1 is region_id, item at index 3 is postcode
+                $('shipping:region_id').value = tokens[1];
+                $('shipping:postcode').value = tokens[3];
+            }
+
+            // Create the autocompleter and assign it to a variable for future use.
+            var completer = new Ajax.Autocompleter("shipping:city", "autocomplete_city_shipping", citySuggestUrl, {
+                afterUpdateElement: updateAddressShipping,
+                minChars: 2,
+                callback: function (inputElement, queryString) {
+                    return queryString + '&' + 'country=' + $F('shipping:country_id');
+                }
+            });
+        }
+    });
     </script>
 <?php endif ?>

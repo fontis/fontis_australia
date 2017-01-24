@@ -1,0 +1,15 @@
+.delivery_choices_test_result_icon {
+    color: transparent;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.delivery_choices_test_result_icon.success {
+    background: url('../../../images/success_msg_icon.gif') no-repeat;
+}
+
+.delivery_choices_test_result_icon.error {
+    background: url('../../../images/error_msg_icon.gif') no-repeat;
+}

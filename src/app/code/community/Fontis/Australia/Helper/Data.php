@@ -32,6 +32,8 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
 
     const AUSTRALIA_COUNTRY_CODE = 'AU';
 
+    const LOG_FILE = 'fontis_australia.log';
+
     protected $_queryText;
 
     /**
@@ -122,5 +124,15 @@ class Fontis_Australia_Helper_Data extends Mage_Core_Helper_Abstract
              LIMIT ' . $this->getPostcodeAutocompleteMaxResults(),
             array('city' => '%' . $this->getQueryText() . '%')
         );
+    }
+
+    /**
+     * Logs a message to the extension's log file.
+     *
+     * @param string $message Message to log
+     */
+    public function logMessage($message, $level = null)
+    {
+        Mage::log($message, $level, static::LOG_FILE);
     }
 }

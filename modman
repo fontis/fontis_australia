@@ -2,10 +2,13 @@
 # see https://github.com/colinmollenhour/modman/ for more info
 
 # Fontis Australia
-src/app/code/community/Fontis/Australia                            app/code/community/Fontis/Australia
-src/app/etc/modules/Fontis_Australia.xml                           app/etc/modules/Fontis_Australia.xml
-src/app/design/adminhtml/default/default/template/fontis/australia app/design/adminhtml/default/default/template/fontis/australia
-src/app/design/frontend/base/default/layout/fontis/australia.xml   app/design/frontend/base/default/layout/fontis/australia.xml
-src/app/design/frontend/base/default/template/fontis/australia     app/design/frontend/base/default/template/fontis/australia
-src/lib/Doghouse/Australia                                         lib/Doghouse/Australia
-src/skin/frontend/base/default/fontis/australia                    skin/frontend/base/default/fontis/australia
+src/app/code/community/Fontis/Australia                              app/code/community/Fontis/Australia
+src/app/etc/modules/Fontis_Australia.xml                             app/etc/modules/Fontis_Australia.xml
+src/app/design/adminhtml/default/default/layout/fontis/australia.xml app/design/adminhtml/default/default/layout/fontis/australia.xml
+src/app/design/adminhtml/default/default/template/fontis/australia   app/design/adminhtml/default/default/template/fontis/australia
+src/app/design/frontend/base/default/layout/fontis/australia.xml     app/design/frontend/base/default/layout/fontis/australia.xml
+src/app/design/frontend/base/default/template/fontis/australia       app/design/frontend/base/default/template/fontis/australia
+src/js/fontis/australia                                              public/js/fontis/australia
+src/lib/Doghouse/Australia                                           lib/Doghouse/Australia
+src/skin/adminhtml/default/default/fontis/australia                  skin/adminhtml/default/default/fontis/australia
+src/skin/frontend/base/default/fontis/australia                      skin/frontend/base/default/fontis/australia

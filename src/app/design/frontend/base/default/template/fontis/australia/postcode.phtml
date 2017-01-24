@@ -18,28 +18,30 @@
 ?>
 <?php if (Mage::helper('australia')->isPostcodeAutocompleteEnabled()): ?>
     <script type="text/javascript">
-    var citySuggestUrl = '<?php echo $this->helper('australia')->getCitySuggestUrl(); ?>';
+    document.observe('dom:loaded', function() {
+        var citySuggestUrl = '<?php echo $this->helper('australia')->getCitySuggestUrl(); ?>';
 
-    // Create and insert the div that will hold the list of autocomplete items. This
-    // is added to the DOM immediately following the #city field.
-    var autocomplete_city = new Element('div', { id: 'autocomplete_city', 'class': 'fontis-postcode-autocomplete' });
-    $('city').parentNode.appendChild(autocomplete_city);
+        // Create and insert the div that will hold the list of autocomplete items. This
+        // is added to the DOM immediately following the #city field.
+        var autocomplete_city = new Element('div', {id: 'autocomplete_city', 'class': 'fontis-postcode-autocomplete'});
+        $('city').parentNode.appendChild(autocomplete_city);
 
-    function updateAddress(text, item) {
-        // Update state and postcode fields
-        var id = item.id;
-        var tokens = id.split('-');
+        function updateAddress(text, item) {
+            // Update state and postcode fields
+            var id = item.id;
+            var tokens = id.split('-');
 
-        // Assume item at index 1 is region_id, item at index 3 is postcode
-        $('region_id').value = tokens[1];
-        $('zip').value = tokens[3];
-    }
+            // Assume item at index 1 is region_id, item at index 3 is postcode
+            $('region_id').value = tokens[1];
+            $('zip').value = tokens[3];
+        }
 
-    // Create the autocompleter and assign it to a variable for future use.
-    var completer = new Ajax.Autocompleter("city", "autocomplete_city", citySuggestUrl, {
-        afterUpdateElement: updateAddress,
-        minChars: 2,
-        parameters: 'country=' + $F('country')
+        // Create the autocompleter and assign it to a variable for future use.
+        var completer = new Ajax.Autocompleter("city", "autocomplete_city", citySuggestUrl, {
+            afterUpdateElement: updateAddress,
+            minChars: 2,
+            parameters: 'country=' + $F('country')
+        });
     });
     </script>
 <?php endif ?>

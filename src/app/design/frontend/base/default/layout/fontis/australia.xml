@@ -39,6 +39,8 @@
             <action method="addCss" ifconfig="fontis_australia/postcode_autocomplete/enabled"><stylesheet>fontis/australia/css/postcode-autocomplete.css</stylesheet></action>
             <action method="addJs" ifconfig="fontis_australia/address_validation/enabled"><script>prototype/window.js</script></action>
             <action method="addCss" ifconfig="fontis_australia/address_validation/enabled"><stylesheet>fontis/australia/css/opcheckout.css</stylesheet></action>
+            <action method="addItem" ifconfig="fontis_australia/address_validation/enabled"><type>skin_js</type><script>fontis/australia/js/addressvalidation.js</script></action>
+            <action method="addItem" ifconfig="fontis_australia/address_validation/enabled"><type>skin_js</type><script>fontis/australia/js/opcheckout.js</script></action>
         </reference>
         <reference name="content">
             <block type="core/template" name="fontis.australia.checkout.onepage" template="fontis/australia/checkout/onepage.phtml">
