@@ -119,7 +119,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Clickandsend
                 $item['itemUnitWeight' . $i] = sprintf('%0.3f', $simpleItem->getWeight());
             }
         }
-
+        
         // Include ATL options column to satisfy new specification
         $item['atlOptions'] = '';
 
