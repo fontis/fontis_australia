@@ -431,4 +431,64 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost
             return $codes[$type][$code];
         }
     }
+
+    /**
+     * @return bool
+     */
+    public function isTrackingAvailable()
+    {
+        return true;
+    }
+
+    /**
+     * @param $tracking
+     * @return bool|false|Mage_Core_Model_Abstract
+     */
+    public function getTrackingInfo($tracking)
+    {
+        $result = $this->getTracking($tracking);
+
+        if ($result instanceof Mage_Shipping_Model_Tracking_Result) {
+            if ($trackings = $result->getAllTrackings()) {
+                return $trackings[0];
+            }
+        } elseif (is_string($result) && !empty($result)) {
+            return $result;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $trackings
+     * @return false|Mage_Core_Model_Abstract
+     */
+    public function getTracking($trackings)
+    {
+        if (!is_array($trackings)) {
+            $trackings = array($trackings);
+        }
+
+        return $this->_getTracking($trackings);
+    }
+
+    /**
+     * @param $trackings
+     * @return false|Mage_Core_Model_Abstract
+     */
+    protected function _getTracking($trackings)
+    {
+        $result = Mage::getModel('shipping/tracking_result');
+
+        foreach ($trackings as $t) {
+            $tracking = Mage::getModel('shipping/tracking_result_status');
+            $tracking->setCarrier($this->_code);
+            $tracking->setCarrierTitle($this->getConfigData('title'));
+            $tracking->setTracking($t);
+            $tracking->setUrl('http://auspost.com.au/track/track.html?id=' . $t);
+            $result->append($tracking);
+        }
+
+        return $result;
+    }
 }
