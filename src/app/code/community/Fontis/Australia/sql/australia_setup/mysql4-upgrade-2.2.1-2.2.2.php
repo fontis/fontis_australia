@@ -25,4 +25,8 @@ $installer->run(
     . " ADD `charge_code_business` VARCHAR( 50 ) NULL DEFAULT NULL"
 );
 
+$installer->run("
+ALTER TABLE {$this->getTable('australia_eparcel')} DROP INDEX `dest_country`, ADD UNIQUE `dest_country` ( `website_id` , `dest_country_id` , `dest_region_id` , `dest_zip` , `condition_name` , `condition_to_value` , `delivery_type`)
+");
+
 $installer->endSetup();
