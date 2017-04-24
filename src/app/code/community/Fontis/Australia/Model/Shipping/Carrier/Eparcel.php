@@ -131,7 +131,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
         /* Is this customer is in a ~business~ group ? */
         $isBusinessCustomer = (
             Mage::getSingleton('customer/session')->isLoggedIn()
-            AND
+            &&
             in_array(
                 Mage::getSingleton('customer/session')->getCustomerGroupId(),
                 explode(
@@ -202,8 +202,8 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
         return array('bestway' => $this->getConfigData('name'));
     }
 
-    /*
-     * Tracking code
+    /**
+     * Whether tracking is available for this shipping method
      *
      * @return bool
      */
@@ -245,7 +245,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel
             $tracking->setCarrier($this->_code);
             $tracking->setCarrierTitle($this->getConfigData('title'));
             $tracking->setTracking($t);
-            $tracking->setUrl('http://auspost.com.au/track/');
+            $tracking->setUrl('https://auspost.com.au/track/track.html?id=' . $t);
             $result->append($tracking);
         }
 

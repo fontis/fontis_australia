@@ -33,26 +33,29 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
     {
         $read = $this->_getReadAdapter();
 
-        $postcode = $request->getDestPostcode();
+        // Ensure the postcodes are 4 digits, matching what is used during import and the format
+        // used in the Click & Collect code
+        $postcode = str_pad($request->getDestPostcode(), 4, '0', STR_PAD_LEFT);
+
         $table = $this->getMainTable();
         $storeId = $request->getStoreId();
 
         $insuranceStep = (float)Mage::getStoreConfig('carriers/eparcel/insurance_step', $storeId);
         $insuranceCostPerStep = (float)Mage::getStoreConfig('carriers/eparcel/insurance_cost_per_step', $storeId);
         $signatureRequired = Mage::getStoreConfigFlag('carriers/eparcel/signature_required', $storeId);
+
         if ($signatureRequired) {
             $signatureCost = (float)Mage::getStoreConfig('carriers/eparcel/signature_cost', $storeId);
         } else {
             $signatureCost = 0;
         }
 
-        Mage::log($request->getDestCountryId());
-        Mage::log($request->getDestRegionId());
-        Mage::log($postcode);
-        Mage::log(var_export($request->getConditionName(), true));
+        Mage::log('Eparcel: ' . $request->getDestCountryId(), null, Fontis_Australia_Helper_Data::LOG_FILE);
+        Mage::log('Eparcel: ' . $request->getDestRegionId(), null, Fontis_Australia_Helper_Data::LOG_FILE);
+        Mage::log('Eparcel: ' . $postcode, null, Fontis_Australia_Helper_Data::LOG_FILE);
+        Mage::log('Eparcel: ' . var_export($request->getConditionName(), true), null, Fontis_Australia_Helper_Data::LOG_FILE);
 
         for ($j = 0; $j < 5; $j++) {
-
             $select = $read->select()->from($table);
 
             // Support for Multi Warehouse Extension.
@@ -60,7 +63,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                 $select->where('stock_id = ?', $request->getWarehouseId());
             }
 
-            switch($j) {
+            switch ($j) {
                 case 0:
                     $select->where(
                         $read->quoteInto(" (dest_country_id=? ", $request->getDestCountryId()).
@@ -87,12 +90,9 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                         );
                     break;
                 case 4:
-                    $select->where(
-                            "  (dest_country_id='0' AND dest_region_id='0' AND dest_zip='0000')"
-                );
+                    $select->where("  (dest_country_id='0' AND dest_region_id='0' AND dest_zip='0000')");
                     break;
             }
-
 
             if (is_array($request->getConditionName())) {
                 $i = 0;
@@ -102,6 +102,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                     } else {
                         $select->orWhere('condition_name=?', $conditionName);
                     }
+
                     $select->where('condition_from_value<=?', $request->getData($conditionName));
                     $select->where('condition_to_value>=?', $request->getData($conditionName));
 
@@ -112,6 +113,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                 $select->where('condition_from_value<=?', $request->getData($request->getConditionName()));
                 $select->where('condition_to_value>=?', $request->getData($request->getConditionName()));
             }
+
             $select->where('website_id=?', $request->getWebsiteId());
 
             $select->order('dest_country_id DESC');
@@ -119,11 +121,12 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
             $select->order('dest_zip DESC');
             $select->order('condition_from_value DESC');
 
-            // pdo has an issue. we cannot use bind
+            Mage::log('Eparcel: ' . $select->__toString(), null, Fontis_Australia_Helper_Data::LOG_FILE);
 
-            $newdata=array();
-            Mage::log($select->__toString());
+            // pdo has an issue. we cannot use bind
+            $newdata = array();
             $row = $read->fetchAll($select);
+
             if (!empty($row) && ($j < 5)) {
                 // have found a result or found nothing and at end of list!
                 foreach ($row as $data) {
@@ -157,13 +160,15 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                             $newdata[]=$data;
                         }
                     } catch (Exception $e) {
-                        Mage::log($e->getMessage());
+                        Mage::logException($e);
                     }
                 }
                 break;
             }
         }
-        Mage::log(var_export($newdata, true));
+
+        Mage::log('Eparcel: ' . var_export($newdata, true), null, Fontis_Australia_Helper_Data::LOG_FILE);
+
         return $newdata;
     }
 
@@ -192,12 +197,14 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                 $csvLines = explode("\n", $csv);
                 $csvLine = array_shift($csvLines);
                 $csvLine = $this->_getCsvValues($csvLine);
+
                 if (count($csvLine) < self::MIN_CSV_COLUMN_COUNT) {
                     $exceptions[0] = Mage::helper('shipping')->__('Less than ' . self::MIN_CSV_COLUMN_COUNT . ' columns in the CSV header.');
                 }
 
                 $countryCodes = array();
                 $regionCodes = array();
+
                 foreach ($csvLines as $k => $csvLine) {
                     $csvLine = $this->_getCsvValues($csvLine);
                     $count = count($csvLine);
@@ -216,6 +223,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                     $countryCodesIso2 = array();
 
                     $countryCollection = Mage::getResourceModel('directory/country_collection')->addCountryCodeFilter($countryCodes)->load();
+
                     foreach ($countryCollection->getItems() as $country) {
                         $countryCodesToIds[$country->getData('iso3_code')] = $country->getData('country_id');
                         $countryCodesToIds[$country->getData('iso2_code')] = $country->getData('country_id');
@@ -231,7 +239,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                         $regionCodesToIds[$region->getData('code')] = $region->getData('region_id');
                     }
 
-                    foreach ($csvLines as $k=>$csvLine) {
+                    foreach ($csvLines as $k => $csvLine) {
                         $csvLine = $this->_getCsvValues($csvLine);
 
                         if (empty($countryCodesToIds) || !array_key_exists($csvLine[0], $countryCodesToIds)) {
@@ -336,14 +344,16 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                     );
                     $connection->delete($table, $condition);
 
-                    Mage::log(count($data)." lines read from CSV");
-                    foreach($data as $k=>$dataLine) {
+                    Mage::log('Eparcel Import: ' . count($data)." lines read from CSV", null, Fontis_Australia_Helper_Data::LOG_FILE);
+
+                    foreach ($data as $k => $dataLine) {
                         try {
                             // convert comma-seperated postcode/postcode range
                             // string into an array
                             $postcodes = array();
-                            foreach(explode(',', $dataLine['dest_zip']) as $postcodeEntry) {
+                            foreach (explode(',', $dataLine['dest_zip']) as $postcodeEntry) {
                                 $postcodeEntry = explode("-", trim($postcodeEntry));
+
                                 if(count($postcodeEntry) == 1) {
                                     Mage::log("Line $k, single postcode: ".$postcodeEntry[0]);
                                     // if the postcode entry is length 1, it's
@@ -360,13 +370,14 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
                                 }
                             }
 
-                            Mage::log(var_export($postcodes, true));
-                            foreach($postcodes as $postcode) {
-                                $dataLine['dest_zip'] = str_pad($postcode, 4, "0", STR_PAD_LEFT);
+                            Mage::log('Eparcel Import: ' . var_export($postcodes, true), null, Fontis_Australia_Helper_Data::LOG_FILE);
+
+                            foreach ($postcodes as $postcode) {
+                                $dataLine['dest_zip'] = str_pad($postcode, 4, '0', STR_PAD_LEFT);
                                 $connection->insert($table, $dataLine);
                             }
                         } catch (Exception $e) {
-                            Mage::log($e->getMessage());
+                            Mage::logException($e);
                             $exceptions[] = $e->getMessage();
                         }
                     }
@@ -423,6 +434,7 @@ class Fontis_Australia_Model_Mysql4_Shipping_Carrier_Eparcel extends Mage_Core_M
             }
             $elements[$i] = trim($elements[$i]);
         }
+
         return $elements;
     }
 

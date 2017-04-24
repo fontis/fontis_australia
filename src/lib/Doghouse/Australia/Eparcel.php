@@ -5,6 +5,7 @@ class Doghouse_Australia_Eparcel
     const ENCLOSURE = '"';
     const DELIMITER = ',';
 
+    /** @var Doghouse_Australia_Eparcel_Record[] */
     protected $records = array();
 
     public function addRecord(Doghouse_Australia_Eparcel_Record $record)

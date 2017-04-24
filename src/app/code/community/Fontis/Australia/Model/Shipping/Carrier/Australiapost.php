@@ -85,6 +85,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost
 
         // Check if this method is even applicable (shipping from Australia)
         $origCountry = Mage::getStoreConfig('shipping/origin/country_id', $request->getStore());
+
         if ($origCountry != Fontis_Australia_Helper_Data::AUSTRALIA_COUNTRY_CODE) {
             return false;
         }
@@ -93,10 +94,11 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost
             return false;
         }
 
-        $fromPostcode = (int)Mage::getStoreConfig('shipping/origin/postcode', $this->getStore());
-        $toPostcode = (int)$request->getDestPostcode();
+        $fromPostcode = str_pad((int)Mage::getStoreConfig('shipping/origin/postcode', $this->getStore()), 4, '0', STR_PAD_LEFT);
+        $toPostcode = str_pad((int)$request->getDestPostcode(), 4, '0', STR_PAD_LEFT);
 
         $destCountry = $request->getDestCountryId();
+
         if (!$destCountry) {
             $destCountry = Fontis_Australia_Helper_Data::AUSTRALIA_COUNTRY_CODE;
         }
@@ -147,6 +149,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost
         // TODO: Clean up this logic
         $allowedMethods = $this->getAllowedMethods();
         $extraCoverParent = $this->getCode('extra_cover');
+
         foreach ($services['services']['service'] as $service) {
             $serviceCode = $service['code']; // e.g. AUS_PARCEL_REGULAR
 
@@ -433,6 +436,8 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost
     }
 
     /**
+     * Whether tracking is available for this shipping method
+     *
      * @return bool
      */
     public function isTrackingAvailable()
@@ -485,7 +490,7 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost
             $tracking->setCarrier($this->_code);
             $tracking->setCarrierTitle($this->getConfigData('title'));
             $tracking->setTracking($t);
-            $tracking->setUrl('http://auspost.com.au/track/track.html?id=' . $t);
+            $tracking->setUrl('https://auspost.com.au/track/track.html?id=' . $t);
             $result->append($tracking);
         }
 
