@@ -193,9 +193,8 @@ class Fontis_Australia_Model_Shipping_Carrier_Eparcel_Export_Csv extends Fontis_
         $helper = Mage::helper('australia/eparcel');
         $consignmentRecord = new Doghouse_Australia_Eparcel_Record_Consignment();
 
-        $consignmentRecord->chargeCode = $this->_getChargeCode($order);
-
-        $consignmentRecord->isSignatureRequired    = (bool) $this->getDefault('consignement/is_signature_required');
+        $consignmentRecord->chargeCode             = $this->_getChargeCode($order);
+        $consignmentRecord->isSignatureRequired    = $this->getDefault('consignement/is_signature_required');
         $consignmentRecord->addToAddressBook       = (bool) $this->getDefault('consignement/add_to_address_book');
         $consignmentRecord->isRefPrintRequired     = (bool) $this->getDefault('consignement/print_ref1');
         $consignmentRecord->isRef2PrintRequired    = (bool) $this->getDefault('consignement/print_ref2');
