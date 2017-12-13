@@ -62,5 +62,20 @@ class Doghouse_Australia_Eparcel_Record_Consignment extends Doghouse_Australia_E
     public $specifiedDeliveryDate;
     public $specifiedDeliveryDay;
     public $specifiedNoDeliveryDay;
+    public $specifiedDeliveryWindow;
     public $customerCollectLocation;
+    public $importerReferenceNumber;
+    public $senderName;
+    public $senderCustomsReference;
+    public $senderBusinessName;
+    public $senderAddressLine1;
+    public $senderAddressLine2;
+    public $senderAddressLine3;
+    public $senderSuburb;
+    public $senderStateCode;
+    public $senderPostcode;
+    public $senderCountryCode;
+    public $senderPhoneNumber;
+    public $senderEmail;
+    public $returnLabel;
 }
