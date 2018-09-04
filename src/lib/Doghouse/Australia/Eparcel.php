@@ -1,10 +1,8 @@
 <?php
-
 class Doghouse_Australia_Eparcel
 {
     const ENCLOSURE = '"';
     const DELIMITER = ',';
-
     private $_cRecord = array(
         "C_CONSIGNMENT_ID",
         "C_POST_CHARGE_TO_ACCOUNT",
@@ -81,7 +79,6 @@ class Doghouse_Australia_Eparcel
         "C_SENDER_EMAIL",
         "C_RTN_LABEL"
     );
-
     private $_aRecord = array(
         "A_ACTUAL_CUBIC_WEIGHT",
         "A_LENGTH",
@@ -103,7 +100,6 @@ class Doghouse_Australia_Eparcel
         "A_PROD_CLASSIFICATION",
         "A_IS_COMMERCIAL_VALUE"
     );
-
     private $_gRecord = array(
         "G_ORIGIN_COUNTRY_CODE",
         "G_HS_TARIFF",
@@ -115,7 +111,6 @@ class Doghouse_Australia_Eparcel
         "G_UNIT_VALUE",
         "G_TOTAL_VALUE"
     );
-
     private $_keyRecord = array(
         "IGNORED",
         "OPTIONAL",
@@ -220,75 +215,58 @@ class Doghouse_Australia_Eparcel
         "MANDATORY/OPTIONAL REFER TO GUIDE",
         "MANDATORY/OPTIONAL REFER TO GUIDE"
     );
-
     /** @var Doghouse_Australia_Eparcel_Record[] */
     protected $records = array();
-
     public function addRecord(Doghouse_Australia_Eparcel_Record $record)
     {
         $record->isAddedToEparcel(true);
-
         return array_push($this->records, $record);
     }
-
     public function makeCsv($filePath)
     {
         /**
          * List of valid eparcel record types
          */
         $recordTypes = array('C','A','G');
-
         /**
          * Array that aggregates the total fields for export row
          */
         $csvRow = array();
-
         /**
          * File pointer handle
          * @var resource
          */
         $fp = fopen($filePath, 'w');
-
         // Check FP handle is ok
         if ( $fp == false ) {
             return false;
         }
-
         // Add CSV header
         fputcsv($fp, array_merge($this->_cRecord, $this->_aRecord, $this->_gRecord), self::DELIMITER, self::ENCLOSURE);
         fputcsv($fp, $this->_keyRecord, self::DELIMITER, self::ENCLOSURE);
-
         // Cycle through records
         foreach ($this->records as $i => $record) {
             // Get array of field values set from class
             $recordArray = $record->getValues();
-
             // Verify correct record
             if ($recordTypes[$i % 3] == $recordArray[0]) {
-
                 // Rectify consignment record charge code field: free shipping set to standard shipping charge code for individuals
                 if ($recordTypes[$i % 3] == 'C' && $recordArray[3] == 'FREESHIPPING') {
                     $recordArray[3] = Mage::getStoreConfig('doghouse_eparcelexport/charge_codes/default_charge_code_individual');
                 }
-
                 // Remove record type value, unneeded in eparcel import
                 unset($recordArray[0]);
-
                 // Add current record to the row
                 $csvRow = array_merge($csvRow, $recordArray);
-
                 // Once all CSV fields are added to row, write row to file
                 if ($recordTypes[$i % 3] == 'G') {
                     fputcsv($fp, $csvRow, self::DELIMITER, self::ENCLOSURE);
-
                     // Reset
                     $csvRow = array();
                 }
             }
         }
-
         fclose($fp);
-
         return true;
     }
 }

@@ -114,8 +114,8 @@ class Fontis_Australia_Model_Shipping_Carrier_Australiapost
         $extraCover = max((int)$request->getPackageValue(), self::EXTRA_COVER_LIMIT);
 
         $config = array(
-            'from_postcode' => $fromPostcode,
-            'to_postcode' => $toPostcode,
+            'from_postcode' => (int)$fromPostcode,
+            'to_postcode' => (int)$toPostcode,
             'length' => $length,
             'width' => $width,
             'height' => $height,
